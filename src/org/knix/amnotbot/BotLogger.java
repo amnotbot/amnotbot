@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2007 Jimmy Mitchener <jimmy.mitchener@gmail.com>
+ * Copyright (c) 2008 Jimmy Mitchener <jcm@packetpan.org>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
