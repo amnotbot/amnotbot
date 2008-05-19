@@ -1,0 +1,56 @@
+<project name="amnotbot" default="dist" basedir=".">
+	<description>
+		Amnotbot - IRC Bot by Jimmy Mitchener
+	</description>
+
+	<property name="src"   location="src/" />
+	<property name="build" location="build/" />
+	<property name="dist"  location="dist/" />
+	<property name="lib"   location="lib/" />
+	
+	<!-- Great utility allowing Amnotbot to run on older VMs (eg. Bland) -->
+	<taskdef name="retroweaver"
+			 classname="net.sourceforge.retroweaver.ant.RetroWeaverTask">
+		<classpath>
+			<pathelement location="${lib}/retroweaver-all-2.0.jar"/>
+		</classpath>
+	</taskdef>
+
+	<path id="classpath">
+		<fileset dir="${lib}" includes="*.jar" />
+        <pathelement location="${lib}" />
+	</path>
+
+	<target name="clean">
+		<delete dir="${build}" />
+		<delete dir="${dist}" />
+	</target>
+
+	<target name="init" depends="clean">
+		<tstamp />
+		<mkdir dir="${build}" />
+		<mkdir dir="${dist}" />
+	</target>
+
+	<target name="compile" depends="init">
+		<javac srcdir="${src}"
+			   destdir="${build}"
+			   debug="true"
+			   classpathref="classpath"/>
+	</target>
+
+	<target name="dist" depends="compile">
+        <jar jarfile="${dist}/amnotbot.jar" manifest="Manifest">
+            <fileset dir="${build}" />
+        </jar>
+        <copy todir="${dist}/lib">
+            <fileset dir="${lib}">
+            	<exclude name="retroweaver-all-2.0.jar" />
+            </fileset>
+        </copy>
+		
+		<retroweaver inputjar="${dist}/amnotbot.jar"
+					 outputjar="${dist}/amnotbot-1.4.jar"
+					 target="1.4" />
+	</target>
+</project>

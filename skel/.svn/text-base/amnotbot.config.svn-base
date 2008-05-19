@@ -1,0 +1,10 @@
+server = irc.freenode.net
+channels = #testing
+nick = amtestbot
+nickserv_enabled = false 
+nickserv = NICKSERV
+nickserv_password = yourpassword 
+ignored_words_file = /home/youruser/ignore.words
+word_counter_imp = sqlite
+delicious_user = your_delicious_user
+delicious_pass = your_delicious_pass
