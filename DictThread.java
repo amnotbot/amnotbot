@@ -34,7 +34,8 @@ import java.util.Vector;
 
 public class DictThread extends Thread
 {    
-	private static final String DEFAULT_DICTIONARY = "!"; 
+//	private static final String DEFAULT_DICTIONARY = "!"; 
+	private static final String DEFAULT_DICTIONARY = "wn"; 
 	private static final String DEFAULT_STRATEGY = "lev";
 
 	private BotConnection con;
@@ -53,7 +54,7 @@ public class DictThread extends Thread
 
 		this.dictParsers = new Hashtable<String, Class>();
 
-		this.dictParsers.put("wn", WordNetDictParser.class);
+//		this.dictParsers.put("wn", WordNetDictParser.class);
 		this.dictParsers.put("vera", VeraDictParser.class);
 	}
 

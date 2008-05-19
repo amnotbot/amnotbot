@@ -35,13 +35,13 @@ public class DictCommand extends AmnotbotCommandImp
 
 	public DictCommand(DictHelper aReceiver)
 	{
-		super("^!dict\\s+(.*)", "dict");
+		super("^!(dict|define)\\s+(.*)", "dict define");
 
 		this.aReceiver = aReceiver;
 	}
 
 	public void execute(BotConnection con, String chan, IRCUser user, String msg)
 	{
-		this.aReceiver.runQuery(chan, user.getNick(), this.getGroup(1), false);
+		this.aReceiver.runQuery(chan, user.getNick(), this.getGroup(2), false);
 	}
 }

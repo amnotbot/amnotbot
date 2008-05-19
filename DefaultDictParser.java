@@ -34,7 +34,7 @@ public class DefaultDictParser implements DictParser {
 	public Vector<String> firstDefinition(Definition definition) {
 		Vector<String> myDefinition = new Vector<String>();
 
-		if (definition.getDefinition().split("\n").length > 20)
+		if (definition.getDefinition().split("\n").length > 10)
 			myDefinition.add(new String("Definition too long! Please, try with a different dictionary. Skipping ..."));
 		else
 			myDefinition.add(definition.getDefinition());

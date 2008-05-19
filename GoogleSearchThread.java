@@ -8,10 +8,9 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.htmlparser.util.ParserUtils;
 
 /**
  *
@@ -95,6 +94,9 @@ public class GoogleSearchThread extends Thread {
 		try {
 			this.con.doPrivmsg(this.chan, json.getJSONObject("responseData").getJSONArray("results").getJSONObject(0).optString("titleNoFormatting"));
 			this.con.doPrivmsg(this.chan, json.getJSONObject("responseData").getJSONArray("results").getJSONObject(0).optString("url"));
+			
+			String content = json.getJSONObject("responseData").getJSONArray("results").getJSONObject(0).optString("content");
+			this.con.doPrivmsg(this.chan, ParserUtils.trimAllTags(content, false));
 		} catch (JSONException ex) {
 			System.out.println(ex.getMessage());
 		}
