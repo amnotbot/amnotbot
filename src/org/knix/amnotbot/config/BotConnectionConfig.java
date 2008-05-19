@@ -1,5 +1,3 @@
-/* $Id: BotConnectionConfig.java 46 2008-05-16 17:28:54Z knix $ */
-
 /*
  * Copyright (c) 2008 Jimmy Mitchener <jimmy.mitchener@gmail.com>
  * All rights reserved.

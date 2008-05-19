@@ -1,5 +1,3 @@
-/* $Id$ */
-
 /*
  * Copyright (c) 2008 Jimmy Mitchener <jimmy.mitchener@gmail.com>
  * All rights reserved.
