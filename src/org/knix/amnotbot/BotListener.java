@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008 Jimmy Mitchener <jcm@packetpan.org>
+ * Copyright (c) 2007 Jimmy Mitchener <jimmy.mitchener@gmail.com>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -76,6 +76,7 @@ public class BotListener implements IRCEventListener
 
 		this.macroCommand.add(new QurlRequestCommand());
 		this.macroCommand.add(new GoogleCommand());
+		this.macroCommand.add(new GoogleBookSearchCommand());
 		SearchClient yahooClient = new SearchClient("G7RklHzV34Gs_AYiBU0xA4wak1J3plPRonFhFfwJEeXMVP4PrpvwiflgxXa4uw--");
 		this.macroCommand.add(new YahooWebSearchCommand(yahooClient));
 		this.macroCommand.add(new YahooNewsSearchCommand(yahooClient));
