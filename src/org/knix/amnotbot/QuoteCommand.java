@@ -1,8 +1,5 @@
 package org.knix.amnotbot;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import org.schwering.irc.lib.IRCUser;
 
 public class QuoteCommand extends AmnotbotCommandImp {
