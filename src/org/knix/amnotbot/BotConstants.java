@@ -27,6 +27,8 @@
 
 package org.knix.amnotbot;
 
+import org.knix.amnotbot.config.BotConfiguration;
+
 /**
  * Constants used for the bot.
  */

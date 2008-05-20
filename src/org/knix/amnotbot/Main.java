@@ -29,6 +29,8 @@ package org.knix.amnotbot;
 
 import java.util.List;
 
+import org.knix.amnotbot.config.BotConfiguration;
+
 public class Main
 {
 	public static void main(String[] args)
