@@ -16,7 +16,7 @@ import org.htmlparser.util.ParserUtils;
  *
  * @author gpoppino
  */
-public class GoogleSearchThread extends Thread {
+public class GoogleWebSearchThread extends Thread {
     
 	private BotConnection con;
 	private String query;
@@ -24,7 +24,7 @@ public class GoogleSearchThread extends Thread {
 	private String nick;
 
     
-	public GoogleSearchThread(BotConnection con,
+	public GoogleWebSearchThread(BotConnection con,
 			String chan,
 			String nick,
 			String query)
