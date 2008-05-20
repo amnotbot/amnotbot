@@ -1,9 +1,9 @@
 package org.knix.amnotbot;
 
-import org.schwering.irc.lib.IRCUser;
-
 import java.util.Iterator;
 import java.util.LinkedList;
+
+import org.schwering.irc.lib.IRCUser;
 
 public class MacroCommand extends AmnotbotCommandImp {
 

@@ -1,6 +1,7 @@
 package org.knix.amnotbot;
 
 import java.util.LinkedList;
+
 import org.schwering.irc.lib.IRCUser;
 
 public class WordsCommandThread extends Thread {

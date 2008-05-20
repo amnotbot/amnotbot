@@ -8,9 +8,10 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
+
+import org.htmlparser.util.ParserUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.htmlparser.util.ParserUtils;
 
 /**
  *

@@ -1,5 +1,11 @@
 package org.knix.amnotbot;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.util.List;
+
 import com.google.gdata.client.Service;
 import com.google.gdata.client.youtube.YouTubeService;
 import com.google.gdata.data.Entry;
@@ -14,12 +20,6 @@ import com.google.gdata.data.youtube.VideoFeed;
 import com.google.gdata.data.youtube.YouTubeMediaContent;
 import com.google.gdata.data.youtube.YouTubeMediaGroup;
 import com.google.gdata.util.ServiceException;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URL;
-import java.util.List;
 
 /**
  * Created by IntelliJ IDEA.

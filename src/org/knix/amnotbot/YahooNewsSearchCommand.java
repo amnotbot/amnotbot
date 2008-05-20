@@ -1,10 +1,8 @@
 package org.knix.amnotbot;
 
 import org.schwering.irc.lib.IRCUser;
-import com.yahoo.search.SearchClient;
 
-import java.util.regex.Pattern;
-import java.util.regex.Matcher;
+import com.yahoo.search.SearchClient;
 
 /**
  * Created by IntelliJ IDEA.
