@@ -2,6 +2,8 @@ package org.knix.amnotbot;
 
 import java.util.Date;
 
+import org.knix.amnotbot.config.BotConfiguration;
+
 import del.icio.us.Delicious;
 
 public class DeliciousBookmarks {

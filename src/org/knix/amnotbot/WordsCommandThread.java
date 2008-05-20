@@ -2,6 +2,7 @@ package org.knix.amnotbot;
 
 import java.util.LinkedList;
 
+import org.knix.amnotbot.config.BotConfiguration;
 import org.schwering.irc.lib.IRCUser;
 
 public class WordsCommandThread extends Thread {

@@ -1,4 +1,4 @@
-package org.knix.amnotbot;
+package org.knix.amnotbot.config;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;

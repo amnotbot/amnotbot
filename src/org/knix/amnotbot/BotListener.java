@@ -30,6 +30,7 @@ package org.knix.amnotbot;
 
 import java.util.List;
 
+import org.knix.amnotbot.config.BotConfiguration;
 import org.schwering.irc.lib.IRCEventListener;
 import org.schwering.irc.lib.IRCModeParser;
 import org.schwering.irc.lib.IRCUser;
