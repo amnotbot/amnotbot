@@ -2,9 +2,6 @@ package org.knix.amnotbot;
 
 import org.schwering.irc.lib.IRCUser;
 
-import java.util.regex.Pattern;
-import java.util.regex.Matcher;
-
 /**
  * Created by IntelliJ IDEA.
  * User: gpoppino

@@ -1,12 +1,19 @@
 package org.knix.amnotbot;
 
-import com.yahoo.search.*;
-import org.schwering.irc.lib.IRCUser;
-
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.regex.Pattern;
+
+import org.schwering.irc.lib.IRCUser;
+
+import com.yahoo.search.NewsSearchRequest;
+import com.yahoo.search.NewsSearchResult;
+import com.yahoo.search.NewsSearchResults;
+import com.yahoo.search.SearchClient;
+import com.yahoo.search.SearchException;
+import com.yahoo.search.WebSearchRequest;
+import com.yahoo.search.WebSearchResult;
+import com.yahoo.search.WebSearchResults;
 
 /**
  * Created by IntelliJ IDEA.

@@ -1,7 +1,5 @@
 package org.knix.amnotbot;
 
-import org.schwering.irc.lib.IRCUser;
-
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 

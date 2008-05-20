@@ -1,10 +1,9 @@
 package org.knix.amnotbot;
 
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import java.util.LinkedList;
-import java.util.Iterator;
 
 import org.schwering.irc.lib.IRCUser;
 
