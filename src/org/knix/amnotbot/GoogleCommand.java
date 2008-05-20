@@ -10,6 +10,6 @@ public class GoogleCommand extends AmnotbotCommandImp {
 
 	public void execute(BotConnection con, String chan, IRCUser user, String msg)
 	{
-		new GoogleSearchThread(con, chan, user.getNick(), this.getGroup(2));
+		new GoogleWebSearchThread(con, chan, user.getNick(), this.getGroup(2));
 	}
 }
