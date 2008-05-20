@@ -27,15 +27,25 @@
 
 package org.knix.amnotbot;
 
+import org.knix.amnotbot.config.BotConfiguration;
+
 public class DictHelper {
 
 	private BotConnection con;
 	private DictThread dictThread;
 	private DICTClient dictClient;
+	
+	private String defaultServer;
+	private String defaultDict;
+	private String defaultStrategy;
 
 	public DictHelper(BotConnection con) {
 		this.con = con;      
 		this.dictThread = new DictThread(this.con);
+		
+		this.defaultServer = BotConfiguration.getConfig().getString("dictionary_server");
+		this.defaultDict = BotConfiguration.getConfig().getString("default_dictionary");
+		this.defaultStrategy = BotConfiguration.getConfig().getString("default_dictionary_strategy");
 	}
 
 	public void runQuery(String chan, String nick, String query, boolean isSpelling)
@@ -51,7 +61,12 @@ public class DictHelper {
 		}
 
 		if (this.initDictClient()) {
-			this.dictThread.performQuery(this.dictClient, chan, nick, query, isSpelling);
+			this.dictThread.performQuery(this.dictClient, 
+				chan,
+				nick, 
+				query, 
+				this.defaultDict, 
+				this.defaultStrategy, isSpelling);
 		}
 	}
 
@@ -59,8 +74,9 @@ public class DictHelper {
 	{
 		if (this.dictClient == null) {
 			try {
-				this.dictClient  = new DICTClient("dict.org"); // Another hardcoded value!
-			} catch (Exception e) {
+				this.dictClient  = new DICTClient(this.defaultServer);
+			} catch (Exception ex) {
+				System.err.println(ex.getMessage());
 				return false;
 			}
 		}

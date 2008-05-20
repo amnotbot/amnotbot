@@ -34,14 +34,12 @@ import java.util.Vector;
 
 public class DictThread extends Thread
 {    
-//	private static final String DEFAULT_DICTIONARY = "!"; 
-	private static final String DEFAULT_DICTIONARY = "wn"; 
-	private static final String DEFAULT_STRATEGY = "lev";
-
 	private BotConnection con;
 	private String query;
 	private String chan;
 	private String word;
+	private String defaultDict;
+	private String defaultStrategy;
 	private boolean onlySpelling;
 
 	private DICTClient dictClient;
@@ -62,10 +60,14 @@ public class DictThread extends Thread
 			String chan,
 			String nick,
 			String query,
+			String defaultDict,
+			String defaultStrategy,
 			boolean onlySpelling)
 	{
 		this.chan = chan;
 		this.query = query;
+		this.defaultDict = defaultDict;
+		this.defaultStrategy = defaultStrategy;
 		this.onlySpelling = onlySpelling;
 		this.dictClient = dictClient;
 
@@ -90,12 +92,9 @@ public class DictThread extends Thread
 	{
 		String [] databases;
 		String strategy;
-		String database;
 		String [][] matches;
-
-		database = this.getDatabase(this.query, true);
-
-		databases = new String[]{database};
+		
+		databases = new String[]{"all"};
 		strategy = this.getStrategy(this.query);
 
 		try {
@@ -253,22 +252,21 @@ public class DictThread extends Thread
 
 	private String getDefaultDatabase()
 	{
-		return this.DEFAULT_DICTIONARY;
+		return this.defaultDict;
 	}
 
 	/* Slow */
 	private String getDefaultStrategy()
 	{
 		String [][] strategies;
-		String strategy;
-
+		
 		strategies = this.dictClient.getStrategies();
 
 		for (int i = 0; i < strategies.length; ++i) {
 			System.out.println("Strategies " + strategies[i][0]);
 
-			if (this.DEFAULT_STRATEGY.compareTo(strategies[i][0]) == 0) {
-				return this.DEFAULT_STRATEGY;
+			if (this.defaultStrategy.compareTo(strategies[i][0]) == 0) {
+				return this.defaultStrategy;
 			}
 		}
 
