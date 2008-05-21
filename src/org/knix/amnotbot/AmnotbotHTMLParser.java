@@ -38,7 +38,7 @@ public class AmnotbotHTMLParser
 		try {
 			u = new URL(url);
 		} catch (MalformedURLException e) {
-			System.out.println(e.getMessage());
+			System.err.println(e.getMessage());
 			return false;
 		}
 		
@@ -46,7 +46,7 @@ public class AmnotbotHTMLParser
 		try {
 			uc = u.openConnection();
 		} catch (IOException e) {
-			System.out.println(e.getMessage());
+			System.err.println(e.getMessage());
 		}
 		
 		String type = uc.getContentType();
@@ -66,12 +66,10 @@ public class AmnotbotHTMLParser
 			try	{
 				this.parser.setURL(url);		
 			} catch (ParserException pe) {
-				System.out.println(pe.getMessage());		
+				System.err.println(pe.getMessage());		
 				return;
 			}
-			System.out.println("HERE!");
 			this.parse();
-			System.out.println("AFTER!");
 			
 		}
 	}
@@ -134,7 +132,7 @@ public class AmnotbotHTMLParser
 				this.setKeywords( metatag.getMetaContent() );
 			}		
 		} catch (ParserException pe) {
-			System.out.println(pe.getMessage());
+			System.err.println(pe.getMessage());
 			return;
 		}
 	}

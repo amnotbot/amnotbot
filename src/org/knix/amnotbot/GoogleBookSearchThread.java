@@ -51,10 +51,10 @@ public class GoogleBookSearchThread extends Thread {
 				+ URLEncoder.encode(this.query, "UTF-8");
 			url = new URL(urlString);
 		} catch (MalformedURLException ex) {
-			System.out.println(ex.getMessage());
+			System.err.println(ex.getMessage());
 			return;
 		} catch (UnsupportedEncodingException ex) {
-			System.out.println(ex.getMessage());
+			System.err.println(ex.getMessage());
 			return;
 		}	
 
@@ -62,7 +62,7 @@ public class GoogleBookSearchThread extends Thread {
 		try {
 			connection = url.openConnection();
 		} catch (IOException ex) {
-			System.out.println(ex.getMessage());
+			System.err.println(ex.getMessage());
 			return;
 		}
 
@@ -79,7 +79,7 @@ public class GoogleBookSearchThread extends Thread {
 				builder.append(line);
 			}
 		} catch (IOException ex) {
-			System.out.println(ex.getMessage());
+			System.err.println(ex.getMessage());
 			return;
 		}
 
@@ -87,7 +87,7 @@ public class GoogleBookSearchThread extends Thread {
 		try {
 			json = new JSONObject(builder.toString());
 		} catch (JSONException ex) {
-			System.out.println(ex.getMessage());
+			System.err.println(ex.getMessage());
 			return;
 		}
 	
@@ -104,7 +104,7 @@ public class GoogleBookSearchThread extends Thread {
 
 			this.con.doPrivmsg(this.chan, info);
 		} catch (JSONException ex) {
-			System.out.println(ex.getMessage());
+			System.err.println(ex.getMessage());
 		}
     }
 }

@@ -121,8 +121,8 @@ public class WordCounterTextFile implements WordCounter {
 			input.close();
 
 		} catch (IOException e) {
-			System.out.println("Exception IO buildWordsList()");
-			System.out.println(e.getMessage());
+			System.err.println("Exception IO buildWordsList()");
+			System.err.println(e.getMessage());
 			e.printStackTrace();
 		}
 	}
