@@ -72,6 +72,17 @@ public class QuoteThread extends Thread {
 			+ ", " + "\"" + text + "\"" + ");";
 		
 		this.execQuery(query);
+		
+		String msg;
+		if (this.db.changes() > 0) {
+		    msg = "Quote (" + this.db.last_insert_rowid() 
+				+ ") successfully created!";
+						;
+		    this.con.doPrivmsg(this.chan, msg);
+		} else {
+		    msg = "Quote creation failed!";
+		    this.con.doPrivmsg(this.chan, msg);			    
+		}
 	}
 	
 	private void deleteQuote(String id)
