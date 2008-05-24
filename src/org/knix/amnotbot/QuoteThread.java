@@ -45,8 +45,16 @@ public class QuoteThread extends Thread {
 	
 	public void run()
 	{	
-		this.opts.buildArgs();
+		try {
+			this.db.open(this.db_filename, 0);
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.err.println(e.getMessage());
+			return;
+		}
 		
+		this.opts.buildArgs();
+				
 		if (this.opts.getOption("op").hasValue()) {
 			String op = this.opts.getOption("op").stringValue();
 			
@@ -61,7 +69,14 @@ public class QuoteThread extends Thread {
 			}
 		} else {
 			this.getRandomQuote();
-		}					
+		}
+		
+		try {
+			this.db.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.err.println(e.getMessage());
+		}
 	}
 	
 	private void createNewQuote(String text)
@@ -104,51 +119,26 @@ public class QuoteThread extends Thread {
 	
 	private void execQuery(String query)
 	{
-		try {
-			this.db.open(this.db_filename, 0);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		
 		System.out.println(query);
 		
 		try {
 			this.db.exec(query, new QuoteTableFmt());
 		} catch (Exception e) {
 			e.printStackTrace();
-		}	
-		
-		try {
-			this.db.close();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+			System.err.println(e.getMessage());
+		}				
 	}
 	
 	private TableResult runQuery(String query)
 	{
 		TableResult results;
-		
-		try {
-			System.out.println(this.db_filename);
-			System.out.println(query);
-			this.db.open(this.db_filename, 0);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		
+			
 		try {
 			results = this.db.get_table(query);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return null;
-		}
-		
-		try {
-			this.db.close();
-		} catch (Exception e) {
-			e.printStackTrace();
 		}
 		
 		if (results.nrows <= 0)

@@ -44,7 +44,8 @@ public class CmdCommaSeparatedOption implements CmdOption {
 		}
 	}
 
-	public String getName() {		
+	public String getName() 
+	{		
 		return name;
 	}
 
@@ -69,7 +70,7 @@ public class CmdCommaSeparatedOption implements CmdOption {
 		
 		System.out.println("value " + value);
 		
-		return value;
+		return value.toLowerCase();
 	}
 
 	public String stringValue(String sep) 
@@ -89,11 +90,15 @@ public class CmdCommaSeparatedOption implements CmdOption {
 			return null;
 		}
 		
-		return value;
+		return value.toLowerCase();
 	}
 
-	public String stringValue() {
-		return this.arg0;
+	public String stringValue() 
+	{
+		if (this.hasValue())
+		    return this.arg0.toLowerCase();
+		else
+		    return this.arg0;
 	}
 
 	public boolean hasValue() 
