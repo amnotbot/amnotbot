@@ -70,6 +70,8 @@ public class WordCounterSqlite implements WordCounter {
 			this.db.open(this.db_filename, 0);
 		} catch (Exception e) {
 			e.printStackTrace();
+			System.err.println(e.getMessage());
+			return "";  // zero words
 		}
 		
 		MostUsedWordsTableFmt table = new MostUsedWordsTableFmt();
@@ -77,12 +79,14 @@ public class WordCounterSqlite implements WordCounter {
 			this.db.exec(query, table);
 		} catch (Exception e) {
 			e.printStackTrace();
+			return "";
 		}
 		
 		try {
 		    this.db.close();
 		} catch (Exception ex) {
 		    System.err.println(ex.getMessage());
+		    return "";
 		}
 		
 		System.out.println(table.getResults());

@@ -1,5 +1,6 @@
 package org.knix.amnotbot;
 
+import java.io.File;
 import java.util.LinkedList;
 
 import org.knix.amnotbot.config.BotConfiguration;
@@ -40,12 +41,8 @@ public class WordsCommandThread extends Thread {
 		start();
 	}
 
-	private void init()
+	private boolean init()
 	{
-		System.out.println( BotConfiguration.getConfig().getString("ignored_words_file") );
-		String wCounterImp = BotConfiguration.getConfig().getString("word_counter_imp");
-		System.out.println(wCounterImp);
-
 		this.opts.buildArgs();
 
 		this.target = this.chan;
@@ -54,30 +51,56 @@ public class WordsCommandThread extends Thread {
 		}
 
 		System.out.println("Channel = " + this.target);
+
+		if (this.target.charAt(0) != '#') {
+			this.con.doPrivmsg(this.chan, "Not a valid channel: (" + this.target + "). Use the 'channel:' option.");
+			return false;
+		}
 		
+		String db_file = this.con.getBotLogger().getLoggingPath() + "/" + this.target;		
+		if (!this.dbExists(db_file)) {
+		    this.con.doPrivmsg(this.chan, "Statistics not available for: (" + this.target + ").");
+		    return false;
+		}
+				
+		System.out.println( BotConfiguration.getConfig().getString("ignored_words_file") );
+		String wCounterImp = BotConfiguration.getConfig().getString("word_counter_imp");
+		System.out.println(wCounterImp);
+
 		if (wCounterImp.compareTo("textfile") == 0) {
 			this.wordCounter = new WordCounterTextFile( 
 					BotConfiguration.getConfig().getString("ignored_words_file"),
-					this.con.getBotLogger().getLoggingPath() + "/" + this.target);
+					db_file);
 		} else if (wCounterImp.compareTo("sqlite") == 0) {			
 			System.out.println("SQLITE");
-			this.wordCounter = new WordCounterSqlite(
-					this.con.getBotLogger().getLoggingPath() + "/" + this.target 
-			);
+			this.wordCounter = new WordCounterSqlite(db_file);
 		}
+		
+		return true;
+	}
+	
+	boolean dbExists(String path) 
+	{
+	    File db_file = new File(path);
+	    
+	    if (!db_file.exists())
+		return false;	    
+	    
+	    return true;
 	}
 	
 	public void run()
 	{
 		String words;
 
-		this.init();
+		if (!this.init())
+		    return;
 		
 		String nWords = this.opts.getOption("number").stringValue();
 		
 		int n = nWords == null ? 5 : Integer.parseInt( nWords );
 		
-		String msg;
+		String outMsg;
 		if (!this.lines) {		
 			if (this.opts.getOption("word").hasValue()) {
 				words = this.wordCounter.mostUsedWordsBy(n, 
@@ -90,7 +113,7 @@ public class WordsCommandThread extends Thread {
 							this.opts.getOption("date").stringValue()
 				);
 			}
-			msg = "Most used words for ";
+			outMsg = "Most used words for ";
 		} else {
 			String op = "";
 			if (this.opts.getOption("op").hasValue()) {
@@ -101,10 +124,10 @@ public class WordsCommandThread extends Thread {
 						this.opts.getOption("nick").stringValue(" "),
 						this.opts.getOption("date").stringValue()
 				);
-				msg = "Avg. words per line per user for ";
+				outMsg = "Avg. words per line per user for ";
 			} else {
 				words = this.wordCounter.topLines(n, this.opts.getOption("date").stringValue());
-				msg = "Lines per user for ";
+				outMsg = "Lines per user for ";
 			}
 		}
 		
@@ -113,7 +136,7 @@ public class WordsCommandThread extends Thread {
 		} else {
 			LinkedList<String> w = new LinkedList<String>();
 			int trunc = 0, truncationConstant = 430;	// irc client truncates everything over 440 chars
-			while ((words.length() + msg.length()) - trunc > truncationConstant) {
+			while ((words.length() + outMsg.length()) - trunc > truncationConstant) {
 				int truncPos = words.indexOf(' ', (truncationConstant / 2) + trunc);
 				w.add( words.substring(trunc, truncPos) );
 				trunc = truncPos;
@@ -121,12 +144,12 @@ public class WordsCommandThread extends Thread {
 			w.add( words.substring(trunc, words.length()) );
 
 			if (opts.getOption("nick").hasValue()) {
-				this.con.doPrivmsg(this.chan, msg 
+				this.con.doPrivmsg(this.chan, outMsg 
 					+ "'" 
 					+ opts.getOption("nick").stringValue().trim() 
 					+ "': " + w.getFirst());
 			} else {
-				this.con.doPrivmsg(this.chan, msg + "'" + this.target + "': " + w.getFirst());
+				this.con.doPrivmsg(this.chan, outMsg + "'" + this.target + "': " + w.getFirst());
 			}
 
 			for (int j = 1; j < w.size(); ++j) {
