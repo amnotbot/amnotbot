@@ -79,6 +79,12 @@ public class WordCounterSqlite implements WordCounter {
 			e.printStackTrace();
 		}
 		
+		try {
+		    this.db.close();
+		} catch (Exception ex) {
+		    System.err.println(ex.getMessage());
+		}
+		
 		System.out.println(table.getResults());
 		return table.getResults();		
 	}

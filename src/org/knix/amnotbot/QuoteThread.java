@@ -1,3 +1,7 @@
+/*
+ * Author: Geronimo Poppino.
+ */
+
 package org.knix.amnotbot;
 
 import java.util.Random;
@@ -112,7 +116,13 @@ public class QuoteThread extends Thread {
 			this.db.exec(query, new QuoteTableFmt());
 		} catch (Exception e) {
 			e.printStackTrace();
-		}		
+		}	
+		
+		try {
+			this.db.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
 	private TableResult runQuery(String query)
@@ -133,6 +143,12 @@ public class QuoteThread extends Thread {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return null;
+		}
+		
+		try {
+			this.db.close();
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 		
 		if (results.nrows <= 0)
