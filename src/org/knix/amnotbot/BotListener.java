@@ -97,26 +97,24 @@ public class BotListener implements IRCEventListener
 	 */
 	public void onPrivmsg(String target, IRCUser user, String msg)
 	{
+		boolean privateMessage = false;
+
 		con.print(target, user.getNick() + "> " + msg);
 
 		if (con.isSilent())
 			return;
 
-		/*
-		 * Only handle requests in channels for now.
-		 *
-		 * FIXME - This is currently grabbing everything that IRCLib does not
-		 *         support, eg. CTCP, DCC, etc
-		 */
-		if (!IRCUtil.isChan(target)) {
-			con.doPrivmsg(user.getNick(), "I'm a bot, use a channel.");
-			return;
+		if (target.compareTo( this.con.getNick() ) == 0) {
+			target = user.getNick();
+			privateMessage = true;
 		}
 
 		if (this.macroCommand.matches(msg)) {
-			if (this.spamDetector.checkForSpam(target, user)) {
-				System.out.println("Spam Detected!");				
-				return;
+			if (!privateMessage) {
+				if (this.spamDetector.checkForSpam(target, user)) {
+					System.out.println("Spam Detected!");				
+					return;
+				}
 			}
 
 			this.macroCommand.execute(this.con, target, user, msg);

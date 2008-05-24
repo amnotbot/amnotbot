@@ -77,7 +77,6 @@ public class QuoteThread extends Thread {
 		if (this.db.changes() > 0) {
 		    msg = "Quote (" + this.db.last_insert_rowid() 
 				+ ") successfully created!";
-						;
 		    this.con.doPrivmsg(this.chan, msg);
 		} else {
 		    msg = "Quote creation failed!";
@@ -147,16 +146,15 @@ public class QuoteThread extends Thread {
 		Random rand;
 		String query;
 		TableResult results;
-		
+
 		query = "SELECT * FROM quotes";
-		
+
 		results = this.runQuery(query);
 
 		if (results != null) {
 			rand = new Random();
 			System.out.println(results.nrows);
 			String [] r = (String[]) results.rows.get( rand.nextInt(results.nrows) );
-//		String msg = "(" + r[0] + ")" + ": " + "\"" + r[2] + "\"" + " - " + r[1];
 			String msg = "(" + r[0] + ")" + ": " + "\"" + r[2] + "\"";
 			this.con.doPrivmsg(this.chan, "Quote " + msg);
 		}

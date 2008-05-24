@@ -14,6 +14,7 @@ public class WordsCommandThread extends Thread {
 	WordCounter wordCounter;
 	CommandOptions opts;
 	boolean lines;
+	String target;
 
 	public WordsCommandThread(BotConnection con
 			, String chan
@@ -34,30 +35,44 @@ public class WordsCommandThread extends Thread {
 		opts.addOption( new CmdStringOption("number") );
 		opts.addOption( new CmdStringOption("date") );
 		opts.addOption( new CmdStringOption("op") );
+		opts.addOption( new CmdStringOption("channel") );
 		
+		start();
+	}
+
+	private void init()
+	{
 		System.out.println( BotConfiguration.getConfig().getString("ignored_words_file") );
 		String wCounterImp = BotConfiguration.getConfig().getString("word_counter_imp");
 		System.out.println(wCounterImp);
+
+		this.opts.buildArgs();
+
+		this.target = this.chan;
+		if (this.opts.getOption("channel").hasValue()) {
+			this.target = this.opts.getOption("channel").stringValue(); 
+		}
+
+		System.out.println("Channel = " + this.target);
 		
 		if (wCounterImp.compareTo("textfile") == 0) {
 			this.wordCounter = new WordCounterTextFile( 
 					BotConfiguration.getConfig().getString("ignored_words_file"),
-					this.con.getBotLogger().getLoggingPath() + "/" + this.chan);
+					this.con.getBotLogger().getLoggingPath() + "/" + this.target);
 		} else if (wCounterImp.compareTo("sqlite") == 0) {			
 			System.out.println("SQLITE");
 			this.wordCounter = new WordCounterSqlite(
-					this.con.getBotLogger().getLoggingPath() + "/" + this.chan
+					this.con.getBotLogger().getLoggingPath() + "/" + this.target 
 			);
 		}
-		
-		start();
 	}
 	
 	public void run()
 	{
 		String words;
+
+		this.init();
 		
-		this.opts.buildArgs();
 		String nWords = this.opts.getOption("number").stringValue();
 		
 		int n = nWords == null ? 5 : Integer.parseInt( nWords );
@@ -111,7 +126,7 @@ public class WordsCommandThread extends Thread {
 					+ opts.getOption("nick").stringValue().trim() 
 					+ "': " + w.getFirst());
 			} else {
-				this.con.doPrivmsg(this.chan, msg + "'" + this.chan + "': " + w.getFirst());
+				this.con.doPrivmsg(this.chan, msg + "'" + this.target + "': " + w.getFirst());
 			}
 
 			for (int j = 1; j < w.size(); ++j) {

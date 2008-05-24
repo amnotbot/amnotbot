@@ -12,6 +12,8 @@ public class WordCounterSqlite implements WordCounter {
 	{
 		this.db_filename = word_log_file + ".db";
 		this.db = new Database();
+
+		System.out.println("Querying db: " + this.db_filename);
 	}
 	
 	public String getNickList(String nickList)
