@@ -154,6 +154,13 @@ public class WordsCommandThread extends Thread {
 
 			for (int j = 1; j < w.size(); ++j) {
 				this.con.doPrivmsg(this.chan, w.get(j));
+
+				try {
+					Thread.sleep(300 * j);	// avoid being disconnected by flooding
+				} catch (InterruptedException e) {
+					System.err.println(e.getMessage());
+					break;
+				}
 			}
 			System.out.println(words);
 		}
