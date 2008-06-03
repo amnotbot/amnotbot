@@ -23,7 +23,7 @@ for standard practices.
  - No lines shall be longer than 80 characters unless
    ABSOLUTELY NECESSARY. If an expression will not fit on a single
    line, please follow these general guidelines outlined in the
-   Java code conventions at http://java.sun.com/docs/codeconv/
+   Java code conventions:
     - Break after a comma.
     - Break before an operator.
     - Prefer higher-level breaks to lower-level breaks.
