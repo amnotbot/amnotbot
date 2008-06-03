@@ -8,7 +8,11 @@ Coding Conventions
 ==================
 
 To enhance readability and consistency throughout the codebase,
-please adhere to the following guidelines.
+please adhere to the following guidelines. These rules are based
+upon the Java coding conventions put in place by Sun which are
+available at http://java.sun.com/docs/codeconv/. If something
+is not covered in this document please reference the Java conventions
+for standard practices.
 
  - Write javadoc for all non-private methods/fields (and private
    ones if you like)
@@ -55,7 +59,13 @@ please adhere to the following guidelines.
       */
  
  - All class and method declarations shall have their opening and
-   closing curly-brace on a new line.
+   closing curly-brace on a new line with the exception of an
+   empty method which may be declared on a single line as shown below
+
+     /**
+      * An EMPTY method may be declared on a single line
+      */
+     public void nothingHere() {}
 
  - If anything here appears unclear, or there seems to be some
    standard in the codebase not present in this file, please contact
