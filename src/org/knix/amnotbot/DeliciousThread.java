@@ -46,6 +46,8 @@ public class DeliciousThread extends Thread
 		keywords = this.parser.getKeywords();
 		if (keywords != null) {
 			String [] str = keywords.split(",");
+			if (str.length == 1)
+				str = keywords.split(" ");
 			for (int i = 0; i < str.length; ++i) {
 				tags += " " + str[i].trim().replace(" ", ".");
 			}
