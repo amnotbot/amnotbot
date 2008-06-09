@@ -183,9 +183,10 @@ public class BotListener implements IRCEventListener
 		
 		if (user.getNick() != null) {
 			String nickserv = BotConfiguration.getConfig().getString("nickserv").toLowerCase();
-			if (nickserv.compareTo(user.getNick().toLowerCase()) == 0) {					
+			if (nickserv.compareTo(user.getNick().toLowerCase()) == 0) {
 				if (BotConfiguration.getConfig().getBoolean("nickserv_enabled")) {
-					if (msg.contains("IDENTIFY")) {
+					String identifyMsg = new String("IDENTIFY");
+					if ( msg.toLowerCase().contains( identifyMsg.toLowerCase() ) ) {
 						this.con.doPrivmsg(user.getNick(), 
 								"IDENTIFY " + BotConfiguration.getConfig().getString("nickserv_password")
 						);

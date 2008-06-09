@@ -66,10 +66,7 @@ public class CmdStringOption implements CmdOption {
 	
 	public String stringValue() 
 	{
-		if (this.hasValue())
-		    return this.arg0.toLowerCase();
-		else
-		    return this.arg0;
+		return this.arg0;
 	}
 
 	public boolean hasValue() {

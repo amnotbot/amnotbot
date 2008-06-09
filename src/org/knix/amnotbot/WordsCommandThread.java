@@ -101,6 +101,12 @@ public class WordsCommandThread extends Thread {
 		int n = nWords == null ? 5 : Integer.parseInt( nWords );
 		
 		String outMsg;
+
+		String nickList = null;
+		if (opts.getOption("nick").hasValue()) {
+			nickList = this.opts.getOption("nick").stringValue(" ").toLowerCase();
+		}
+
 		if (!this.lines) {		
 			if (this.opts.getOption("word").hasValue()) {
 				words = this.wordCounter.mostUsedWordsBy(n, 
@@ -108,8 +114,7 @@ public class WordsCommandThread extends Thread {
 							this.opts.getOption("date").stringValue()
 				);
 			} else {
-				words = this.wordCounter.mostUsedWords(n, 
-							this.opts.getOption("nick").stringValue(" "),
+				words = this.wordCounter.mostUsedWords(n, nickList,
 							this.opts.getOption("date").stringValue()
 				);
 			}
@@ -120,8 +125,7 @@ public class WordsCommandThread extends Thread {
 				op = this.opts.getOption("op").stringValue();
 			}
 			if (op.compareTo("avg") == 0) {
-				words = this.wordCounter.avgWordsLine(n, 
-						this.opts.getOption("nick").stringValue(" "),
+				words = this.wordCounter.avgWordsLine(n, nickList,
 						this.opts.getOption("date").stringValue()
 				);
 				outMsg = "Avg. words per line per user for ";
