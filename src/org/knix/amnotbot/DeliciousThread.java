@@ -12,12 +12,14 @@ public class DeliciousThread extends Thread
 	private AmnotbotHTMLParser parser;
 	private boolean showTitle;
 	private CommandOptions opts;
+	private int maxTagLength;
 	
 	public DeliciousThread(DeliciousBookmarks delicious, BotConnection con,
 			String chan,
 			String nick,
 			String url,
 			String msg,
+			int maxTagLength,
 			boolean showTitle)
 	{
 		this.con = con;
@@ -25,6 +27,7 @@ public class DeliciousThread extends Thread
 		this.nick = nick;
 		this.url = url;
 		this.delicious = delicious;
+		this.maxTagLength = maxTagLength;
 		this.showTitle = showTitle;
 		
 		opts = new CommandOptions(msg);
@@ -58,21 +61,29 @@ public class DeliciousThread extends Thread
 		
 	private String getTags()
 	{		
-		String tags = "";
+		String tmpTags = "";
+		String finalTags = "";
 		CmdCommaSeparatedOption tagOption;		
 		
 		tagOption = (CmdCommaSeparatedOption)this.opts.getOption("tags");
 		if (tagOption.hasValue()) 
-			tags += tagOption.stringValue(" ", ".");
+			tmpTags += tagOption.stringValue(" ", ".");
 
-		tags += this.getPageTags();
+		tmpTags += this.getPageTags();
 				
-		if (tags.trim().length() > 0)
-			tags += " " + this.nick;
+		if (tmpTags.trim().length() > 0)
+			tmpTags += " " + this.nick;
 		else
-			tags = this.nick;
+			tmpTags = this.nick;
+
+		String [] str = tmpTags.split(" "); 
+		for (int i = 0; i < str.length; ++i) {
+			if (str[i].length() > this.maxTagLength)
+				continue;
+			finalTags += " " + str[i].trim();
+		}
 		
-		return tags;
+		return finalTags;
 	}
 		
 	private String getTitle()
