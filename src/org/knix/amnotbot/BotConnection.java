@@ -178,9 +178,9 @@ public class BotConnection extends IRCConnection
 
 	 public void print(String target, String msg)
 	 {
-		 System.out.println(target + " " + msg);
+		 System.out.println(target.toLowerCase() + " " + msg);
 
 		 if (logger != null)
-			 logger.log(target, msg, true);
+			 logger.log(target.toLowerCase(), msg, true);
 	 }
 }
