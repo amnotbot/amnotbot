@@ -180,19 +180,18 @@ public class BotListener implements IRCEventListener
 	{
 		con.print(BotConstants.getBotConstants().getServerPFX() + " NOTICE " +
 				user.getNick() + ": " + msg);
-		
-		if (user.getNick() != null) {
-			String nickserv = BotConfiguration.getConfig().getString("nickserv").toLowerCase();
-			if (nickserv.compareTo(user.getNick().toLowerCase()) == 0) {
-				if (BotConfiguration.getConfig().getBoolean("nickserv_enabled")) {
-					String identifyMsg = new String("IDENTIFY");
-					if ( msg.toLowerCase().contains( identifyMsg.toLowerCase() ) ) {
-						this.con.doPrivmsg(user.getNick(), 
-								"IDENTIFY " + BotConfiguration.getConfig().getString("nickserv_password")
-						);
-					}
+
+        String nickserv = BotConfiguration.getConfig().getString("nickserv");
+
+		if (user.getNick() != null
+                && user.getNick().equalsIgnoreCase(nickserv)) {
+		    if (BotConfiguration.getConfig().getBoolean("nickserv_enabled")) {
+				String identifyMsg = new String("IDENTIFY");
+				if (msg.toLowerCase().contains(identifyMsg.toLowerCase())) {
+					this.con.doPrivmsg(user.getNick(), "IDENTIFY " +
+                            BotConfiguration.getConfig()
+                            .getString("nickserv_password"));
 				}
-			
 			}
 		}
 	}
