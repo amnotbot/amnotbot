@@ -72,9 +72,9 @@ public class DictThread extends Thread
 		this.dictClient = dictClient;
 
 		this.word = this.getWord(this.query);
-		System.out.println("query :->" + this.query);
-		System.out.println("word :->" + this.word);
-		System.out.println("database :->" + this.getDatabase(this.query, onlySpelling));
+		BotLogger.getDebugLogger().debug("query :->" + this.query);
+		BotLogger.getDebugLogger().debug("word :->" + this.word);
+		BotLogger.getDebugLogger().debug("database :->" + this.getDatabase(this.query, onlySpelling));
 
 		start();
 	}
@@ -107,8 +107,8 @@ public class DictThread extends Thread
 			return;
 		}
 
-		System.out.println("databases = " + databases[0] + " strategy = " + strategy + " word = " + this.word);
-		System.out.println("matches #" + matches.length);
+		BotLogger.getDebugLogger().debug("databases = " + databases[0] + " strategy = " + strategy + " word = " + this.word);
+		BotLogger.getDebugLogger().debug("matches #" + matches.length);
 
 		switch (matches.length) {
 		case 0:
@@ -263,7 +263,7 @@ public class DictThread extends Thread
 		strategies = this.dictClient.getStrategies();
 
 		for (int i = 0; i < strategies.length; ++i) {
-			System.out.println("Strategies " + strategies[i][0]);
+			BotLogger.getDebugLogger().debug("Strategies " + strategies[i][0]);
 
 			if (this.defaultStrategy.compareTo(strategies[i][0]) == 0) {
 				return this.defaultStrategy;

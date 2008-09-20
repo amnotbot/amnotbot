@@ -13,7 +13,7 @@ public class WordCounterSqlite implements WordCounter {
 		this.db_filename = word_log_file + ".db";
 		this.db = new Database();
 
-		System.out.println("Querying db: " + this.db_filename);
+		BotLogger.getDebugLogger().debug("Querying db: " + this.db_filename);
 	}
 	
 	public String getNickList(String nickList)
@@ -70,7 +70,7 @@ public class WordCounterSqlite implements WordCounter {
 			this.db.open(this.db_filename, 0);
 		} catch (Exception e) {
 			e.printStackTrace();
-			System.err.println(e.getMessage());
+			BotLogger.getDebugLogger().debug(e.getMessage());
 			return "";  // zero words
 		}
 		
@@ -85,11 +85,11 @@ public class WordCounterSqlite implements WordCounter {
 		try {
 		    this.db.close();
 		} catch (Exception ex) {
-		    System.err.println(ex.getMessage());
+		    BotLogger.getDebugLogger().debug(ex.getMessage());
 		    return "";
 		}
 		
-		System.out.println(table.getResults());
+		BotLogger.getDebugLogger().debug(table.getResults());
 		return table.getResults();		
 	}
 			
@@ -108,7 +108,7 @@ public class WordCounterSqlite implements WordCounter {
 			}
 		}
 			
-		System.out.println("date=" + date);
+		BotLogger.getDebugLogger().debug("date=" + date);
 
 		String query;
 		if (where == null) {
@@ -122,9 +122,9 @@ public class WordCounterSqlite implements WordCounter {
 				+ Integer.toString(numberOfWords);
 		}
 			
-		System.out.println("nicklist =" + nickList);
-		System.out.println("query = " + query);
-		System.out.println("where = " + where);
+		BotLogger.getDebugLogger().debug("nicklist =" + nickList);
+		BotLogger.getDebugLogger().debug("query = " + query);
+		BotLogger.getDebugLogger().debug("where = " + where);
 		
 		return this.runQuery(query);
 	}
@@ -133,8 +133,8 @@ public class WordCounterSqlite implements WordCounter {
 	{
 		String where = null;
 
-		System.out.println(words);
-		System.out.println(words.length());
+		BotLogger.getDebugLogger().debug(words);
+		BotLogger.getDebugLogger().debug(words.length());
 		
 		if (words.compareTo("*") != 0)			
 			where = this.getWords(words);
@@ -154,9 +154,9 @@ public class WordCounterSqlite implements WordCounter {
 					+ Integer.toString(numberOfWords);
 		}
 		
-		System.out.println("date =" + date);
-		System.out.println("query = " + query);
-		System.out.println("where = " + where);
+		BotLogger.getDebugLogger().debug("date =" + date);
+		BotLogger.getDebugLogger().debug("query = " + query);
+		BotLogger.getDebugLogger().debug("where = " + where);
 		
 		return this.runQuery(query);	
 	}
@@ -168,7 +168,7 @@ public class WordCounterSqlite implements WordCounter {
 		if (date != null)
 			where = this.getDate(date);			
 			
-		System.out.println("date=" + date);
+		BotLogger.getDebugLogger().debug("date=" + date);
 
 		String query;
 		if (where == null) {
@@ -182,8 +182,8 @@ public class WordCounterSqlite implements WordCounter {
 				+ Integer.toString(numberOfusers);
 		}
 			
-		System.out.println("query = " + query);
-		System.out.println("where = " + where);
+		BotLogger.getDebugLogger().debug("query = " + query);
+		BotLogger.getDebugLogger().debug("where = " + where);
 		
 		return this.runQuery(query);
 	}
@@ -202,7 +202,7 @@ public class WordCounterSqlite implements WordCounter {
 				where = this.getDate(date);
 		}
 			
-		System.out.println("date=" + date);
+		BotLogger.getDebugLogger().debug("date=" + date);
 
 		String query;
 		if (where == null) {
@@ -224,10 +224,10 @@ public class WordCounterSqlite implements WordCounter {
 				+ Integer.toString(numberOfusers);
 		}
 		
-		System.out.println("nickList = " + nickList);
-		System.out.println("date = " + date);
-		System.out.println("query = " + query);
-		System.out.println("where = " + where);
+		BotLogger.getDebugLogger().debug("nickList = " + nickList);
+		BotLogger.getDebugLogger().debug("date = " + date);
+		BotLogger.getDebugLogger().debug("query = " + query);
+		BotLogger.getDebugLogger().debug("where = " + where);
 		
 		return this.runQuery(query);
 	}

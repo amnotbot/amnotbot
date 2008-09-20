@@ -49,7 +49,7 @@ public class QuoteThread extends Thread {
 			this.db.open(this.db_filename, 0);
 		} catch (Exception e) {
 			e.printStackTrace();
-			System.err.println(e.getMessage());
+			BotLogger.getDebugLogger().debug(e.getMessage());
 			return;
 		}
 		
@@ -75,7 +75,7 @@ public class QuoteThread extends Thread {
 			this.db.close();
 		} catch (Exception e) {
 			e.printStackTrace();
-			System.err.println(e.getMessage());
+			BotLogger.getDebugLogger().debug(e.getMessage());
 		}
 	}
 	
@@ -107,7 +107,7 @@ public class QuoteThread extends Thread {
 	{
 		String query;
 		
-		System.out.println("id = " + id);
+		BotLogger.getDebugLogger().debug("id = " + id);
 		
 		if (id == null)
 			return;
@@ -119,13 +119,13 @@ public class QuoteThread extends Thread {
 	
 	private void execQuery(String query)
 	{
-		System.out.println(query);
+		BotLogger.getDebugLogger().debug(query);
 		
 		try {
 			this.db.exec(query, new QuoteTableFmt());
 		} catch (Exception e) {
 			e.printStackTrace();
-			System.err.println(e.getMessage());
+			BotLogger.getDebugLogger().debug(e.getMessage());
 		}				
 	}
 	
@@ -159,7 +159,7 @@ public class QuoteThread extends Thread {
 
 		if (results != null) {
 			rand = new Random();
-			System.out.println(results.nrows);
+			BotLogger.getDebugLogger().debug(results.nrows);
 			String [] r = (String[]) results.rows.get( rand.nextInt(results.nrows) );
 			String msg = "(" + r[0] + ")" + ": " + "\"" + r[2] + "\"";
 			this.con.doPrivmsg(this.chan, "Quote " + msg);
@@ -171,7 +171,7 @@ public class QuoteThread extends Thread {
 		String query;
 		TableResult results;
 		
-		System.out.println("id = " + id);
+		BotLogger.getDebugLogger().debug("id = " + id);
 		
 		if (id == null)
 			return;

@@ -34,6 +34,7 @@ import java.util.List;
  * TODO - allow for multiple servers at startup
  *      - allow user input.
  */
+import org.apache.log4j.Logger;
 
 /**
  * Very simple IRC bot.
@@ -43,85 +44,88 @@ import java.util.List;
  */
 public class Bot extends Thread
 {
-	private String server;
-	private int port;
-	private List<String> channels;
+    private String server;
+    private int port;
+    private List<String> channels;
 
-	private static final int SO_TIMEOUT = 1000 * 60 * 5;
+    private static final int SO_TIMEOUT = 1000 * 60 * 5;
+    private BotLogger logger;
+    private Logger debugLogger;
 
-	public Bot(String server, List<String> channels)
-	{
-		new Bot(server, 0, channels);
-	}
+    public Bot(String server, List<String> channels)
+    {
+        new Bot(server, 0, channels);
+    }
 
-	/**
-	 * Create a new bot.
-	 */
-	public Bot(String server, int port, List<String> channels)
-	{
-		this.server = server;
-		this.port = port;
-		this.channels = channels;
+    /**
+     * Create a new bot.
+     */
+    public Bot(String server, int port, List<String> channels)
+    {
+        this.server = server;
+        this.port = port;
+        this.channels = channels;
+        this.logger = new BotLogger(server);
+        this.debugLogger = BotLogger.getDebugLogger();
 
-		start();
-	}
+        start();
+    }
 
-	public void run() {
-		// Should this be in the constructor ... ?
-		BotLogger logger = new BotLogger(server);
+    public void run() {
+        
+        try {
+            BotConnection con =
+                createConnection(server, port, channels, logger);
+            con.connect();
 
-		try {
-			BotConnection con =
-				createConnection(server, port, channels, logger);
-			con.connect();
+            for (;;) {
+                if (!con.isConnected()) {
+                    try {
+                        con = createConnection(server, port, channels, logger);
+                        con.connect();
+                    } catch (Exception e) {
+                        debugLogger.debug(e.getMessage());
+                    }
+                }
+				
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException ie) {
+                    debugLogger.debug(ie.getMessage());
+                }				
+            }
+        } catch (IOException e) {
+            debugLogger.debug(e.getMessage());
+        }
+    }
 
-			for (;;) {
-				if (!con.isConnected()) {
-					try {
-						con = createConnection(server, port, channels, logger);
-						con.connect();
-					} catch (Exception e) {
-						e.printStackTrace(logger.getDefaultLogger());
-					}
-				}
+    /**
+     * Create a new bot connection.
+     * This should probably be in some kind of connection factory
+     * 
+     * @param server server we're to connect to
+     * @param channels list of channels to join on connect
+     * @return
+     */
+    private static BotConnection createConnection(String server,
+        int port,
+        List<String> channels,
+        BotLogger logger) 
+    {
+        BotConnection con = null;
 
-				try {
-					Thread.sleep(5000);
-				} catch (InterruptedException ie) {
-					ie.printStackTrace(logger.getDefaultLogger());
-				}
-			}
-		} catch (IOException e) {
-			e.printStackTrace(logger.getDefaultLogger());
-		}
-	}
+        if (port > 0) {
+            con = new BotConnection(server, port);
+        } else {
+            con = new BotConnection(server);
+        }
 
-	/**
-	 * Create a new bot connection.
-	 * This should probably be in some kind of connection factory
-	 * 
-	 * @param server server we're to connect to
-	 * @param channels list of channels to join on connect
-	 * @return
-	 */
-	private static BotConnection createConnection(String server,
-			int port,
-			List<String> channels,
-			BotLogger logger)
-	{
-		BotConnection con = null;
+        con.setBotLogger(logger);
+        con.addIRCEventListener(new BotListener(con, channels));
+        con.setPong(true);
+        con.setDaemon(false);
+        con.setTimeout(SO_TIMEOUT);
 
-		if (port > 0)
-			con = new BotConnection(server, port);
-		else
-			con = new BotConnection(server);
-
-		con.setBotLogger(logger);
-		con.addIRCEventListener(new BotListener(con, channels));
-		con.setPong(true);
-		con.setDaemon(false);
-		con.setTimeout(SO_TIMEOUT);
-
-		return con;
-	}
+        return con;
+    }
 }

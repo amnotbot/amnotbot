@@ -51,7 +51,7 @@ public class DictHelper {
 	public void runQuery(String chan, String nick, String query, boolean isSpelling)
 	{
 		if(this.dictThread.isAlive()) {
-			System.out.println("Query still running. Skipping: " + query);
+			BotLogger.getDebugLogger().debug("Query still running. Skipping: " + query);
 			return; 
 		}
 
@@ -76,7 +76,7 @@ public class DictHelper {
 			try {
 				this.dictClient  = new DICTClient(this.defaultServer);
 			} catch (Exception ex) {
-				System.err.println(ex.getMessage());
+				BotLogger.getDebugLogger().debug(ex.getMessage());
 				return false;
 			}
 		}

@@ -21,10 +21,10 @@ public class CmdCommaSeparatedOption implements CmdOption {
 			return;
 				
 		index = msg.indexOf(this.name + ":");
-		System.out.println("1. index of " + index + " " + msg);
+		BotLogger.getDebugLogger().debug("1. index of " + index + " " + msg);
 		if (index >= 0) {		
 			index += this.name.length() + 1;
-			System.out.println("2. index of " + index + " " + msg.substring(index, msg.length()) + " length " + msg.length());
+			BotLogger.getDebugLogger().debug("2. index of " + index + " " + msg.substring(index, msg.length()) + " length " + msg.length());
 		
 			if (index < msg.length()) {				
 				for (int i = index; i < msg.length(); ++i) {
@@ -37,7 +37,7 @@ public class CmdCommaSeparatedOption implements CmdOption {
 					arg += c;			
 				}				
 		
-				System.out.println("arg = " + arg);
+				BotLogger.getDebugLogger().debug("arg = " + arg);
 				if (arg.length() > 0)
 					this.arg0 = arg.trim();
 			}
@@ -57,7 +57,7 @@ public class CmdCommaSeparatedOption implements CmdOption {
 		if (this.arg0 != null) {
 			String arg = this.arg0;
 			
-			System.out.println("arg " + arg);
+			BotLogger.getDebugLogger().debug("arg " + arg);
 			
 			keywords = arg.split(",");
 			for (int j = 0; j < keywords.length; ++j) {
@@ -68,7 +68,7 @@ public class CmdCommaSeparatedOption implements CmdOption {
 			}
 		}
 		
-		System.out.println("value " + value);
+		BotLogger.getDebugLogger().debug("value " + value);
 		
 		return value.toLowerCase();
 	}

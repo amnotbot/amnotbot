@@ -304,19 +304,19 @@ public class DICTClient {
 		try {
 			socket.close();
 		} catch (IOException e) {
-			System.err.println("Socket closing was unsuccesful");
+			BotLogger.getDebugLogger().debug("Socket closing was unsuccesful");
 		}
 	}
 
 	private void send(String command) {
-//		System.out.println(command);    // XXX
+//		BotLogger.getDebugLogger().debug(command);    // XXX
 		out.println(command);
 	}
 
 	private String receive() {
 		try {
 			String text = in.readLine();
-//			System.out.println(text);   // XXX
+//			BotLogger.getDebugLogger().debug(text);   // XXX
 			return text;
 		} catch (IOException e) {
 			e.printStackTrace();

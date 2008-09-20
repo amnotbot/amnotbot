@@ -27,18 +27,18 @@
 
 package org.knix.amnotbot;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringReader;
-import java.util.Date;
-import java.util.Hashtable;
-import java.util.Map;
 
+import java.util.Enumeration;
 import org.apache.commons.lang.SystemUtils;
-import org.apache.commons.lang.time.FastDateFormat;
+
+import org.apache.log4j.Appender;
+import org.apache.log4j.PropertyConfigurator;
+import org.apache.log4j.Logger;
+import org.apache.log4j.FileAppender;
+import org.apache.log4j.PatternLayout;
+
 
 /**
  * Very basic logging mechanism designed to handle different servers/channels.
@@ -47,16 +47,8 @@ import org.apache.commons.lang.time.FastDateFormat;
  */
 public class BotLogger
 {
-	// use Hashtable because it's synchronized
-	private Map<String, PrintWriter> logs =
-		new Hashtable<String, PrintWriter>();
-
-	/** Key for the "default" logger */
-	public static final String DEFAULT = ",";
-
-	/** Thread safe SimpleDateFormat thanks to Jakarta Commons */
-	private static final FastDateFormat DATE_FORMAT =
-		FastDateFormat.getInstance("MM/dd/yyyy HH:mm:ss");
+	//private static final FastDateFormat DATE_FORMAT =
+	//	FastDateFormat.getInstance("MM/dd/yyyy HH:mm:ss");
 
 	/** Bot's home directory */
 	public static final File BOT_HOME =
@@ -64,7 +56,7 @@ public class BotLogger
 
 	/** Log folder for this server instance */
 	private File LOG_HOME;
-
+    
 	static {
 		// create folder if it doesn't already exist
 		BOT_HOME.mkdirs();
@@ -73,66 +65,46 @@ public class BotLogger
 	public BotLogger(String server)
 	{
 		LOG_HOME = new File(BOT_HOME, "log" + File.separator + server);
-		LOG_HOME.mkdirs();
-
-		// create default log
-		logs.put(DEFAULT, createLog(LOG_HOME, "_AMNOTBOT"));
+		LOG_HOME.mkdirs();  
 	}
-	
-	protected PrintWriter getDefaultLogger()
-	{
-		return logs.get(DEFAULT);
-	}
-	
+    
+    public static Logger getDebugLogger()
+    {
+        return Logger.getLogger("debugLogger");
+    }
+		
 	public String getLoggingPath()
 	{
 		return this.LOG_HOME.getAbsolutePath();
+    }
+    
+	public void log(String msg)
+	{
+        Logger.getRootLogger().info(msg);
 	}
 
-	public void log(String msg, boolean timestamp)
-	{
-		log(getDefaultLogger(), msg, timestamp);
-	}
-
-	public void log(String target, String msg, boolean timestamp)
-	{
-		PrintWriter out = logs.get(target);
-
-		if (out == null) {
-			out = createLog(LOG_HOME, target);
-			logs.put(target, out);
-		}
-
-		log(out, msg, timestamp);
-	}
-
-	private void log(PrintWriter out, String msg, boolean stamp)
-	{
-		String timestamp = DATE_FORMAT.format(new Date());
-
-		BufferedReader reader = new BufferedReader(new StringReader(msg));
-		String buf;
-
-		try {
-			while ((buf = reader.readLine()) != null) {
-				if (stamp)
-					out.println("[" + timestamp + "] " + buf);
-				else
-					out.println(buf);
-			}
-		} catch (IOException e) {}
-	}
-
-	private static PrintWriter createLog(File parent, String target)
-	{
-		try {
-			File f = new File(parent, target);
-			f.createNewFile();
-
-			// append and autoflush
-			return new PrintWriter(new FileWriter(f, true), true);
-		} catch (IOException e) {
-			throw new RuntimeException("Failed to create log file", e);
-		}
+    public void log(String target, String msg)
+    {
+		//PrintWriter out = logs.get(target);
+        BotLogger.getDebugLogger().debug(target);
+        Logger logger = Logger.getLogger(target);
+        FileAppender appender = (FileAppender)logger.getAppender(target);
+        
+        if (appender == null) {
+            PatternLayout layout = new PatternLayout("[%d] %m%n");
+            
+            try {
+                appender = new FileAppender(layout, this.LOG_HOME.getAbsolutePath() + "/" + target);
+            } catch (IOException e) {
+                BotLogger.getDebugLogger().debug("Can't create appender for channel:" + target);
+                BotLogger.getDebugLogger().debug(e.getMessage());
+                return;
+            }
+            
+            appender.setName(target);        
+            logger.addAppender(appender);
+        }
+        
+        logger.info(msg);
 	}
 }

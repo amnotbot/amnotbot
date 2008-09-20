@@ -50,7 +50,7 @@ public class WordsCommandThread extends Thread {
 			this.target = this.opts.getOption("channel").stringValue(); 
 		}
 
-		System.out.println("Channel = " + this.target);
+		BotLogger.getDebugLogger().debug("Channel = " + this.target);
 
 		if (this.target.charAt(0) != '#') {
 			this.con.doPrivmsg(this.chan, "Not a valid channel: (" + this.target + "). Use the 'channel:' option.");
@@ -63,16 +63,16 @@ public class WordsCommandThread extends Thread {
 		    return false;
 		}
 				
-		System.out.println( BotConfiguration.getConfig().getString("ignored_words_file") );
+		BotLogger.getDebugLogger().debug( BotConfiguration.getConfig().getString("ignored_words_file") );
 		String wCounterImp = BotConfiguration.getConfig().getString("word_counter_imp");
-		System.out.println(wCounterImp);
+		BotLogger.getDebugLogger().debug(wCounterImp);
 
 		if (wCounterImp.compareTo("textfile") == 0) {
 			this.wordCounter = new WordCounterTextFile( 
 					BotConfiguration.getConfig().getString("ignored_words_file"),
 					db_file);
 		} else if (wCounterImp.compareTo("sqlite") == 0) {			
-			System.out.println("SQLITE");
+			BotLogger.getDebugLogger().debug("SQLITE");
 			this.wordCounter = new WordCounterSqlite(db_file);
 		}
 		
@@ -162,11 +162,11 @@ public class WordsCommandThread extends Thread {
 				try {
 					Thread.sleep(300 * j);	// avoid being disconnected by flooding
 				} catch (InterruptedException e) {
-					System.err.println(e.getMessage());
+					BotLogger.getDebugLogger().debug(e.getMessage());
 					break;
 				}
 			}
-			System.out.println(words);
+			BotLogger.getDebugLogger().debug(words);
 		}
 
 	}	

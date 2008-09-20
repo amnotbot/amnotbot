@@ -46,7 +46,7 @@ public class HelpCommand extends AmnotbotCommandImp {
 			if (m.find()) {
 				String helpMsg = command.help();
 
-				System.out.println("Help " + helpMsg);
+				BotLogger.getDebugLogger().debug("Help " + helpMsg);
 
 				if (helpMsg != null)
 					con.doPrivmsg(chan, helpMsg);

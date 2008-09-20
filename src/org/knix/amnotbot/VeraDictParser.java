@@ -22,7 +22,7 @@ public class VeraDictParser implements DictParser {
 		Matcher m = veraFirstDef.matcher(definition.getDefinition());
 
 		if (m.find()) {
-			System.out.println("vera def" + myString.substring(m.start(), myString.length()));
+			BotLogger.getDebugLogger().debug("vera def" + myString.substring(m.start(), myString.length()));
 			myDefinition.add( myString.substring(m.start(), myString.length()) );
 		}
 

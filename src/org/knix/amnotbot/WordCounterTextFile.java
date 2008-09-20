@@ -79,20 +79,20 @@ public class WordCounterTextFile implements WordCounter {
 		Pattern nickPattern = null;
 		Matcher m;
 		
-		System.out.println("botPattern " + botPattern.pattern());
-		System.out.println("urlPattern " + urlPattern.pattern());
-		System.out.println("commandPattern " + commandPattern.pattern());
+		BotLogger.getDebugLogger().debug("botPattern " + botPattern.pattern());
+		BotLogger.getDebugLogger().debug("urlPattern " + urlPattern.pattern());
+		BotLogger.getDebugLogger().debug("commandPattern " + commandPattern.pattern());
 		
 		if (nicks != null) {			
 			nickPattern = Pattern.compile(this.buildNickPattern(nicks), Pattern.CASE_INSENSITIVE);
-			System.out.println("commandPattern " + nickPattern.pattern());
+			BotLogger.getDebugLogger().debug("commandPattern " + nickPattern.pattern());
 		}
 				
 		try {
 //			File aFile = new File(word_log_file);
 			FileInputStream aFile = new FileInputStream(word_log_file);
 
-			System.out.println(word_log_file);
+			BotLogger.getDebugLogger().debug(word_log_file);
 			
 			BufferedReader input = null;
 			input = new BufferedReader( new InputStreamReader(aFile, "US-ASCII") );
@@ -121,8 +121,8 @@ public class WordCounterTextFile implements WordCounter {
 			input.close();
 
 		} catch (IOException e) {
-			System.err.println("Exception IO buildWordsList()");
-			System.err.println(e.getMessage());
+			BotLogger.getDebugLogger().debug("Exception IO buildWordsList()");
+			BotLogger.getDebugLogger().debug(e.getMessage());
 			e.printStackTrace();
 		}
 	}
@@ -131,13 +131,13 @@ public class WordCounterTextFile implements WordCounter {
 	{
 		String nickPattern = new String();
 	 
-		System.out.println(":" + nicklist + ":");
+		BotLogger.getDebugLogger().debug(":" + nicklist + ":");
 		if (nicklist == null)
 			return null;
 		
 		String [] nicks = nicklist.split(" ");
 		
-		System.out.println(nicks.length);
+		BotLogger.getDebugLogger().debug(nicks.length);
 		nickPattern = "\\[.*\\]\\s(";
 		for (int i = 0; i < nicks.length; ++i) {
 			if (i > 0)
@@ -172,7 +172,7 @@ public class WordCounterTextFile implements WordCounter {
 			Integer n = (Integer)htWords.get(w);
 			if (n != null) {
 				htWords.put(w, new Integer(n.intValue() + 1));
-				//System.out.println("word = " + words[i] + " n = " + n.intValue() + 1);
+				//BotLogger.getDebugLogger().debug("word = " + words[i] + " n = " + n.intValue() + 1);
 			} else
 				htWords.put(w, 1);
 		}			

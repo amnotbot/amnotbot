@@ -29,11 +29,11 @@ public class DeliciousBookmarks {
 		tags += " " + mm + "-" + yyyy;
 		tags += " " + yyyy;
 		
-		System.out.println("URL: " + url);
-		System.out.println("Description: " + description);
-		System.out.println("Extended: " + extended);
-		System.out.println("Tags: " + tags);
-		System.out.println("Date: " + date);
+		BotLogger.getDebugLogger().debug("URL: " + url);
+		BotLogger.getDebugLogger().debug("Description: " + description);
+		BotLogger.getDebugLogger().debug("Extended: " + extended);
+		BotLogger.getDebugLogger().debug("Tags: " + tags);
+		BotLogger.getDebugLogger().debug("Date: " + date);
 		
 		return this.delicious.addPost(url, description, extended, tags, date);
 	}		

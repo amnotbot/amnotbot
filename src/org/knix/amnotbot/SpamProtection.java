@@ -139,7 +139,7 @@ class ChannelSpamDetector {
 		long diff = this.getQueryTime() - lastQuery.getQueryTime();
 
 		if (SpamConstants.MIN_DIFF_ALLOWED > diff) {
-			System.out.println("MIN_DIFF_ALLOWED " + SpamConstants.MIN_DIFF_ALLOWED + " diff: " + diff);
+			BotLogger.getDebugLogger().debug("MIN_DIFF_ALLOWED " + SpamConstants.MIN_DIFF_ALLOWED + " diff: " + diff);
 			return true;
 		}
 
@@ -157,10 +157,10 @@ class ChannelSpamDetector {
 		QueryTime firstQuery = this.globalQueriesQueue.poll();	
 		long diff = this.getQueryTime() - firstQuery.getQueryTime();
 
-		System.out.println("- GLOBAL_UNIT_TIME " + SpamConstants.GLOBAL_UNIT_TIME + " diff: " + diff);
+		BotLogger.getDebugLogger().debug("- GLOBAL_UNIT_TIME " + SpamConstants.GLOBAL_UNIT_TIME + " diff: " + diff);
 		this.globalQueriesQueue.offer(new QueryTime(this.getQueryTime()));
 		if (SpamConstants.GLOBAL_UNIT_TIME > diff) {
-			System.out.println("+ GLOBAL_UNIT_TIME " + SpamConstants.GLOBAL_UNIT_TIME + " diff: " + diff);
+			BotLogger.getDebugLogger().debug("+ GLOBAL_UNIT_TIME " + SpamConstants.GLOBAL_UNIT_TIME + " diff: " + diff);
 			return true;
 		} else {
 			while (this.globalQueriesQueue.size() > 1)
@@ -196,10 +196,10 @@ class ChannelSpamDetector {
 		QueryTime lastQuery = (QueryTime) amnotbotUser.queriesQueue.getLast(); // tail		
 		long diff = this.getQueryTime() - lastQuery.getQueryTime();
 
-		System.out.println("MIN_DIFF_ALLOWED " + SpamConstants.MIN_DIFF_ALLOWED + " diff: " + diff);
+		BotLogger.getDebugLogger().debug("MIN_DIFF_ALLOWED " + SpamConstants.MIN_DIFF_ALLOWED + " diff: " + diff);
 
 		if (SpamConstants.MIN_DIFF_ALLOWED > diff) {
-			System.out.println("MIN_DIFF_ALLOWED " + SpamConstants.MIN_DIFF_ALLOWED + " diff: " + diff);
+			BotLogger.getDebugLogger().debug("MIN_DIFF_ALLOWED " + SpamConstants.MIN_DIFF_ALLOWED + " diff: " + diff);
 			return true;
 		}
 
@@ -217,7 +217,7 @@ class ChannelSpamDetector {
 		QueryTime firstQuery = amnotbotUser.queriesQueue.poll();
 		long diff = this.getQueryTime() - firstQuery.getQueryTime();
 
-		System.out.println("UNIT_TIME " + SpamConstants.UNIT_TIME + " diff: " + diff);
+		BotLogger.getDebugLogger().debug("UNIT_TIME " + SpamConstants.UNIT_TIME + " diff: " + diff);
 		amnotbotUser.queriesQueue.offer(new QueryTime(this.getQueryTime()));
 		if (SpamConstants.UNIT_TIME > diff) {
 			return true;

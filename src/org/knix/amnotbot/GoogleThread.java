@@ -81,7 +81,7 @@ public class GoogleThread extends Thread {
 		String videoID;
 
 		videoID = query.substring(query.indexOf("v=") + 2, query.length());
-		System.out.println("video ID: " + videoID);
+		BotLogger.getDebugLogger().debug("video ID: " + videoID);
 
 		return videoID;
 	}
@@ -113,29 +113,27 @@ public class GoogleThread extends Thread {
 			this.con.doPrivmsg(this.chan, "Title: " +  videoEntry.getTitle().getPlainText());
 		}
 		if (videoEntry.getSummary() != null) {
-			System.out.println("Summary: " + videoEntry.getSummary().getPlainText());
+			BotLogger.getDebugLogger().debug("Summary: " + videoEntry.getSummary().getPlainText());
 		}
 		YouTubeMediaGroup mediaGroup = videoEntry.getMediaGroup();
 		if (mediaGroup != null) {
 			MediaPlayer mediaPlayer = mediaGroup.getPlayer();
-			System.out.println("Web Player URL: " + mediaPlayer.getUrl());
+			BotLogger.getDebugLogger().debug("Web Player URL: " + mediaPlayer.getUrl());
 			MediaKeywords keywords = mediaGroup.getKeywords();
 			System.out.print("Keywords: ");
 			for(String keyword : keywords.getKeywords()) {
 				System.out.print(keyword + ",");
 			}
-			System.out.println();
-			System.out.println("\tThumbnails:");
+			BotLogger.getDebugLogger().debug("\tThumbnails:");
 			for(MediaThumbnail mediaThumbnail : mediaGroup.getThumbnails()) {
-				System.out.println("\t\tThumbnail URL: " + mediaThumbnail.getUrl());
-				System.out.println("\t\tThumbnail Time Index: " +
+				BotLogger.getDebugLogger().debug("\t\tThumbnail URL: " + mediaThumbnail.getUrl());
+				BotLogger.getDebugLogger().debug("\t\tThumbnail Time Index: " +
 					mediaThumbnail.getTime());
-				System.out.println();
 			}
-			System.out.println("\tMedia:");
+			BotLogger.getDebugLogger().debug("\tMedia:");
 			for (YouTubeMediaContent mediaContent : mediaGroup.getYouTubeContents()) {
-				System.out.println("\t\tMedia Location: "+mediaContent.getUrl());
-				System.out.println("\t\tMedia Type: "+mediaContent.getType());
+				BotLogger.getDebugLogger().debug("\t\tMedia Location: "+mediaContent.getUrl());
+				BotLogger.getDebugLogger().debug("\t\tMedia Type: "+mediaContent.getType());
 
 				int minutes = mediaContent.getDuration() / 60;
 				int seconds = mediaContent.getDuration() % 60;
@@ -147,17 +145,15 @@ public class GoogleThread extends Thread {
 				}
 				
 				//this.con.doPrivmsg(this.chan, "Duration: " + mDuration);
-				System.out.println("Duration: " + mDuration);
-				System.out.println();
+				BotLogger.getDebugLogger().debug("Duration: " + mDuration);
 			}
-			System.out.println();
 		}
 		if (showCommentsAndResponses) {
 			this.printResponsesFeed(videoEntry);
-			System.out.println("");
+			BotLogger.getDebugLogger().debug("");
 			this.printCommentsFeed(videoEntry);
-			System.out.println("");
-			System.out.println("");
+			BotLogger.getDebugLogger().debug("");
+			BotLogger.getDebugLogger().debug("");
 		}
 	}
 
@@ -174,7 +170,6 @@ public class GoogleThread extends Thread {
 		if (videoEntry.getVideoResponsesLink() != null) {
 			String videoResponsesFeedUrl =
 				videoEntry.getVideoResponsesLink().getHref();
-			System.out.println();
 			this.printVideoFeed((YouTubeService) videoEntry.getService(),
 				videoResponsesFeedUrl, false);
 		}
@@ -192,7 +187,7 @@ public class GoogleThread extends Thread {
 		throws IOException, ServiceException {
 		Comments comments = videoEntry.getComments();
 		if (comments != null && comments.getFeedLink() != null) {
-			System.out.println("\tComments:");
+			BotLogger.getDebugLogger().debug("\tComments:");
 			this.printFeed(videoEntry.getService(), comments.getFeedLink().getHref(),
 				"Comment");
 		}
@@ -225,14 +220,14 @@ public class GoogleThread extends Thread {
 	 * @param prefix a prefix to be printed before each entry attribute
 	 */
 	private void printEntry(Entry entry, String prefix) {
-		System.out.println("\t\t" + prefix + " Title: "
+		BotLogger.getDebugLogger().debug("\t\t" + prefix + " Title: "
 			+ entry.getTitle().getPlainText());
 		if (entry.getContent() != null) {
 			TextContent content = (TextContent) entry.getContent();
-			System.out.println("\t\t" + prefix + " Content: "
+			BotLogger.getDebugLogger().debug("\t\t" + prefix + " Content: "
 				+ content.getContent().getPlainText());
 		}
-		System.out.println("\t\tURL: " + entry.getHtmlLink().getHref());
+		BotLogger.getDebugLogger().debug("\t\tURL: " + entry.getHtmlLink().getHref());
 	}
 
 	/**
@@ -256,10 +251,10 @@ public class GoogleThread extends Thread {
 		if (showCommentsAndResponses) {
 			title += " with comments and responses";
 		}
-		printUnderlined(title);
+//		printUnderlined(title);
 		List<VideoEntry> videoEntries = videoFeed.getEntries();
 		if (videoEntries.size() == 0) {
-			System.out.println("This feed contains no entries.");
+			BotLogger.getDebugLogger().debug("This feed contains no entries.");
 			return;
 		}
 		int count = 1;
@@ -275,21 +270,6 @@ public class GoogleThread extends Thread {
 			int whichVideo = readInt();
 			this.printVideoEntry("", videoEntries.get(whichVideo - 1), true);
 		}
-		System.out.println();
-	}
-
-	/**
-	 * Prints a String, a newline, and a number of '-' characters equal to the
-	 * String's length.
-	 *
-	 * @param feedTitle - the title to print underlined
-	 */
-	private void printUnderlined(String feedTitle) {
-		System.out.println(feedTitle);
-		for (int i = 0; i < feedTitle.length(); ++i) {
-			System.out.print("-");
-		}
-		System.out.println("\n");
 	}
 
 	/**

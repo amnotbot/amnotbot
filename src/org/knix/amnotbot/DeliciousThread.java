@@ -123,7 +123,7 @@ public class DeliciousThread extends Thread
 		title = this.getTitle();
 		comment = this.opts.getOption("comment").stringValue();
 							
-		System.out.println("DeliciousThread: tags:" + tags + ":title:" + title + ":length(" + title.length() + ")" + ":comment:" + comment + ":");
+		BotLogger.getDebugLogger().debug("DeliciousThread: tags:" + tags + ":title:" + title + ":length(" + title.length() + ")" + ":comment:" + comment + ":");
 		success = false;
 		if (this.showTitle && this.isPageTitle())
 			this.con.doPrivmsg(this.chan, title);
@@ -131,8 +131,8 @@ public class DeliciousThread extends Thread
 		success = this.delicious.addPost(this.url, title, comment, tags.trim(), new Date());
 						
 		if (!success)
-			System.out.println("Post failed! :-(");
+			BotLogger.getDebugLogger().debug("Post failed! :-(");
 		else
-			System.out.println("Posted!");
+			BotLogger.getDebugLogger().debug("Posted!");
 	}
 }

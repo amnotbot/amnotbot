@@ -52,10 +52,10 @@ public class GoogleWebSearchThread extends Thread {
 				+ URLEncoder.encode(this.query, "UTF-8");
 			url = new URL(urlString);
 		} catch (MalformedURLException ex) {
-			System.err.println(ex.getMessage());
+			BotLogger.getDebugLogger().debug(ex.getMessage());
 			return;
 		} catch (UnsupportedEncodingException ex) {
-			System.err.println(ex.getMessage());
+			BotLogger.getDebugLogger().debug(ex.getMessage());
 			return;
 		}	
 
@@ -63,7 +63,7 @@ public class GoogleWebSearchThread extends Thread {
 		try {
 			connection = url.openConnection();
 		} catch (IOException ex) {
-			System.err.println(ex.getMessage());
+			BotLogger.getDebugLogger().debug(ex.getMessage());
 			return;
 		}
 
@@ -80,7 +80,7 @@ public class GoogleWebSearchThread extends Thread {
 				builder.append(line);
 			}
 		} catch (IOException ex) {
-			System.err.println(ex.getMessage());
+			BotLogger.getDebugLogger().debug(ex.getMessage());
 			return;
 		}
 
@@ -88,7 +88,7 @@ public class GoogleWebSearchThread extends Thread {
 		try {
 			json = new JSONObject(builder.toString());
 		} catch (JSONException ex) {
-			System.err.println(ex.getMessage());
+			BotLogger.getDebugLogger().debug(ex.getMessage());
 			return;
 		}
 	
@@ -99,7 +99,7 @@ public class GoogleWebSearchThread extends Thread {
 			String content = json.getJSONObject("responseData").getJSONArray("results").getJSONObject(0).optString("content");
 			this.con.doPrivmsg(this.chan, ParserUtils.trimAllTags(content, false));
 		} catch (JSONException ex) {
-			System.err.println(ex.getMessage());
+			BotLogger.getDebugLogger().debug(ex.getMessage());
 		}
     }
 }

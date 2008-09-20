@@ -3,6 +3,8 @@ package org.knix.amnotbot.config;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
+import org.apache.log4j.PropertyConfigurator;
+import org.knix.amnotbot.BotLogger;
 
 public class BotConfiguration {
 
@@ -17,12 +19,14 @@ public class BotConfiguration {
 	{
 		if (botConfig == null) {
 			botConfig = new BotConfiguration();
+            
+            PropertyConfigurator.configure("log4j.properties");
 			
 			try {
 				config = new PropertiesConfiguration("amnotbot.config");
 			} catch (ConfigurationException e) {
 				e.printStackTrace();
-				System.err.println("Problem loading amnotbot.config file");
+				BotLogger.getDebugLogger().debug("Problem loading amnotbot.config file");
 			}
 		}
 		

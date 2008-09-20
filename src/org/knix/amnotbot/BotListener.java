@@ -34,7 +34,6 @@ import org.knix.amnotbot.config.BotConfiguration;
 import org.schwering.irc.lib.IRCEventListener;
 import org.schwering.irc.lib.IRCModeParser;
 import org.schwering.irc.lib.IRCUser;
-import org.schwering.irc.lib.IRCUtil;
 import com.yahoo.search.SearchClient;
 
 /**
@@ -112,7 +111,7 @@ public class BotListener implements IRCEventListener
 		if (this.macroCommand.matches(msg)) {
 			if (!privateMessage) {
 				if (this.spamDetector.checkForSpam(target, user)) {
-					System.out.println("Spam Detected!");				
+					BotLogger.getDebugLogger().debug("Spam Detected!");
 					return;
 				}
 			}

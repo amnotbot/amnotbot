@@ -6,6 +6,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 
+import org.apache.log4j.Logger;
 import org.htmlparser.Node;
 import org.htmlparser.Parser;
 import org.htmlparser.filters.AndFilter;
@@ -21,24 +22,26 @@ import org.htmlparser.util.Translate;
 public class AmnotbotHTMLParser
 {
 
-	private Parser parser;
-	private String title = null;
-	private String keywords = null;	
+    private Parser parser;
+    private String title = null;
+    private String keywords = null;	
+    
+    private Logger logger;
 	
-	public AmnotbotHTMLParser(String url)
-	{
-		this.parser = new Parser();		
-		System.out.println("HTMLParser!");
-		this.setUrl(url);		
-	}
+    public AmnotbotHTMLParser(String url)
+    {
+        this.parser = new Parser();
+        this.setUrl(url);
+        this.logger = BotLogger.getDebugLogger();
+    }
 	
-	private boolean isValidURL(String url)
-	{
-		URL u = null;
+    private boolean isValidURL(String url)
+    {
+        URL u = null;
 		try {
 			u = new URL(url);
-		} catch (MalformedURLException e) {
-			System.err.println(e.getMessage());
+		} catch (MalformedURLException e) {		
+            logger.debug(e.getMessage());	
 			return false;
 		}
 		
@@ -46,11 +49,11 @@ public class AmnotbotHTMLParser
 		try {
 			uc = u.openConnection();
 		} catch (IOException e) {
-			System.err.println(e.getMessage());
+			BotLogger.getDebugLogger().debug(e.getMessage());
 		}
 		
 		String type = uc.getContentType();
-		System.out.println("type: " + type);
+        logger.debug("type:" + type);		
 		if (type != null) {
 			if (!type.startsWith ("text"))
 				return false;
@@ -66,7 +69,7 @@ public class AmnotbotHTMLParser
 			try	{
 				this.parser.setURL(url);		
 			} catch (ParserException pe) {
-				System.err.println(pe.getMessage());		
+				logger.debug(pe.getMessage());		
 				return;
 			}
 			this.parse();
@@ -93,7 +96,7 @@ public class AmnotbotHTMLParser
 		this.keywords = keywords;		
 	}
 	
-	public String getKeywords()
+    public String getKeywords()
 	{
 		return this.keywords;
 	}
@@ -117,7 +120,7 @@ public class AmnotbotHTMLParser
 			nl = this.parser.parse(null);
 							
 			NodeList titles = nl.extractAllNodesThatMatch( new NodeClassFilter(TitleTag.class), true );
-			System.out.println("Titles " + titles.size());
+            logger.debug("Titles: " + titles.size());
 			if (titles.size() > 0) {
 				TitleTag titletag = (TitleTag)titles.elementAt(0);
 				this.setTitle( Translate.decode( titletag.getTitle().trim() ) );			
@@ -126,14 +129,13 @@ public class AmnotbotHTMLParser
 			NodeList meta = nl.extractAllNodesThatMatch( 
 					new AndFilter(new NodeClassFilter(MetaTag.class), 
 									new HasAttributeFilter ("name", "keywords")), true);
-			System.out.println("meta size = " + meta.size());
 			if (meta.size() > 0) {	    	    	
 				MetaTag metatag = (MetaTag)meta.elementAt(0);
 				this.setKeywords( metatag.getMetaContent() );
 			}		
-		} catch (ParserException pe) {
-			System.err.println(pe.getMessage());
-			return;
+        } catch (ParserException pe) {
+            logger.debug(pe.getMessage());			
+            return;
 		}
 	}
 	

@@ -67,7 +67,7 @@ public class YahooThread extends Thread {
 		else
 			this.query = this.msg;
 		
-		System.out.println("query:" + this.query);
+		BotLogger.getDebugLogger().debug("query:" + this.query);
 		
 		switch (this.sType) {
 			case NEWS_SEARCH:
@@ -116,17 +116,17 @@ public class YahooThread extends Thread {
 		if (this.opts.getOption("site").hasValue())
 			request.addSite(this.opts.getOption("site").stringValue());
 		
-		System.out.println("parameters:" + request.getParameters());
+		BotLogger.getDebugLogger().debug("parameters:" + request.getParameters());
 		
 		try {
 			// Execute the search.
 			WebSearchResults results = this.yahooClient.webSearch(request);			
 
 			// Print out how many hits were found.
-			System.out.println("Found " + results.getTotalResultsAvailable() +
+			BotLogger.getDebugLogger().debug("Found " + results.getTotalResultsAvailable() +
 				" hits for " + this.msg + "! Displaying the first " +
 				results.getTotalResultsReturned() + ".");
-			System.out.println("Performed search:" + this.msg);
+			BotLogger.getDebugLogger().debug("Performed search:" + this.msg);
 
 			// Iterate over the results.
 			//for (int i = 0; i < results.listResults().length; i++) {
@@ -134,11 +134,11 @@ public class YahooThread extends Thread {
 			//WebSearchResult result = results.listResults()[i];
 			if (results.listResults().length != 0) {				
 				//BigInteger firstPos = results.getFirstResultPosition();
-				//System.out.println("First position: " + firstPos.toString());
+				//BotLogger.getDebugLogger().debug("First position: " + firstPos.toString());
 				WebSearchResult result = results.listResults()[0];				
 
 				// Print out the document title and URL.
-				System.out.println("  : " + result.getTitle() + " - " +
+				BotLogger.getDebugLogger().debug("  : " + result.getTitle() + " - " +
 					result.getUrl());
 				this.con.doPrivmsg(this.chan, result.getTitle());
 				this.con.doPrivmsg(this.chan, result.getUrl());
@@ -149,13 +149,13 @@ public class YahooThread extends Thread {
 		}
 		catch (IOException e) {
 			// Most likely a network exception of some sort.
-			System.err.println("Error calling Yahoo! Search Service: " +
+			BotLogger.getDebugLogger().debug("Error calling Yahoo! Search Service: " +
 				e.toString());
 			e.printStackTrace(System.err);
 		}
 		catch (SearchException e) {
 			// An issue with the XML or with the service.
-			System.err.println("Error calling Yahoo! Search Service: " +
+			BotLogger.getDebugLogger().debug("Error calling Yahoo! Search Service: " +
 				e.toString());
 			e.printStackTrace(System.err);
 			this.con.doPrivmsg(this.chan, "Invalid parameters! Check: http://developer.yahoo.com/search/web/V1/webSearch.html");
@@ -172,17 +172,17 @@ public class YahooThread extends Thread {
 		else
 			request.setLanguage("en");
 		
-		System.out.println("parameters:" + request.getParameters());
+		BotLogger.getDebugLogger().debug("parameters:" + request.getParameters());
 
 		try {
 			// Execute the search.
 			NewsSearchResults results = this.yahooClient.newsSearch(request);		
 
 			// Print out how many hits were found.
-			System.out.println("Found " + results.getTotalResultsAvailable() +
+			BotLogger.getDebugLogger().debug("Found " + results.getTotalResultsAvailable() +
 				" hits for " + this.msg + "! Displaying the first " +
 				results.getTotalResultsReturned() + ".");
-			System.out.println("Performed search:" + this.msg);
+			BotLogger.getDebugLogger().debug("Performed search:" + this.msg);
 
 			// Iterate over the results.
 			//for (int i = 0; i < results.listResults().length; i++) {
@@ -190,11 +190,11 @@ public class YahooThread extends Thread {
 			//WebSearchResult result = results.listResults()[i];
 			if (results.listResults().length != 0) {
 				//BigInteger firstPos = results.getFirstResultPosition();
-				//System.out.println("First position: " + firstPos.toString());
+				//BotLogger.getDebugLogger().debug("First position: " + firstPos.toString());
 				NewsSearchResult result = results.listResults()[0];
 
 				// Print out the document title and URL.
-				System.out.println("  : " + result.getTitle() + " - " +
+				BotLogger.getDebugLogger().debug("  : " + result.getTitle() + " - " +
 					result.getUrl());
 		
 				SimpleDateFormat publishDate = new SimpleDateFormat("MMM dd, yyyy");
@@ -211,13 +211,13 @@ public class YahooThread extends Thread {
 		}
 		catch (IOException e) {
 			// Most likely a network exception of some sort.
-			System.err.println("Error calling Yahoo! Search Service: " +
+			BotLogger.getDebugLogger().debug("Error calling Yahoo! Search Service: " +
 				e.toString());
 			e.printStackTrace(System.err);
 		}
 		catch (SearchException e) {
 			// An issue with the XML or with the service.
-			System.err.println("Error calling Yahoo! Search Service: " +
+			BotLogger.getDebugLogger().debug("Error calling Yahoo! Search Service: " +
 				e.toString());
 			e.printStackTrace(System.err);
 		}

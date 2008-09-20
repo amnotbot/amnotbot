@@ -36,6 +36,7 @@ import java.net.URLEncoder;
 /*
  * TODO - Use Jakarta's HttpClient (maybe)
  */
+import org.apache.log4j.Logger;
 
 /**
  * Request a shortened URL from Qurl.org
@@ -59,6 +60,8 @@ public class QurlRequest extends Thread
 
 	/** Regex to grab URLs from qurl.org responses */
 	public static final String REGEX = ".*a href=\"(http://qurl.org.*)\".*";
+    
+    private Logger logger;
 
 	/**
 	 * Create a new QurlRequest thread.
@@ -77,6 +80,8 @@ public class QurlRequest extends Thread
 		this.chan = chan;
 		this.nick = nick;
 		this.query = query;
+        
+        this.logger = BotLogger.getDebugLogger();
 
 		start();
 	}
@@ -106,7 +111,7 @@ public class QurlRequest extends Thread
 				con.doPrivmsg(chan, nick + ": " + qurl + " " + domain);
 			}
 		} catch (Exception e) {
-			e.printStackTrace(con.getBotLogger().getDefaultLogger());
+            this.logger.debug(e.getMessage());
 		}
 	}
 }

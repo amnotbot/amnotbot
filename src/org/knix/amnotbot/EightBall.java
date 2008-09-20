@@ -37,6 +37,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import org.apache.log4j.Logger;
 
 /**
  * Magic eightball thread.
@@ -55,6 +56,7 @@ public class EightBall extends Thread
 	private static long timestampBuf = 0;
 
 	private static List<String> ballResponses;
+    private Logger logger;
 
 	static {
 		try {
@@ -77,6 +79,8 @@ public class EightBall extends Thread
 		this.con = con;
 		this.chan = chan;
 		this.nick = nick;
+        
+        this.logger = BotLogger.getDebugLogger();
 
 		start();
 	}
@@ -86,7 +90,7 @@ public class EightBall extends Thread
 		try {
 			con.doPrivmsg(chan, nick + ": " + getMessage());
 		} catch (IOException e) {
-			e.printStackTrace(con.getBotLogger().getDefaultLogger());
+            this.logger.debug(e.getMessage());
 		}
 	}
 
@@ -108,7 +112,7 @@ public class EightBall extends Thread
 
 			if (fd.lastModified() > timestampBuf) {
 				// FIXME - we cannot currently log this because it's static
-				System.err.println(BotConstants.getBotConstants().getAppPFX() + " Reloading eightball data");
+				BotLogger.getDebugLogger().debug(BotConstants.getBotConstants().getAppPFX() + " Reloading eightball data");
 
 				timestampBuf = fd.lastModified();
 				BufferedReader reader = new BufferedReader(new FileReader(fd));
