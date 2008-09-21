@@ -27,7 +27,6 @@
 
 package org.knix.amnotbot;
 
-import org.knix.amnotbot.BotConstants;
 
 import org.schwering.irc.lib.IRCConnection;
 

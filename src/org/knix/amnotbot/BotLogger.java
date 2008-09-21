@@ -30,11 +30,8 @@ package org.knix.amnotbot;
 import java.io.File;
 import java.io.IOException;
 
-import java.util.Enumeration;
 import org.apache.commons.lang.SystemUtils;
 
-import org.apache.log4j.Appender;
-import org.apache.log4j.PropertyConfigurator;
 import org.apache.log4j.Logger;
 import org.apache.log4j.FileAppender;
 import org.apache.log4j.PatternLayout;
@@ -85,8 +82,6 @@ public class BotLogger
 
     public void log(String target, String msg)
     {
-		//PrintWriter out = logs.get(target);
-        BotLogger.getDebugLogger().debug(target);
         Logger logger = Logger.getLogger(target);
         FileAppender appender = (FileAppender)logger.getAppender(target);
         
@@ -96,8 +91,7 @@ public class BotLogger
             try {
                 appender = new FileAppender(layout, this.LOG_HOME.getAbsolutePath() + "/" + target);
             } catch (IOException e) {
-                BotLogger.getDebugLogger().debug("Can't create appender for channel:" + target);
-                BotLogger.getDebugLogger().debug(e.getMessage());
+                BotLogger.getDebugLogger().debug("Can't create appender for channel:" + target, e);            
                 return;
             }
             

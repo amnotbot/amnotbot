@@ -34,7 +34,6 @@ import java.util.List;
  * TODO - allow for multiple servers at startup
  *      - allow user input.
  */
-import org.apache.log4j.Logger;
 
 /**
  * Very simple IRC bot.
@@ -50,7 +49,6 @@ public class Bot extends Thread
 
     private static final int SO_TIMEOUT = 1000 * 60 * 5;
     private BotLogger logger;
-    private Logger debugLogger;
 
     public Bot(String server, List<String> channels)
     {
@@ -66,7 +64,6 @@ public class Bot extends Thread
         this.port = port;
         this.channels = channels;
         this.logger = new BotLogger(server);
-        this.debugLogger = BotLogger.getDebugLogger();
 
         start();
     }
@@ -84,18 +81,18 @@ public class Bot extends Thread
                         con = createConnection(server, port, channels, logger);
                         con.connect();
                     } catch (Exception e) {
-                        debugLogger.debug(e.getMessage());
+                        BotLogger.getDebugLogger().debug("Connection failed!", e);
                     }
                 }
 				
                 try {
                     Thread.sleep(5000);
                 } catch (InterruptedException ie) {
-                    debugLogger.debug(ie.getMessage());
+                    BotLogger.getDebugLogger().debug(ie);
                 }				
             }
         } catch (IOException e) {
-            debugLogger.debug(e.getMessage());
+            BotLogger.getDebugLogger().debug(e);
         }
     }
 

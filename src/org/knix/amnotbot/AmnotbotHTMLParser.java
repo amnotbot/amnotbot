@@ -6,13 +6,10 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 
-import org.apache.log4j.Logger;
-import org.htmlparser.Node;
 import org.htmlparser.Parser;
 import org.htmlparser.filters.AndFilter;
 import org.htmlparser.filters.HasAttributeFilter;
 import org.htmlparser.filters.NodeClassFilter;
-import org.htmlparser.filters.TagNameFilter;
 import org.htmlparser.tags.MetaTag;
 import org.htmlparser.tags.TitleTag;
 import org.htmlparser.util.NodeList;
@@ -26,13 +23,10 @@ public class AmnotbotHTMLParser
     private String title = null;
     private String keywords = null;	
     
-    private Logger logger;
-	
     public AmnotbotHTMLParser(String url)
     {
         this.parser = new Parser();
         this.setUrl(url);
-        this.logger = BotLogger.getDebugLogger();
     }
 	
     private boolean isValidURL(String url)
@@ -41,7 +35,7 @@ public class AmnotbotHTMLParser
 		try {
 			u = new URL(url);
 		} catch (MalformedURLException e) {		
-            logger.debug(e.getMessage());	
+            BotLogger.getDebugLogger().debug(e);
 			return false;
 		}
 		
@@ -49,11 +43,11 @@ public class AmnotbotHTMLParser
 		try {
 			uc = u.openConnection();
 		} catch (IOException e) {
-			BotLogger.getDebugLogger().debug(e.getMessage());
+			BotLogger.getDebugLogger().debug(e);
 		}
 		
 		String type = uc.getContentType();
-        logger.debug("type:" + type);		
+        BotLogger.getDebugLogger().debug("type:" + type);
 		if (type != null) {
 			if (!type.startsWith ("text"))
 				return false;
@@ -69,7 +63,7 @@ public class AmnotbotHTMLParser
 			try	{
 				this.parser.setURL(url);		
 			} catch (ParserException pe) {
-				logger.debug(pe.getMessage());		
+				BotLogger.getDebugLogger().debug(pe);
 				return;
 			}
 			this.parse();
@@ -120,7 +114,7 @@ public class AmnotbotHTMLParser
 			nl = this.parser.parse(null);
 							
 			NodeList titles = nl.extractAllNodesThatMatch( new NodeClassFilter(TitleTag.class), true );
-            logger.debug("Titles: " + titles.size());
+            BotLogger.getDebugLogger().debug("Titles: " + titles.size());
 			if (titles.size() > 0) {
 				TitleTag titletag = (TitleTag)titles.elementAt(0);
 				this.setTitle( Translate.decode( titletag.getTitle().trim() ) );			
@@ -134,7 +128,7 @@ public class AmnotbotHTMLParser
 				this.setKeywords( metatag.getMetaContent() );
 			}		
         } catch (ParserException pe) {
-            logger.debug(pe.getMessage());			
+            BotLogger.getDebugLogger().debug(pe);			
             return;
 		}
 	}
