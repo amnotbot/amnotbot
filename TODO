@@ -2,6 +2,5 @@ TODO
 ====
 
  - Unit testing via JUnit or TestNG
- - log4j support (no more printing to stdout/err)
  - New "Action" framework
  - Code cleanup to adhere to guidelines in HACKING
