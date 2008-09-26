@@ -5,7 +5,7 @@ import org.schwering.irc.lib.IRCUser;
 public class GoogleCommand extends AmnotbotCommandImp {
 
     public GoogleCommand() {
-        super("^!g(oogle)?\\s+(.*)", null);
+        super("^!g(oogle)?\\s+(.*)", "g google");
     }
 
     public void execute(BotConnection con, String chan, IRCUser user,

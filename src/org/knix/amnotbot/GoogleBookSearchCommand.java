@@ -5,7 +5,7 @@ import org.schwering.irc.lib.IRCUser;
 public class GoogleBookSearchCommand extends AmnotbotCommandImp {
 
     public GoogleBookSearchCommand() {
-        super("^!gbook?\\s+(.*)", null);
+        super("^!gbook?\\s+(.*)", "gbook");
     }
 
     public void execute(BotConnection con, String chan, IRCUser user,
