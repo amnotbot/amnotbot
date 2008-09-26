@@ -3,7 +3,6 @@ package org.knix.amnotbot;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-import org.apache.log4j.Logger;
 import org.schwering.irc.lib.IRCUser;
 
 public class MacroCommand extends AmnotbotCommandImp {
@@ -11,7 +10,6 @@ public class MacroCommand extends AmnotbotCommandImp {
     private LinkedList<AmnotbotCommand> commands;
     //private AmnotbotCommand aReceiver;
     private LinkedList<AmnotbotCommand> receivers;
-    private Logger debugLogger;
 
     public MacroCommand() {
         //this.aReceiver = null;
@@ -19,11 +17,10 @@ public class MacroCommand extends AmnotbotCommandImp {
 
         this.commands = new LinkedList<AmnotbotCommand>();
         this.receivers = new LinkedList<AmnotbotCommand>();
-        this.debugLogger = BotLogger.getDebugLogger();
     }
 
     public void add(AmnotbotCommand command) {
-        this.debugLogger.debug("Class = " + command.getClass().getName());
+        BotLogger.getDebugLogger().debug("Class = " + command.getClass().getName());
         this.commands.add(command);
     }
 
