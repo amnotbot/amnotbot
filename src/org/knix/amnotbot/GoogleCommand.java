@@ -4,12 +4,12 @@ import org.schwering.irc.lib.IRCUser;
 
 public class GoogleCommand extends AmnotbotCommandImp {
 
-	public GoogleCommand() {
-		super("^!g(oogle)?\\s+(.*)", null);
-	}
+    public GoogleCommand() {
+        super("^!g(oogle)?\\s+(.*)", null);
+    }
 
-	public void execute(BotConnection con, String chan, IRCUser user, String msg)
-	{
-		new GoogleWebSearchThread(con, chan, user.getNick(), this.getGroup(2));
-	}
+    public void execute(BotConnection con, String chan, IRCUser user,
+        String msg) {
+        new GoogleWebSearchThread(con, chan, user.getNick(), this.getGroup(2));
+    }
 }
