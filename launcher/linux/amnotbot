@@ -1,0 +1,219 @@
+#!/bin/sh
+#
+# Copyright (c) 2008 Geronimo Poppino
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions
+# are met:
+# 1. Redistributions of source code must retain the above copyright
+#    notice, this list of conditions and the following disclaimer.
+# 2. Redistributions in binary form must reproduce the above copyright
+#    notice, this list of conditions and the following disclaimer in the
+#    documentation and/or other materials provided with the distribution.
+# 3. The name of the author may not be used to endorse or promote products
+#    derived from this software without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE AUTHOR "AS IS" AND ANY EXPRESS OR
+# IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+# OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+# IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
+# INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+# NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+# DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+# THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+# THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#
+
+#
+#
+# Bot TODO:
+#	+ add 'shutdown' handler (quit graciously).
+#	+ add command line options handling.
+#
+
+PRG=$0
+AMNOTBOT_HOME=~/.amnotbot
+PID_FILE=$AMNOTBOT_HOME/amnotbot.pid
+
+while [ -h "$PRG" ] ; do
+	link=`readlink "$PRG"`
+	PRG="`dirname "$PRG"`/$link"
+done
+
+progdir=`dirname "$PRG"`
+configfile="/etc/amnotbot.config"
+log4jconfig=""
+jarfile="amnotbot.jar"
+bgmode=false
+has_config_opt=no
+has_log4j_opt=no
+
+function find_config_file()
+{
+    if [ -f $progdir/../etc/amnotbot.config ] ; then
+        configfile=$progdir/../etc/amnotbot.config
+    fi
+
+    if [ -f `pwd`/amnotbot.config ] ; then
+        configfile=`pwd`/amnotbot.config
+    fi
+
+    if [ -f ~./amnotbot.config ] ; then
+        configfile=~./amnotbot.config
+    fi
+
+    if [ -f ~./.amnotbot/amnotbot.config ] ; then
+        configfile=~./.amnotbot/amnotbot.config
+    fi
+}
+
+function find_log4j_file()
+{
+    if [ -f $progdir/../etc/log4j.properties ] ; then
+        log4jconfig=$progdir/../etc/log4j.properties
+    fi
+
+    if [ -f `pwd`/log4j.properties ] ; then
+        log4jconfig=`pwd`/log4j.properties
+    fi
+
+    if [ -f ~./log4j.properties ] ; then
+        log4jconfig=~./log4j.properties
+    fi
+
+    if [ -f ~./.amnotbot/log4j.properties ] ; then
+        log4jconfig=~./.amnotbot/log4j.properties
+    fi
+}
+
+function find_jar_file()
+{
+    if [ -f $progdir/../core/amnotbot.jar ] ; then
+        jarfile=$progdir/../core/amnotbot.jar
+    elif [ -f `pwd`/amnotbot.jar ] ; then
+        jarfile=`pwd`/amnotbot.jar
+    else
+        echo "Installation problem: jar file not found"
+        exit -1
+    fi
+}
+
+function exec_mode()
+{
+    if [ ! -f $configfile ] ; then
+        echo "Could not find config file"
+        exit -1
+    fi
+
+    bgmode=`grep daemon $configfile | cut -d'=' -f2 | tr -d " "`
+}
+
+function find_cmd_params()
+{
+    while getopts "c:l:" optval ;
+    do
+        case ${optval} in
+            c)
+                has_config_opt=yes
+                configfile=$OPTARG
+                ;;
+            l)
+                has_log4j_opt=yes
+                log4jconfig=$OPTARG
+                ;;
+        esac
+    done
+}
+
+function exec_bot()
+{
+    CONFIG_OPT=""
+    if [ "${has_config_opt}" = "no" ] ; then 
+        CONFIG_OPT="-c $configfile"
+    fi
+
+    LOG4J_OPT=""
+    if [ "${has_log4j_opt}" = "no" ] ; then
+        LOG4J_OPT="-l $log4jconfig"
+    fi
+
+    exec java -jar $jarfile $CONFIG_OPT $LOG4J_OPT "$@"
+}
+
+function verify_pid()
+{
+    if [ ! -f $PID_FILE ] ; then
+        return 0
+    elif [ -s $PID_FILE -a -d /proc/$(<$PID_FILE) ] ; then
+        echo "Bot running with pid $(<$PID_FILE)!"
+        echo "Note: run '$0 stop' to stop the bot."
+        return 1
+    fi
+
+    return 0
+}
+
+function stop_bot()
+{
+    echo -n "Stopping bot ... "
+    pid=$(<$PID_FILE)
+    kill -TERM $pid 2>/dev/null
+
+    if [ $? = 0 ] ; then
+        echo "succeeded."
+        rm -f $PID_FILE
+    else
+        echo "failed."
+    fi
+}
+
+case "${1}" in 
+    stop)
+        if verify_pid -eq 0 1>/dev/null ; then
+            echo "Bot not running ..."
+        else
+            stop_bot
+        fi
+        ;;
+    *)
+        # Is the bot already running?
+        if verify_pid -eq 0 ; then
+            find_config_file
+            find_log4j_file
+            find_cmd_params $@
+            find_jar_file
+            exec_mode
+
+            wait_bot=0
+            case $bgmode in
+
+                true)
+                    echo "Going into the background ..."
+                    eval exec_bot '"$@"' \
+                        > /dev/null 2>&1 &
+                    pid=$!
+                    ;;
+
+                *)
+                    eval exec_bot '"$@"' &
+                    pid=$!
+                    wait_bot=1
+                    ;;
+            esac
+
+            # store last command's pid (bot pid)
+            pid=$!
+            if [ ! -d $AMNOTBOT_HOME ] ; then
+                mkdir $AMNOTBOT_HOME 
+            fi
+
+            echo $pid > $PID_FILE
+            if test $wait_bot -eq 1 ; then
+                wait $pid
+            fi
+        fi
+        ;;
+esac
+
