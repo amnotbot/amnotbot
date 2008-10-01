@@ -33,13 +33,20 @@
 #	+ add command line options handling.
 #
 
+#
+# Exit codes:
+# 64 - Installation problem
+# 65 - Configuration problem
+# 66 - User aborted execution
+#
+
 PRG=$0
 AMNOTBOT_HOME=~/.amnotbot
 PID_FILE=$AMNOTBOT_HOME/amnotbot.pid
 
 while [ -h "$PRG" ] ; do
-	link=`readlink "$PRG"`
-	PRG="`dirname "$PRG"`/$link"
+    link=`readlink "$PRG"`
+    PRG="`dirname "$PRG"`/$link"
 done
 
 progdir=`dirname "$PRG"`
@@ -96,7 +103,7 @@ function find_jar_file()
         jarfile=`pwd`/amnotbot.jar
     else
         echo "Installation problem: jar file not found"
-        exit -1
+        exit 64
     fi
 }
 
@@ -104,7 +111,7 @@ function exec_mode()
 {
     if [ ! -f $configfile ] ; then
         echo "Could not find config file"
-        exit -1
+        exit 65
     fi
 
     bgmode=`grep daemon $configfile | cut -d'=' -f2 | tr -d " "`
@@ -169,9 +176,32 @@ function stop_bot()
     fi
 }
 
+function trap_signals()
+{
+    trap abort_bot 1 2 3 9 15
+}
+
+function abort_bot()
+{
+    verify_pid 1> /dev/null
+    ret=$?
+
+    if [ "$ret" -ne 0 ] ; then
+        stop_bot
+    fi
+
+    echo "Aborted."
+    exit 66
+}
+
+trap_signals
+
 case "${1}" in 
     stop)
-        if verify_pid -eq 0 1>/dev/null ; then
+        verify_pid 1> /dev/null
+        ret=$?
+
+        if [ "$ret" -eq 0 ] ; then
             echo "Bot not running ..."
         else
             stop_bot
@@ -193,12 +223,10 @@ case "${1}" in
                     echo "Going into the background ..."
                     eval exec_bot '"$@"' \
                         > /dev/null 2>&1 &
-                    pid=$!
                     ;;
 
                 *)
                     eval exec_bot '"$@"' &
-                    pid=$!
                     wait_bot=1
                     ;;
             esac
