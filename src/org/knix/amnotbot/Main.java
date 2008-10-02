@@ -33,10 +33,14 @@ import org.knix.amnotbot.config.BotConfiguration;
 
 public class Main
 {
-	public static void main(String[] args)
-	{        
-		List<String> channels = BotConfiguration.getConfig().getList("channels");
-        
-		new Bot(BotConfiguration.getConfig().getString("server"), 6667, channels);       
+    public static void main(String[] args)
+    {        
+        List<String> channels = BotConfiguration.getConfig().getList("channels");
+        		         
+        Runtime.getRuntime().addShutdownHook(
+            new BotShutdownHandler(
+                new Bot(BotConfiguration.getConfig().getString("server"), 6667, channels)
+            )
+        );
 	}
 }

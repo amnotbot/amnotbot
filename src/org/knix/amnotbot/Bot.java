@@ -41,7 +41,7 @@ import java.util.List;
  * @author Jimmy Mitchener &lt;jimmy.mitchener | et | [g]mail.com&gt;
  * @version 0.01
  */
-public class Bot extends Thread
+public class Bot extends Thread implements IBot
 {
     private String server;
     private int port;
@@ -49,6 +49,7 @@ public class Bot extends Thread
 
     private static final int SO_TIMEOUT = 1000 * 60 * 5;
     private BotLogger logger;
+    private BotConnection con;
 
     public Bot(String server, List<String> channels)
     {
@@ -64,22 +65,28 @@ public class Bot extends Thread
         this.port = port;
         this.channels = channels;
         this.logger = new BotLogger(server);
+        this.con = null;
 
         start();
     }
-
-    public void run() {
         
+    public void shutdown() 
+    {
+        this.con.doQuit();        
+    }
+
+    public void run() 
+    {        
         try {
-            BotConnection con =
-                createConnection(server, port, channels, logger);
-            con.connect();
+            
+            this.con = createConnection(server, port, channels, logger);
+            this.con.connect();
 
             for (;;) {
-                if (!con.isConnected()) {
+                if (!this.con.isConnected()) {
                     try {
-                        con = createConnection(server, port, channels, logger);
-                        con.connect();
+                        this.con = createConnection(server, port, channels, logger);
+                        this.con.connect();
                     } catch (Exception e) {
                         BotLogger.getDebugLogger().debug("Connection failed!", e);
                     }
@@ -109,20 +116,20 @@ public class Bot extends Thread
         List<String> channels,
         BotLogger logger) 
     {
-        BotConnection con = null;
+        BotConnection bcon = null;
 
         if (port > 0) {
-            con = new BotConnection(server, port);
+            bcon = new BotConnection(server, port);
         } else {
-            con = new BotConnection(server);
+            bcon = new BotConnection(server);
         }
 
-        con.setBotLogger(logger);
-        con.addIRCEventListener(new BotListener(con, channels));
-        con.setPong(true);
-        con.setDaemon(false);
-        con.setTimeout(SO_TIMEOUT);
+        bcon.setBotLogger(logger);
+        bcon.addIRCEventListener(new BotListener(bcon, channels));
+        bcon.setPong(true);
+        bcon.setDaemon(false);
+        bcon.setTimeout(SO_TIMEOUT);
 
-        return con;
+        return bcon;
     }
 }
