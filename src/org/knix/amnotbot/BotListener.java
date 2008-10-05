@@ -62,7 +62,10 @@ public class BotListener implements IRCEventListener {
         this.spamDetector = new SpamDetector(channels);
         this.macroCommand = new MacroCommand();
 
-        this.macroCommand.add(new DeliciousCommand(true));
+        if ( BotConfiguration.getConfig().getBoolean("delicious_enabled") ) 
+        {
+            this.macroCommand.add(new DeliciousCommand(true));
+        }
 
         DictHelper dictHelper = new DictHelper(con);
         this.macroCommand.add(new DictCommand(dictHelper));
