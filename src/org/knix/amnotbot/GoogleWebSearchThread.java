@@ -7,6 +7,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 
 import org.htmlparser.util.ParserUtils;
@@ -88,12 +89,16 @@ public class GoogleWebSearchThread extends Thread {
         }
 
         try {
-            this.con.doPrivmsg(this.chan, json.getJSONObject("responseData").getJSONArray("results").getJSONObject(0).optString("titleNoFormatting"));
-            this.con.doPrivmsg(this.chan, json.getJSONObject("responseData").getJSONArray("results").getJSONObject(0).optString("url"));
+            String rTitle = json.getJSONObject("responseData").getJSONArray("results").getJSONObject(0).optString("titleNoFormatting");
+            this.con.doPrivmsg(this.chan, rTitle);
+            String rUrl = URLDecoder.decode(json.getJSONObject("responseData").getJSONArray("results").getJSONObject(0).optString("url"), "UTF-8");
+            this.con.doPrivmsg(this.chan, rUrl);
 
             String content = json.getJSONObject("responseData").getJSONArray("results").getJSONObject(0).optString("content");
             this.con.doPrivmsg(this.chan, ParserUtils.trimAllTags(content, false));
         } catch (JSONException ex) {
+            BotLogger.getDebugLogger().debug(ex.getMessage());
+        } catch (java.io.UnsupportedEncodingException ex) {
             BotLogger.getDebugLogger().debug(ex.getMessage());
         }
     }
