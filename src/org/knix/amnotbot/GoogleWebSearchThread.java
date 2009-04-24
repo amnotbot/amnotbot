@@ -37,69 +37,76 @@ public class GoogleWebSearchThread extends Thread {
         start();
     }
 
-    public void run() {
-        this.makeQuery();
+    public void run()
+    {
+        try {
+            URL searchUrl;
+            searchUrl = this.buildGoogleSearchUrl(this.query);
+
+            URLConnection googleConn;
+            googleConn = this.startGoogleConnection(searchUrl);
+
+            JSONObject answer;
+            answer = this.makeQuery(googleConn);
+
+            this.showAnswer(answer);
+         } catch (Exception e) {
+            BotLogger.getDebugLogger().debug(e.getMessage());
+         }
     }
 
-    public void makeQuery() {
-        URL url;
-        try {
-            String urlString =
-                    "http://ajax.googleapis.com/ajax/services/search/web?v=1.0&q=" + URLEncoder.encode(this.query, "UTF-8");
-            url = new URL(urlString);
-        } catch (MalformedURLException ex) {
-            BotLogger.getDebugLogger().debug(ex.getMessage());
-            return;
-        } catch (UnsupportedEncodingException ex) {
-            BotLogger.getDebugLogger().debug(ex.getMessage());
-            return;
-        }
+    private URL buildGoogleSearchUrl(String query)
+            throws MalformedURLException, UnsupportedEncodingException
+    {        
+        String urlString =
+            "http://ajax.googleapis.com/ajax/services/search/web?v=1.0&q="
+                + URLEncoder.encode(query, "UTF-8");
 
-        URLConnection connection;
-        try {
-            connection = url.openConnection();
-        } catch (IOException ex) {
-            BotLogger.getDebugLogger().debug(ex.getMessage());
-            return;
-        }
+        return ( new URL(urlString) );
+    }
 
-        connection.addRequestProperty("Referer",
-                "http://knix.mine.nu/index.html");
+    private URLConnection startGoogleConnection(URL searchUrl)
+            throws IOException
+    {
+        URLConnection googleConn;
+        
+        googleConn = searchUrl.openConnection();        
+        googleConn.addRequestProperty("Referer", "http://packetpan.org");
+        
+        return googleConn;
+    }
+
+    public JSONObject makeQuery(URLConnection googleConn)
+            throws IOException, JSONException
+    {       
+        BufferedReader reader;
+        reader = new BufferedReader(
+                    new InputStreamReader(googleConn.getInputStream())
+                    );
 
         String line;
         StringBuilder builder = new StringBuilder();
-
-        try {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-
-            while ((line = reader.readLine()) != null) {
-                builder.append(line);
-            }
-        } catch (IOException ex) {
-            BotLogger.getDebugLogger().debug(ex.getMessage());
-            return;
+        while ((line = reader.readLine()) != null) {
+            builder.append(line);
         }
+     
+        return ( new JSONObject( builder.toString() ) );
+    }
 
-        JSONObject json;
-        try {
-            json = new JSONObject(builder.toString());
-        } catch (JSONException ex) {
-            BotLogger.getDebugLogger().debug(ex.getMessage());
-            return;
-        }
+    private void showAnswer(JSONObject answer) 
+            throws JSONException, UnsupportedEncodingException
+    {
+        JSONObject data = answer.getJSONObject("responseData");
+        JSONObject result = data.getJSONArray("results").getJSONObject(0);
 
-        try {
-            String rTitle = json.getJSONObject("responseData").getJSONArray("results").getJSONObject(0).optString("titleNoFormatting");
-            this.con.doPrivmsg(this.chan, rTitle);
-            String rUrl = URLDecoder.decode(json.getJSONObject("responseData").getJSONArray("results").getJSONObject(0).optString("url"), "UTF-8");
-            this.con.doPrivmsg(this.chan, rUrl);
+        String title = result.optString("titleNoFormatting");
+        this.con.doPrivmsg(this.chan, title);
 
-            String content = json.getJSONObject("responseData").getJSONArray("results").getJSONObject(0).optString("content");
-            this.con.doPrivmsg(this.chan, ParserUtils.trimAllTags(content, false));
-        } catch (JSONException ex) {
-            BotLogger.getDebugLogger().debug(ex.getMessage());
-        } catch (java.io.UnsupportedEncodingException ex) {
-            BotLogger.getDebugLogger().debug(ex.getMessage());
-        }
+        String url = URLDecoder.decode(result.optString("url"), "UTF-8");
+        this.con.doPrivmsg(this.chan, url);
+
+        String snippet = result.optString("content");
+        this.con.doPrivmsg(this.chan,
+                ParserUtils.trimAllTags(snippet, false));
     }
 }
