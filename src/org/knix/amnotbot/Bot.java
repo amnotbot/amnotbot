@@ -24,7 +24,6 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
 package org.knix.amnotbot;
 
 import java.io.IOException;
@@ -34,33 +33,29 @@ import java.util.List;
  * TODO - allow for multiple servers at startup
  *      - allow user input.
  */
-
 /**
  * Very simple IRC bot.
  * 
  * @author Jimmy Mitchener &lt;jimmy.mitchener | et | [g]mail.com&gt;
  * @version 0.01
  */
-public class Bot extends Thread implements IBot
-{
+public class Bot extends Thread implements IBot {
+
     private String server;
     private int port;
     private List<String> channels;
-
     private static final int SO_TIMEOUT = 1000 * 60 * 5;
     private BotLogger logger;
     private BotConnection con;
 
-    public Bot(String server, List<String> channels)
-    {
+    public Bot(String server, List<String> channels) {
         new Bot(server, 0, channels);
     }
 
     /**
      * Create a new bot.
      */
-    public Bot(String server, int port, List<String> channels)
-    {
+    public Bot(String server, int port, List<String> channels) {
         this.server = server;
         this.port = port;
         this.channels = channels;
@@ -69,16 +64,14 @@ public class Bot extends Thread implements IBot
 
         start();
     }
-        
-    public void shutdown() 
-    {
-        this.con.doQuit();        
+
+    public void shutdown() {
+        this.con.doQuit();
     }
 
-    public void run() 
-    {        
+    public void run() {
         try {
-            
+
             this.con = createConnection(server, port, channels, logger);
             this.con.connect();
 
@@ -91,12 +84,12 @@ public class Bot extends Thread implements IBot
                         BotLogger.getDebugLogger().debug("Connection failed!", e);
                     }
                 }
-				
+
                 try {
                     Thread.sleep(5000);
                 } catch (InterruptedException ie) {
                     BotLogger.getDebugLogger().debug(ie);
-                }				
+                }
             }
         } catch (IOException e) {
             BotLogger.getDebugLogger().debug(e);
@@ -112,10 +105,9 @@ public class Bot extends Thread implements IBot
      * @return
      */
     private static BotConnection createConnection(String server,
-        int port,
-        List<String> channels,
-        BotLogger logger) 
-    {
+            int port,
+            List<String> channels,
+            BotLogger logger) {
         BotConnection bcon = null;
 
         if (port > 0) {
@@ -129,6 +121,7 @@ public class Bot extends Thread implements IBot
         bcon.setPong(true);
         bcon.setDaemon(false);
         bcon.setTimeout(SO_TIMEOUT);
+        bcon.setEncoding("UTF-8");
 
         return bcon;
     }
