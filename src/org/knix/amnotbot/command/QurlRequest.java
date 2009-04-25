@@ -24,7 +24,6 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
 package org.knix.amnotbot.command;
 
 import org.knix.amnotbot.*;
@@ -34,85 +33,60 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 
-/*
- * TODO - Use Jakarta's HttpClient (maybe)
- */
 import org.apache.log4j.Logger;
 
 /**
  * Request a shortened URL from Qurl.org
  * 
  * @author Jimmy Mitchener
- * @version 0.01
  */
 public class QurlRequest extends Thread
 {
-	/** Connection to print messages to. */
-	private BotConnection con;
 
-	/** Channel to print to. */
-	private String chan;
+    private BotConnection conn;
+    private String chan;
+    private String nick;
+    private String query;
+    public static final String QURL_REGEX = ".*a href=\"(http://qurl.org.*)\".*";
+ 
+    public QurlRequest(BotConnection conn,
+            String chan,
+            String nick,
+            String query)
+    {
+        this.conn = conn;
+        this.chan = chan;
+        this.nick = nick;
+        this.query = query;
 
-	/** User that requested URL. */
-	private String nick;
+        start();
+    }
 
-	/** URL to be shortened. */
-	private String query;
+    public void run()
+    {
+        try {
+            String encoded = URLEncoder.encode(query, "UTF-8");
 
-	/** Regex to grab URLs from qurl.org responses */
-	public static final String REGEX = ".*a href=\"(http://qurl.org.*)\".*";
-    
-    private Logger logger;
+            URL url = new URL("http://qurl.org/submit.jsp?url=" + encoded);
+            HttpURLConnection http = (HttpURLConnection) url.openConnection();
 
-	/**
-	 * Create a new QurlRequest thread.
-	 * 
-	 * @param con Connection to print the URL to.
-	 * @param chan Channel to print the URL.
-	 * @param nick User that requested the shortened URL.
-	 * @param query URL to be shortened.
-	 */
-	public QurlRequest(BotConnection con,
-			String chan,
-			String nick,
-			String query)
-	{
-		this.con = con;
-		this.chan = chan;
-		this.nick = nick;
-		this.query = query;
-        
-        this.logger = BotLogger.getDebugLogger();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(
+                    http.getInputStream()));
 
-		start();
-	}
+            String buf = reader.readLine();
+            if (buf.matches(QURL_REGEX)) {
+                String qurl = buf.replaceFirst(QURL_REGEX, "$1");
+                String domain;
+                domain = this.query.replaceFirst(".*https?://([\\w.-]+)/.*",
+                                                                        "<$1>");
+                if (domain.equals(query)) {
+                    domain = "";
+                }
 
-	public void run()
-	{
-		try {
-			String encoded = URLEncoder.encode(query, "UTF-8");
-
-			URL url = new URL("http://qurl.org/submit.jsp?url=" + encoded);
-			HttpURLConnection http = (HttpURLConnection) url.openConnection();
-
-			BufferedReader reader = new BufferedReader(new InputStreamReader(
-					http.getInputStream()));
-
-			String buf = reader.readLine();
-
-			if (buf.matches(REGEX)) {
-				String qurl = buf.replaceFirst(REGEX, "$1");
-				String domain = query.replaceFirst(
-						".*https?://([\\w.-]+)/.*", "<$1>");
-
-				// TODO - probably a better way of going about this
-				if (domain.equals(query))
-					domain = "";
-
-				con.doPrivmsg(chan, nick + ": " + qurl + " " + domain);
-			}
-		} catch (Exception e) {
-            this.logger.debug(e.getMessage());
-		}
-	}
+                this.conn.doPrivmsg(chan, nick + ": " + qurl + " " + domain);
+            }
+        } catch (Exception e) {
+            BotLogger.getDebugLogger().debug(e.getMessage());
+        }
+    }
 }
