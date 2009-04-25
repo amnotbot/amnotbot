@@ -76,7 +76,8 @@ public class GoogleSearch
     {
         BufferedReader reader;
         reader = new BufferedReader(
-                new InputStreamReader(googleConn.getInputStream()));
+                        new InputStreamReader(googleConn.getInputStream())
+                    );
 
         String line;
         StringBuilder builder = new StringBuilder();

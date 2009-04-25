@@ -10,8 +10,8 @@ import org.json.JSONObject;
  *
  * @author gpoppino
  */
-public class GoogleBookSearchThread extends Thread {
-
+public class GoogleBookSearchThread extends Thread
+{
     private BotConnection con;
     private String query;
     private String chan;
@@ -20,7 +20,8 @@ public class GoogleBookSearchThread extends Thread {
     public GoogleBookSearchThread(BotConnection con,
             String chan,
             String nick,
-            String query) {
+            String query)
+    {
         this.con = con;
         this.chan = chan;
         this.nick = nick;
@@ -32,11 +33,11 @@ public class GoogleBookSearchThread extends Thread {
     public void run() 
     {
         try {
-            JSONObject answer;
             GoogleSearch google = new GoogleSearch();
 
+            JSONObject answer;
             answer = google.search(GoogleSearch.searchType.BOOKS_SEARCH,
-                    this.query);
+                        this.query);
 
             this.showAnswer(answer);
         } catch (Exception e) {

@@ -11,8 +11,8 @@ import org.json.JSONObject;
  *
  * @author gpoppino
  */
-public class GoogleWebSearchThread extends Thread {
-
+public class GoogleWebSearchThread extends Thread
+{
     private BotConnection con;
     private String query;
     private String chan;
@@ -21,7 +21,8 @@ public class GoogleWebSearchThread extends Thread {
     public GoogleWebSearchThread(BotConnection con,
             String chan,
             String nick,
-            String query) {
+            String query)
+    {
         this.con = con;
         this.chan = chan;
         this.nick = nick;
@@ -32,10 +33,10 @@ public class GoogleWebSearchThread extends Thread {
 
     public void run()
     {
-        try {
-            JSONObject answer;
+        try {          
             GoogleSearch google = new GoogleSearch();
             
+            JSONObject answer;
             answer = google.search(GoogleSearch.searchType.WEB_SEARCH,
                         this.query);
 
@@ -44,8 +45,6 @@ public class GoogleWebSearchThread extends Thread {
             BotLogger.getDebugLogger().debug(e.getMessage());
          }
     }
-
-
 
     private void showAnswer(JSONObject answer) 
             throws JSONException, UnsupportedEncodingException
