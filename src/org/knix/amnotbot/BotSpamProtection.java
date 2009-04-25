@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2007 gresco
+ * Copyright (c) 2007 Geronimo Poppino
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without

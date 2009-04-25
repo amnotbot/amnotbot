@@ -8,96 +8,93 @@ import java.util.regex.Pattern;
 
 import org.schwering.irc.lib.IRCUser;
 
+public class HelpCommand extends BotCommandImp
+{
 
-public class HelpCommand extends BotCommandImp {
-	
-	private LinkedList<BotCommandInterface> cmds;
-	
-	public HelpCommand()
-	{
-		super("^!help\\s?(.*)", "help");
+    private LinkedList<BotCommandInterface> cmds;
 
-		this.cmds = new LinkedList<BotCommandInterface>();
-	}
+    public HelpCommand()
+    {
+        super("^!help\\s?(.*)", "help");
 
-	public void execute(BotConnection con, String chan, IRCUser user, String msg) 
-	{
-		boolean found = false;
-		Iterator<BotCommandInterface> it = this.cmds.iterator();
-                while (it.hasNext()) {
-                        BotCommandInterface command = it.next();
+        this.cmds = new LinkedList<BotCommandInterface>();
+    }
 
-			String keywords = command.getKeywords();
+    public void execute(BotConnection con, String chan, IRCUser user, String msg)
+    {
+        boolean found = false;
+        Iterator<BotCommandInterface> it = this.cmds.iterator();
+        while (it.hasNext()) {
+            BotCommandInterface command = it.next();
 
-			if (keywords == null)
-				continue;
+            String keywords = command.getKeywords();
 
-			String [] k = keywords.split(" ");
-			String regexp = "(" + k[0];
-			for (int i = 1; i < k.length; ++i) {
-				regexp += "|";
-				regexp += k[i];
-			}
-			regexp += ")";
+            if (keywords == null) continue;
 
-			Matcher m = Pattern.compile(
-					regexp, 
-					Pattern.CASE_INSENSITIVE).matcher(this.getGroup(1));
+            String[] k = keywords.split(" ");
+            String regexp = "(" + k[0];
+            for (int i = 1; i < k.length; ++i) {
+                regexp += "|";
+                regexp += k[i];
+            }
+            regexp += ")";
 
-			if (m.find()) {
-				String helpMsg = command.help();
+            Matcher m = Pattern.compile(
+                    regexp,
+                    Pattern.CASE_INSENSITIVE).matcher(this.getGroup(1));
 
-				BotLogger.getDebugLogger().debug("Help " + helpMsg);
+            if (m.find()) {
+                String helpMsg = command.help();
 
-				if (helpMsg != null)
-					con.doPrivmsg(chan, helpMsg);
-				else 
-					con.doPrivmsg(chan, this.noHelp());
-
-				found = true;
-
-				break;
-			}
+                if (helpMsg != null) {
+                    con.doPrivmsg(chan, helpMsg);
+                } else {
+                    con.doPrivmsg(chan, this.noHelp());
                 }
+                
+                found = true;
+                break;
+            }
+        }
 
-		if (!found)
-			con.doPrivmsg(chan, this.help());
-	}
+        if (!found) {
+            con.doPrivmsg(chan, this.help());
+        }
+    }
 
+    public void addCommands(LinkedList<BotCommandInterface> l)
+    {
+        this.cmds.addAll(l);
+    }
 
-	public void addCommands(LinkedList<BotCommandInterface> l)
-	{
-		this.cmds.addAll(l);
-	}
+    public String noHelp()
+    {
+        String msg;
 
-	public String noHelp()
-	{
-		String msg;
+        msg = "No help available for command";
 
-		msg = "No help available for command";
+        return msg;
+    }
 
-		return msg;
-	}
+    @Override
+    public String help()
+    {
+        String msg = null;
 
-	public String help()
-	{
-		String msg = null;
+        Iterator<BotCommandInterface> it = this.cmds.iterator();
+        while (it.hasNext()) {
+            BotCommandInterface command = it.next();
 
-		Iterator<BotCommandInterface> it = this.cmds.iterator();
-                while (it.hasNext()) {
-                        BotCommandInterface command = it.next();
+            String keywords = command.getKeywords();
 
-			String keywords = command.getKeywords();
+            if (keywords == null) continue;
 
-			if (keywords == null)
-				continue;
-
-			if (msg == null)
-				msg = "Available commands: " + keywords;
-			else
-				msg += " " + keywords;
-		}
-
-		return msg;
-	}
+            if (msg == null) {
+                msg = "Available commands: " + keywords;
+            } else {
+                msg += " " + keywords;
+            }
+        }
+        return msg;
+    }
 }
