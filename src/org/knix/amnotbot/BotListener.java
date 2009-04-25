@@ -33,6 +33,7 @@ import org.schwering.irc.lib.IRCEventListener;
 import org.schwering.irc.lib.IRCModeParser;
 import org.schwering.irc.lib.IRCUser;
 import com.yahoo.search.SearchClient;
+import org.apache.commons.configuration.Configuration;
 
 /**
  * Event handler for MainBot. This is the real workhorse.
@@ -74,8 +75,8 @@ public class BotListener implements IRCEventListener
         SearchClient yahooClient = new SearchClient("G7RklHzV34Gs_AYiBU0xA4wak1J3plPRonFhFfwJEeXMVP4PrpvwiflgxXa4uw--");
         this.macroCommand.add(new YahooWebSearchCommand(yahooClient));
         this.macroCommand.add(new YahooNewsSearchCommand(yahooClient));
-        this.macroCommand.add(new GoogleYouTubeCommand());
-        this.macroCommand.add(new URLSearchCommand(yahooClient));
+//        this.macroCommand.add(new GoogleYouTubeCommand());
+//        this.macroCommand.add(new URLSearchCommand(yahooClient));
         this.macroCommand.add(new WordsCommand());
         this.macroCommand.add(new LinesCommand());
         this.macroCommand.add(new QuoteCommand());
@@ -111,7 +112,8 @@ public class BotListener implements IRCEventListener
 
     public void onDisconnected()
     {
-        con.print(BotConstants.getBotConstants().getAppPFX() + " DISCONNECTED!");
+        con.print(BotConstants.getBotConstants().getAppPFX() +
+                " DISCONNECTED!");
     }
 
     public void onError(int num, String msg)
@@ -173,20 +175,18 @@ public class BotListener implements IRCEventListener
         this.con.print(BotConstants.getBotConstants().getServerPFX() +
                 " NOTICE " + user.getNick() + ": " + msg);
 
-        if (user.getNick() == null) {
-            return;
-        }
+        if (user.getNick() == null) return;
 
-        String nickserv = BotConfiguration.getConfig().getString("nickserv");
+        Configuration config = BotConfiguration.getConfig();
+        String nickserv = config.getString("nickserv");
         boolean nickservTalking = user.getNick().equalsIgnoreCase(nickserv);
 
         if (nickservTalking) {
-            if (BotConfiguration.getConfig().getBoolean("nickserv_enabled")) {
+            if (config.getBoolean("nickserv_enabled")) {
                 String identifyMsg = new String("IDENTIFY");
                 if (msg.toLowerCase().contains(identifyMsg.toLowerCase())) {
-                    this.con.doPrivmsg(user.getNick(),
-                            "IDENTIFY " +
-                            BotConfiguration.getConfig().getString("nickserv_password"));
+                    String passwd = config.getString("nickserv_password");
+                    this.con.doPrivmsg(user.getNick(), "IDENTIFY " + passwd);
                 }
             }
         }
@@ -224,9 +224,7 @@ public class BotListener implements IRCEventListener
         }
     }
 
-    public void onReply(int num, String value, String msg)
-    {
-    }
+    public void onReply(int num, String value, String msg) { }
 
     public void onMode(String chan, IRCUser user, IRCModeParser mParser)
     {
