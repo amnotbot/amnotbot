@@ -3,7 +3,7 @@ package org.knix.amnotbot.command;
 import org.knix.amnotbot.*;
 import org.schwering.irc.lib.IRCUser;
 
-public class QuoteCommand extends AmnotbotCommandImp {
+public class QuoteCommand extends BotCommandImp {
 	
 	public QuoteCommand()
 	{

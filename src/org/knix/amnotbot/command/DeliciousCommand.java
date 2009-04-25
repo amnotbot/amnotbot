@@ -4,7 +4,7 @@ import org.knix.amnotbot.*;
 import org.schwering.irc.lib.IRCUser;
 import org.knix.amnotbot.config.BotConfiguration;
 
-public class DeliciousCommand extends AmnotbotCommandImp
+public class DeliciousCommand extends BotCommandImp
 {
 	private DeliciousBookmarks delicious;
 	private boolean showURL;

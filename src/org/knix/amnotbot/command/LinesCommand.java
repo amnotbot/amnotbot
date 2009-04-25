@@ -3,7 +3,7 @@ package org.knix.amnotbot.command;
 import org.knix.amnotbot.*;
 import org.schwering.irc.lib.IRCUser;
 
-public class LinesCommand extends AmnotbotCommandImp {
+public class LinesCommand extends BotCommandImp {
 	
 	public LinesCommand() {
 		super("^!lines\\s?(.*)", "lines");

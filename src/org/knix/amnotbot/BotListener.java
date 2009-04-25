@@ -60,7 +60,7 @@ public class BotListener implements IRCEventListener
     private List<String> channels;
     private SpamDetector spamDetector;
     /** Stores all Commands **/
-    private MacroCommand macroCommand;
+    private BotMacroCommand macroCommand;
 
     /**
      * Create a new BotListener object
@@ -72,7 +72,7 @@ public class BotListener implements IRCEventListener
         this.con = con;
         this.channels = channels;
         this.spamDetector = new SpamDetector(channels);
-        this.macroCommand = new MacroCommand();
+        this.macroCommand = new BotMacroCommand();
 
         if (BotConfiguration.getConfig().getBoolean("delicious_enabled")) {
             this.macroCommand.add(new DeliciousCommand(true));

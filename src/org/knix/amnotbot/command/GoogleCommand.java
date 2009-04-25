@@ -3,7 +3,7 @@ package org.knix.amnotbot.command;
 import org.knix.amnotbot.*;
 import org.schwering.irc.lib.IRCUser;
 
-public class GoogleCommand extends AmnotbotCommandImp {
+public class GoogleCommand extends BotCommandImp {
 
     public GoogleCommand() {
         super("^!g(oogle)?\\s+(.*)", "g google");

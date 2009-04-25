@@ -2,7 +2,7 @@ package org.knix.amnotbot;
 
 import org.schwering.irc.lib.IRCUser;
 
-public interface AmnotbotCommand
+public interface BotCommandInterface
 {
 
     public boolean matches(String msg);

@@ -3,7 +3,11 @@ package org.knix.amnotbot;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public abstract class AmnotbotCommandImp implements AmnotbotCommand
+/**
+ * Inherit from this class to create new commands.
+ * @author gpoppino
+ */
+public abstract class BotCommandImp implements BotCommandInterface
 {
 
     private Pattern commandPattern = null;
@@ -11,7 +15,7 @@ public abstract class AmnotbotCommandImp implements AmnotbotCommand
     private Matcher m = null;
     private boolean initialized = false;
 
-    public AmnotbotCommandImp(String regexp, String keywords)
+    public BotCommandImp(String regexp, String keywords)
     {
         if (regexp != null) {
             this.commandPattern = Pattern.compile(regexp,

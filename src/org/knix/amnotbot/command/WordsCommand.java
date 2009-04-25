@@ -3,7 +3,7 @@ package org.knix.amnotbot.command;
 import org.knix.amnotbot.*;
 import org.schwering.irc.lib.IRCUser;
 
-public class WordsCommand extends AmnotbotCommandImp {
+public class WordsCommand extends BotCommandImp {
 
     public WordsCommand() {
         super("^!(w(ords)?)\\s?(.*)", "w words");

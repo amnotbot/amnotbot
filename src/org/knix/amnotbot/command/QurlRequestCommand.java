@@ -10,7 +10,7 @@ import org.schwering.irc.lib.IRCUser;
  * Time: 5:24:08 PM
  * To change this template use File | Settings | File Templates.
  */
-public class QurlRequestCommand extends AmnotbotCommandImp {
+public class QurlRequestCommand extends BotCommandImp {
 
 	public QurlRequestCommand() {
 		super("(https?://\\S{75,})", null);

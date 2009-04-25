@@ -9,23 +9,23 @@ import java.util.regex.Pattern;
 import org.schwering.irc.lib.IRCUser;
 
 
-public class HelpCommand extends AmnotbotCommandImp {
+public class HelpCommand extends BotCommandImp {
 	
-	private LinkedList<AmnotbotCommand> cmds;
+	private LinkedList<BotCommandInterface> cmds;
 	
 	public HelpCommand()
 	{
 		super("^!help\\s?(.*)", "help");
 
-		this.cmds = new LinkedList<AmnotbotCommand>();
+		this.cmds = new LinkedList<BotCommandInterface>();
 	}
 
 	public void execute(BotConnection con, String chan, IRCUser user, String msg) 
 	{
 		boolean found = false;
-		Iterator<AmnotbotCommand> it = this.cmds.iterator();
+		Iterator<BotCommandInterface> it = this.cmds.iterator();
                 while (it.hasNext()) {
-                        AmnotbotCommand command = it.next();
+                        BotCommandInterface command = it.next();
 
 			String keywords = command.getKeywords();
 
@@ -65,7 +65,7 @@ public class HelpCommand extends AmnotbotCommandImp {
 	}
 
 
-	public void addCommands(LinkedList<AmnotbotCommand> l)
+	public void addCommands(LinkedList<BotCommandInterface> l)
 	{
 		this.cmds.addAll(l);
 	}
@@ -83,9 +83,9 @@ public class HelpCommand extends AmnotbotCommandImp {
 	{
 		String msg = null;
 
-		Iterator<AmnotbotCommand> it = this.cmds.iterator();
+		Iterator<BotCommandInterface> it = this.cmds.iterator();
                 while (it.hasNext()) {
-                        AmnotbotCommand command = it.next();
+                        BotCommandInterface command = it.next();
 
 			String keywords = command.getKeywords();
 

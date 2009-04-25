@@ -30,7 +30,7 @@ package org.knix.amnotbot.command;
 import org.knix.amnotbot.*;
 import org.schwering.irc.lib.IRCUser;
 
-public class SpellCommand extends AmnotbotCommandImp {
+public class SpellCommand extends BotCommandImp {
 
 	private DictHelper aReceiver;
 

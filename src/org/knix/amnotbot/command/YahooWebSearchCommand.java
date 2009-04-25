@@ -12,7 +12,7 @@ import com.yahoo.search.SearchClient;
  * Time: 12:01:07 AM
  * To change this template use File | Settings | File Templates.
  */
-public class YahooWebSearchCommand extends AmnotbotCommandImp {
+public class YahooWebSearchCommand extends BotCommandImp {
 
 	private SearchClient yahooClient;
 
