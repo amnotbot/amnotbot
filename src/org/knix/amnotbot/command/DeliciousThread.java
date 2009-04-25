@@ -13,7 +13,7 @@ public class DeliciousThread extends Thread
 	private String url;	
 	private String nick;
 	private DeliciousBookmarks delicious;
-	private AmnotbotHTMLParser parser;
+	private BotHTMLParser parser;
 	private boolean showTitle;
 	private CommandOptions opts;
 	private int maxTagLength;
@@ -40,7 +40,7 @@ public class DeliciousThread extends Thread
 		opts.addOption( new CmdStringOption("title", '"') );
 		opts.addOption( new CmdStringOption("comment", '"') );
 		
-		this.parser = new AmnotbotHTMLParser(this.url);	
+		this.parser = new BotHTMLParser(this.url);
 		
 		start();
 	}
