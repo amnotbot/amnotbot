@@ -3,32 +3,33 @@ package org.knix.amnotbot.command;
 import org.knix.amnotbot.*;
 import org.schwering.irc.lib.IRCUser;
 
-public class QuoteCommand extends BotCommandImp {
-	
-	public QuoteCommand()
-	{
-		super("^!quote\\s?(.*)", "quote quotes");
-	}
+public class QuoteCommand extends BotCommandImp
+{
 
-	public void execute(BotConnection con, String chan, IRCUser user, String msg) 
-	{
-		new QuoteThread(con, chan, user, this.getGroup(1));
-	}
+    public QuoteCommand()
+    {
+        super("^!quote\\s?(.*)", "quote quotes");
+    }
 
-	public String help() 
-	{
-		String msg;
+    public void execute(BotConnection con, String chan, IRCUser user, String msg)
+    {
+        new QuoteThread(con, chan, user, this.getGroup(1));
+    }
 
-		msg = "Description: Quotes command.";
-		msg += " Keywords: quote quotes.";
-		msg += " Parameters: op:set text:\"Your text\"";
-		msg += " | ";
-		msg += "op:del id:number";
-		msg += " | ";
-		msg += "op:info id:number";
-		msg += " | ";
-		msg += "op:get";
+    public String help()
+    {
+        String msg;
 
-		return msg;
-	}
+        msg = "Description: Quotes command.";
+        msg += " Keywords: quote quotes.";
+        msg += " Parameters: op:set text:\"Your text\"";
+        msg += " | ";
+        msg += "op:del id:number";
+        msg += " | ";
+        msg += "op:info id:number";
+        msg += " | ";
+        msg += "op:get";
+
+        return msg;
+    }
 }
