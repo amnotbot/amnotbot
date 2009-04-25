@@ -1,14 +1,8 @@
 package org.knix.amnotbot;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.net.URLEncoder;
 
+import java.net.URLDecoder;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -17,94 +11,58 @@ import org.json.JSONObject;
  * @author gpoppino
  */
 public class GoogleBookSearchThread extends Thread {
-    
-	private BotConnection con;
-	private String query;
-	private String chan;
-	private String nick;
 
-    
-	public GoogleBookSearchThread(BotConnection con,
-			String chan,
-			String nick,
-			String query)
-	{
-		this.con = con;
-		this.chan = chan;
-		this.nick = nick;
-		this.query = query;
-	
-		start();
-	}
-    
-	public void run()
-	{
-		this.makeQuery();
-	}
-    
-	public void makeQuery()
-	{
-		URL url;
-		try {
-			String urlString = 
-				"http://ajax.googleapis.com/ajax/services/search/books?v=1.0&q=" 
-				+ URLEncoder.encode(this.query, "UTF-8");
-			url = new URL(urlString);
-		} catch (MalformedURLException ex) {
-			BotLogger.getDebugLogger().debug(ex.getMessage());
-			return;
-		} catch (UnsupportedEncodingException ex) {
-			BotLogger.getDebugLogger().debug(ex.getMessage());
-			return;
-		}	
+    private BotConnection con;
+    private String query;
+    private String chan;
+    private String nick;
 
-		URLConnection connection;
-		try {
-			connection = url.openConnection();
-		} catch (IOException ex) {
-			BotLogger.getDebugLogger().debug(ex.getMessage());
-			return;
-		}
+    public GoogleBookSearchThread(BotConnection con,
+            String chan,
+            String nick,
+            String query) {
+        this.con = con;
+        this.chan = chan;
+        this.nick = nick;
+        this.query = query;
 
-		connection.addRequestProperty("Referer",
-			"http://knix.mine.nu/index.html");
+        start();
+    }
 
-		String line;
-		StringBuilder builder = new StringBuilder();
+    public void run() 
+    {
+        try {
+            JSONObject answer;
+            GoogleSearch google = new GoogleSearch();
 
-		try {
-			BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            answer = google.search(GoogleSearch.searchType.BOOKS_SEARCH,
+                    this.query);
 
-			while ((line = reader.readLine()) != null) {
-				builder.append(line);
-			}
-		} catch (IOException ex) {
-			BotLogger.getDebugLogger().debug(ex.getMessage());
-			return;
-		}
+            this.showAnswer(answer);
+        } catch (Exception e) {
+            BotLogger.getDebugLogger().debug(e.getMessage());
+        }
+    }
 
-		JSONObject json;
-		try {
-			json = new JSONObject(builder.toString());
-		} catch (JSONException ex) {
-			BotLogger.getDebugLogger().debug(ex.getMessage());
-			return;
-		}
-	
-		try {
-			this.con.doPrivmsg(this.chan, json.getJSONObject("responseData").getJSONArray("results").getJSONObject(0).optString("titleNoFormatting"));
-			this.con.doPrivmsg(this.chan, json.getJSONObject("responseData").getJSONArray("results").getJSONObject(0).optString("unescapedUrl"));
+    private void showAnswer(JSONObject answer)
+            throws JSONException, UnsupportedEncodingException
+    {
+        JSONObject data = answer.getJSONObject("responseData");
+        JSONObject result = data.getJSONArray("results").getJSONObject(0);
 
-			String info;
-			info = "by " + json.getJSONObject("responseData").getJSONArray("results").getJSONObject(0).optString("authors");
-			info += " - " + json.getJSONObject("responseData").getJSONArray("results").getJSONObject(0).optString("bookId");
-			info += " - " + json.getJSONObject("responseData").getJSONArray("results").getJSONObject(0).optString("publishedYear");
-			info += " - " + json.getJSONObject("responseData").getJSONArray("results").getJSONObject(0).optString("pageCount");
-			info += " pages";
+        String title = result.optString("titleNoFormatting");
+        this.con.doPrivmsg(this.chan, title);
+        
+        String url = URLDecoder.decode(result.optString("url"), "UTF-8");
+        this.con.doPrivmsg(this.chan, url);
 
-			this.con.doPrivmsg(this.chan, info);
-		} catch (JSONException ex) {
-			BotLogger.getDebugLogger().debug(ex.getMessage());
-		}
+        String bookInfo;
+        bookInfo = "by " + result.optString("authors");
+        bookInfo += " - " + result.optString("bookId");
+        bookInfo += " - " + result.optString("publishedYear");
+        bookInfo += " - " + result.optString("pageCount");
+        bookInfo += " pages";
+
+        this.con.doPrivmsg(this.chan, bookInfo);
     }
 }

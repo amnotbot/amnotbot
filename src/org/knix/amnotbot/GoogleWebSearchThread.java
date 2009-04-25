@@ -1,14 +1,7 @@
 package org.knix.amnotbot;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
 import java.net.URLDecoder;
-import java.net.URLEncoder;
 
 import org.htmlparser.util.ParserUtils;
 import org.json.JSONException;
@@ -40,14 +33,11 @@ public class GoogleWebSearchThread extends Thread {
     public void run()
     {
         try {
-            URL searchUrl;
-            searchUrl = this.buildGoogleSearchUrl(this.query);
-
-            URLConnection googleConn;
-            googleConn = this.startGoogleConnection(searchUrl);
-
             JSONObject answer;
-            answer = this.makeQuery(googleConn);
+            GoogleSearch google = new GoogleSearch();
+            
+            answer = google.search(GoogleSearch.searchType.WEB_SEARCH,
+                        this.query);
 
             this.showAnswer(answer);
          } catch (Exception e) {
@@ -55,43 +45,7 @@ public class GoogleWebSearchThread extends Thread {
          }
     }
 
-    private URL buildGoogleSearchUrl(String query)
-            throws MalformedURLException, UnsupportedEncodingException
-    {        
-        String urlString =
-            "http://ajax.googleapis.com/ajax/services/search/web?v=1.0&q="
-                + URLEncoder.encode(query, "UTF-8");
 
-        return ( new URL(urlString) );
-    }
-
-    private URLConnection startGoogleConnection(URL searchUrl)
-            throws IOException
-    {
-        URLConnection googleConn;
-        
-        googleConn = searchUrl.openConnection();        
-        googleConn.addRequestProperty("Referer", "http://packetpan.org");
-        
-        return googleConn;
-    }
-
-    public JSONObject makeQuery(URLConnection googleConn)
-            throws IOException, JSONException
-    {       
-        BufferedReader reader;
-        reader = new BufferedReader(
-                    new InputStreamReader(googleConn.getInputStream())
-                    );
-
-        String line;
-        StringBuilder builder = new StringBuilder();
-        while ((line = reader.readLine()) != null) {
-            builder.append(line);
-        }
-     
-        return ( new JSONObject( builder.toString() ) );
-    }
 
     private void showAnswer(JSONObject answer) 
             throws JSONException, UnsupportedEncodingException
