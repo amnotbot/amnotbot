@@ -24,9 +24,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
 package org.knix.amnotbot;
-
 
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -35,234 +33,226 @@ import java.util.List;
 
 import org.schwering.irc.lib.IRCUser;
 
-/** Get this from config file **/
-class SpamConstants {
+class SpamConstants
+{
 
-	public SpamConstants() {		
-	}
-	/** milliseconds **/
-	public static final int MIN_DIFF_ALLOWED = 1000 * 3;
-
-	public static final int MAX_QUERIES_PER_UNIT_TIME = 3;
-
-	public static final int GLOBAL_MAX_QUERIES_PER_UNIT_TIME = 10;
-
-	public static final int UNIT_TIME = 1000 * 60; 
-
-	public static final int GLOBAL_UNIT_TIME = 1000 * 60;
+    public SpamConstants()
+    {
+    }
+    /** milliseconds **/
+    public static final int MIN_DIFF_ALLOWED = 1000 * 3;
+    public static final int MAX_QUERIES_PER_UNIT_TIME = 3;
+    public static final int GLOBAL_MAX_QUERIES_PER_UNIT_TIME = 10;
+    public static final int UNIT_TIME = 1000 * 60;
+    public static final int GLOBAL_UNIT_TIME = 1000 * 60;
 };
 
+class QueryTime
+{
 
+    private long time;
 
-class QueryTime {
+    QueryTime(long time)
+    {
+        this.time = time;
+    }
 
-	private long time;
-
-	QueryTime(long time) {
-		this.time = time;
-	}
-
-	public long getQueryTime() {
-		return this.time;
-	}
+    public long getQueryTime()
+    {
+        return this.time;
+    }
 };
 
+class AmnotbotUser
+{
 
-class AmnotbotUser {
+    public LinkedList<QueryTime> queriesQueue;
+    private String nick;
 
-	public LinkedList<QueryTime> queriesQueue;
+    public AmnotbotUser(String nick)
+    {
+        this.nick = nick;
+        this.queriesQueue = new LinkedList<QueryTime>();
+    }
 
-	private String nick;
-
-	public AmnotbotUser(String nick) {
-		this.nick = nick;
-		this.queriesQueue = new LinkedList<QueryTime>();
-	}
-
-	public String getNick() {
-		return this.nick;
-	}
+    public String getNick()
+    {
+        return this.nick;
+    }
 };
 
-class ChannelSpamDetector {
+class ChannelSpamDetector
+{
 
-	private LinkedList<QueryTime> globalQueriesQueue;
+    private LinkedList<QueryTime> globalQueriesQueue;
+    private Hashtable<String, AmnotbotUser> queriesPerUser;
+    private long queryTime;
 
-	private Hashtable<String, AmnotbotUser> queriesPerUser;
+    public ChannelSpamDetector()
+    {
+        this.globalQueriesQueue = new LinkedList<QueryTime>();
+        this.queriesPerUser = new Hashtable<String, AmnotbotUser>();
+    }
 
-	private long queryTime;
+    public void setQueryTime(long time)
+    {
+        this.queryTime = time;
+    }
 
-	public ChannelSpamDetector() {
-		this.globalQueriesQueue = new LinkedList<QueryTime>();
-		this.queriesPerUser = new Hashtable<String, AmnotbotUser>();
-	}
+    public long getQueryTime()
+    {
+        return this.queryTime;
+    }
 
-	public void setQueryTime(long time) 
-	{
-		this.queryTime = time;
-	}
+    public boolean checkForSpam(IRCUser user)
+    {
+        this.setQueryTime(System.currentTimeMillis());
 
-	public long getQueryTime() 
-	{
-		return this.queryTime;
-	}
+        if (this.checkGlobalQueries()) return true;
 
-	public boolean checkForSpam(IRCUser user) 
-	{	
-		this.setQueryTime( System.currentTimeMillis() );
+        if (this.checkQueriesPerUser(user)) return true;
 
-		if (this.checkGlobalQueries()) return true;
+        return false;
+    }
 
-		if (this.checkQueriesPerUser(user)) return true;
+    private boolean checkGlobalQueries()
+    {
+        if (this.globalQueriesQueue.isEmpty()) {
+            this.globalQueriesQueue.offer(new QueryTime(this.getQueryTime()));
 
-		return false;
-	}
+            return false;
+        }
 
-	private boolean checkGlobalQueries() 
-	{			
-		if (this.globalQueriesQueue.isEmpty()) {
-			this.globalQueriesQueue.offer(new QueryTime(this.getQueryTime()));
+        if (this.checkGlobalMinGap()) return true;
 
-			return false;
-		}
+        if (this.checkGlobalMaxQueriesPerUnitTime()) return true;
 
-		if (this.checkGlobalMinGap()) return true;
+        return false;
+    }
 
-		if (this.checkGlobalMaxQueriesPerUnitTime()) return true;
+    private boolean checkGlobalMinGap()
+    {
+        QueryTime lastQuery;
+        lastQuery = (QueryTime) this.globalQueriesQueue.getLast(); // tail
+        long diff = this.getQueryTime() - lastQuery.getQueryTime();
 
-		return false;
-	}
+        if (SpamConstants.MIN_DIFF_ALLOWED > diff) return true;
 
-	private boolean checkGlobalMinGap() 
-	{			
-		QueryTime lastQuery = (QueryTime) this.globalQueriesQueue.getLast(); // tail		
-		long diff = this.getQueryTime() - lastQuery.getQueryTime();
+        return false;
+    }
 
-		if (SpamConstants.MIN_DIFF_ALLOWED > diff) {
-			BotLogger.getDebugLogger().debug("MIN_DIFF_ALLOWED " + SpamConstants.MIN_DIFF_ALLOWED + " diff: " + diff);
-			return true;
-		}
+    private boolean checkGlobalMaxQueriesPerUnitTime()
+    {
+        int qSize = this.globalQueriesQueue.size();
+        if ( qSize < SpamConstants.GLOBAL_MAX_QUERIES_PER_UNIT_TIME) {
+            this.globalQueriesQueue.offer(new QueryTime(this.getQueryTime()));
 
-		return false;		
-	}
+            return false;
+        }
 
-	private boolean checkGlobalMaxQueriesPerUnitTime() 
-	{
-		if (this.globalQueriesQueue.size() < SpamConstants.GLOBAL_MAX_QUERIES_PER_UNIT_TIME) {
-			this.globalQueriesQueue.offer(new QueryTime(this.getQueryTime()));
+        QueryTime firstQuery = this.globalQueriesQueue.poll();
+        long diff = this.getQueryTime() - firstQuery.getQueryTime();
+        
+        this.globalQueriesQueue.offer(new QueryTime(this.getQueryTime()));
+        if (SpamConstants.GLOBAL_UNIT_TIME > diff) return true;
 
-			return false;
-		}
+        while (this.globalQueriesQueue.size() > 1) {
+                this.globalQueriesQueue.remove();
+        }
 
-		QueryTime firstQuery = this.globalQueriesQueue.poll();	
-		long diff = this.getQueryTime() - firstQuery.getQueryTime();
+        return false;
+    }
 
-		BotLogger.getDebugLogger().debug("- GLOBAL_UNIT_TIME " + SpamConstants.GLOBAL_UNIT_TIME + " diff: " + diff);
-		this.globalQueriesQueue.offer(new QueryTime(this.getQueryTime()));
-		if (SpamConstants.GLOBAL_UNIT_TIME > diff) {
-			BotLogger.getDebugLogger().debug("+ GLOBAL_UNIT_TIME " + SpamConstants.GLOBAL_UNIT_TIME + " diff: " + diff);
-			return true;
-		} else {
-			while (this.globalQueriesQueue.size() > 1)
-				this.globalQueriesQueue.remove();
-		}
+    private boolean checkQueriesPerUser(IRCUser user)
+    {
+        AmnotbotUser amnotbotUser;
+        amnotbotUser = (AmnotbotUser) this.queriesPerUser.get(user.getNick());
 
-		return false;		
-	}
+        if (amnotbotUser == null) {
+            amnotbotUser = new AmnotbotUser(user.getNick());
 
-	private boolean checkQueriesPerUser(IRCUser user) 
-	{
-		AmnotbotUser amnotbotUser = (AmnotbotUser) this.queriesPerUser.get(user.getNick());
+            amnotbotUser.queriesQueue.offer(new QueryTime(this.getQueryTime()));
+            this.queriesPerUser.put(user.getNick(), amnotbotUser);
 
-		if (amnotbotUser == null) {
-			amnotbotUser = new AmnotbotUser(user.getNick());
-			amnotbotUser.queriesQueue.offer(new QueryTime(this.getQueryTime()));
-
-			this.queriesPerUser.put(user.getNick(), amnotbotUser);
-
-			return false;
-		}
+            return false;
+        }
 
 
-		if (this.checkPerUserMinGap(amnotbotUser)) return true;
+        if (this.checkPerUserMinGap(amnotbotUser)) return true;
 
-		if (this.checkPerUserMaxQueriesPerUnitTime(amnotbotUser)) return true;
+        if (this.checkPerUserMaxQueriesPerUnitTime(amnotbotUser)) return true;
 
-		return false;		
-	}
+        return false;
+    }
 
-	private boolean checkPerUserMinGap(AmnotbotUser amnotbotUser) 
-	{
-		QueryTime lastQuery = (QueryTime) amnotbotUser.queriesQueue.getLast(); // tail		
-		long diff = this.getQueryTime() - lastQuery.getQueryTime();
+    private boolean checkPerUserMinGap(AmnotbotUser amnotbotUser)
+    {
+        QueryTime lastQuery;
+        lastQuery = (QueryTime) amnotbotUser.queriesQueue.getLast(); // tail
+        long diff = this.getQueryTime() - lastQuery.getQueryTime();
+        
+        if (SpamConstants.MIN_DIFF_ALLOWED > diff) return true;
 
-		BotLogger.getDebugLogger().debug("MIN_DIFF_ALLOWED " + SpamConstants.MIN_DIFF_ALLOWED + " diff: " + diff);
+        return false;
+    }
 
-		if (SpamConstants.MIN_DIFF_ALLOWED > diff) {
-			BotLogger.getDebugLogger().debug("MIN_DIFF_ALLOWED " + SpamConstants.MIN_DIFF_ALLOWED + " diff: " + diff);
-			return true;
-		}
+    private boolean checkPerUserMaxQueriesPerUnitTime(AmnotbotUser amnotbotUser)
+    {
+        int qSize = amnotbotUser.queriesQueue.size();
+        if (qSize < SpamConstants.MAX_QUERIES_PER_UNIT_TIME) {
+            amnotbotUser.queriesQueue.offer(new QueryTime(this.getQueryTime()));
 
-		return false;
-	}
+            return false;
+        }
 
-	private boolean checkPerUserMaxQueriesPerUnitTime(AmnotbotUser amnotbotUser) 
-	{	
-		if (amnotbotUser.queriesQueue.size() < SpamConstants.MAX_QUERIES_PER_UNIT_TIME) {
-			amnotbotUser.queriesQueue.offer(new QueryTime(this.getQueryTime()));
+        QueryTime firstQuery = amnotbotUser.queriesQueue.poll();
+        long diff = this.getQueryTime() - firstQuery.getQueryTime();
 
-			return false;
-		}
+        amnotbotUser.queriesQueue.offer(new QueryTime(this.getQueryTime()));
+        if (SpamConstants.UNIT_TIME > diff) return true;
 
-		QueryTime firstQuery = amnotbotUser.queriesQueue.poll();
-		long diff = this.getQueryTime() - firstQuery.getQueryTime();
-
-		BotLogger.getDebugLogger().debug("UNIT_TIME " + SpamConstants.UNIT_TIME + " diff: " + diff);
-		amnotbotUser.queriesQueue.offer(new QueryTime(this.getQueryTime()));
-		if (SpamConstants.UNIT_TIME > diff) {
-			return true;
-		} else {
-			while (amnotbotUser.queriesQueue.size() > 1)
-				amnotbotUser.queriesQueue.remove();
-		}
-
-		return false;		
-	}
+        while (amnotbotUser.queriesQueue.size() > 1) {
+            amnotbotUser.queriesQueue.remove();
+        }
+ 
+        return false;
+    }
 }
 
-class SpamDetector {
+class SpamDetector
+{
 
-	private Hashtable<String, ChannelSpamDetector> chanSpamDetector;
+    private Hashtable<String, ChannelSpamDetector> chanSpamDetector;
 
-	public SpamDetector(List<String> channels) {
-		this.chanSpamDetector = new Hashtable<String, ChannelSpamDetector>();
+    public SpamDetector(List<String> channels)
+    {
+        this.chanSpamDetector = new Hashtable<String, ChannelSpamDetector>();
 
-		String chan;
-		Iterator<String> it = channels.iterator();
-		while (it.hasNext()) {
-			chan = it.next();
-			this.addChannel(chan);
-		}
-	}
+        String chan;
+        Iterator<String> it = channels.iterator();
+        while (it.hasNext()) {
+            chan = it.next();
+            this.addChannel(chan);
+        }
+    }
 
-	public void addChannel(String chan) 
-	{
-		this.chanSpamDetector.put(chan, new ChannelSpamDetector());
-	}
+    public void addChannel(String chan)
+    {
+        this.chanSpamDetector.put(chan, new ChannelSpamDetector());
+    }
 
-	public boolean checkForSpam(String channel, IRCUser user) 
-	{
-		ChannelSpamDetector spamDetector = this.chanSpamDetector.get(channel);
+    public boolean checkForSpam(String channel, IRCUser user)
+    {
+        ChannelSpamDetector spamDetector = this.chanSpamDetector.get(channel);
 
-		if (spamDetector == null) 
-			this.addChannel(channel);
+        if (spamDetector == null) {
+            this.addChannel(channel);
+        }
 
-		spamDetector = this.chanSpamDetector.get(channel);
+        spamDetector = this.chanSpamDetector.get(channel);
 
-		if (spamDetector.checkForSpam(user)) 
-			return true;
+        if (spamDetector.checkForSpam(user)) return true;
 
-		return false;
-	}
-
+        return false;
+    }
 }

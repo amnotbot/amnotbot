@@ -46,7 +46,6 @@ public class CmdStringOption implements CmdOption
                     arg += c;
                 }
 
-                BotLogger.getDebugLogger().debug("str = " + arg);
                 if (arg.length() > 0) {
                     this.arg0 = arg.trim();
                 }
