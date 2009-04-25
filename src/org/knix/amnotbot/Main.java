@@ -24,23 +24,24 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
 package org.knix.amnotbot;
 
 import java.util.List;
 
+import org.apache.commons.configuration.Configuration;
 import org.knix.amnotbot.config.BotConfiguration;
 
 public class Main
 {
+
     public static void main(String[] args)
-    {        
-        List<String> channels = BotConfiguration.getConfig().getList("channels");
-        		         
+    {
+        Configuration config;
+        config = BotConfiguration.getConfig();
+        List<String> channels = config.getList("channels");
+
         Runtime.getRuntime().addShutdownHook(
-            new BotShutdownHandler(
-                new Bot(BotConfiguration.getConfig().getString("server"), 6667, channels)
-            )
-        );
-	}
+                new BotShutdownHandler(
+                new Bot(config.getString("server"), 6667, channels)));
+    }
 }
