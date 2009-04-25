@@ -24,7 +24,6 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
 package org.knix.amnotbot;
 
 import java.io.File;
@@ -36,69 +35,62 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.FileAppender;
 import org.apache.log4j.PatternLayout;
 
-
 /**
- * Very basic logging mechanism designed to handle different servers/channels.
- * 
  * @author Jimmy Mitchener
  */
 public class BotLogger
 {
-	//private static final FastDateFormat DATE_FORMAT =
-	//	FastDateFormat.getInstance("MM/dd/yyyy HH:mm:ss");
 
-	/** Bot's home directory */
-	public static final File BOT_HOME =
-		new File(SystemUtils.getUserHome(), ".amnotbot");
+    public static final File BOT_HOME =
+            new File(SystemUtils.getUserHome(), ".amnotbot");
+    private File LOG_HOME;
 
-	/** Log folder for this server instance */
-	private File LOG_HOME;
-    
-	static {
-		// create folder if it doesn't already exist
-		BOT_HOME.mkdirs();
-	}
 
-	public BotLogger(String server)
-	{
-		LOG_HOME = new File(BOT_HOME, "log" + File.separator + server);
-		LOG_HOME.mkdirs();  
-	}
-    
+    static {
+        BOT_HOME.mkdirs();
+    }
+
+    public BotLogger(String server)
+    {
+        LOG_HOME = new File(BOT_HOME, "log" + File.separator + server);
+        LOG_HOME.mkdirs();
+    }
+
     public static Logger getDebugLogger()
     {
         return Logger.getLogger("debugLogger");
     }
-		
-	public String getLoggingPath()
-	{
-		return this.LOG_HOME.getAbsolutePath();
+
+    public String getLoggingPath()
+    {
+        return this.LOG_HOME.getAbsolutePath();
     }
-    
-	public void log(String msg)
-	{
+
+    public void log(String msg)
+    {
         Logger.getRootLogger().info(msg);
-	}
+    }
 
     public void log(String target, String msg)
     {
         Logger logger = Logger.getLogger(target);
-        FileAppender appender = (FileAppender)logger.getAppender(target);
-        
+        FileAppender appender = (FileAppender) logger.getAppender(target);
+
         if (appender == null) {
             PatternLayout layout = new PatternLayout("[%d] %m%n");
-            
+
             try {
-                appender = new FileAppender(layout, this.LOG_HOME.getAbsolutePath() + "/" + target);
+                appender = new FileAppender(layout,
+                        this.LOG_HOME.getAbsolutePath() + "/" + target);
             } catch (IOException e) {
-                BotLogger.getDebugLogger().debug("Can't create appender for channel:" + target, e);            
+                BotLogger.getDebugLogger().debug("Logging failed:" + target, e);
                 return;
             }
-            
-            appender.setName(target);        
+
+            appender.setName(target);
             logger.addAppender(appender);
         }
-        
+
         logger.info(msg);
-	}
+    }
 }
