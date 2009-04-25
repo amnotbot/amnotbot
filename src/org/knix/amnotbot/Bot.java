@@ -39,90 +39,78 @@ import java.util.List;
  * @author Jimmy Mitchener &lt;jimmy.mitchener | et | [g]mail.com&gt;
  * @version 0.01
  */
-public class Bot extends Thread implements IBot {
+public class Bot extends Thread implements IBot
+{
 
     private String server;
     private int port;
     private List<String> channels;
     private static final int SO_TIMEOUT = 1000 * 60 * 5;
     private BotLogger logger;
-    private BotConnection con;
+    private BotConnection conn;
 
-    public Bot(String server, List<String> channels) {
+    public Bot(String server, List<String> channels)
+    {
         new Bot(server, 0, channels);
     }
 
-    /**
-     * Create a new bot.
-     */
-    public Bot(String server, int port, List<String> channels) {
+    public Bot(String server, int port, List<String> channels)
+    {
         this.server = server;
         this.port = port;
         this.channels = channels;
         this.logger = new BotLogger(server);
-        this.con = null;
+        this.conn = null;
 
         start();
     }
 
-    public void shutdown() {
-        this.con.doQuit();
+    public void shutdown()
+    {
+        this.conn.doQuit();
     }
 
-    public void run() {
+    public void run()
+    {
         try {
-
-            this.con = createConnection(server, port, channels, logger);
-            this.con.connect();
+            this.conn = createConnection(server, port, channels, logger);
+            this.conn.connect();
 
             for (;;) {
-                if (!this.con.isConnected()) {
-                    try {
-                        this.con = createConnection(server, port, channels, logger);
-                        this.con.connect();
-                    } catch (Exception e) {
-                        BotLogger.getDebugLogger().debug("Connection failed!", e);
-                    }
+                if (!this.conn.isConnected()) {
+                    this.conn = createConnection(server, port, channels,
+                                                                    logger);
+                    this.conn.connect();
                 }
-
-                try {
-                    Thread.sleep(5000);
-                } catch (InterruptedException ie) {
-                    BotLogger.getDebugLogger().debug(ie);
-                }
+                Thread.sleep(5000);
             }
         } catch (IOException e) {
+            BotLogger.getDebugLogger().debug(e);
+        } catch (InterruptedException e) {
             BotLogger.getDebugLogger().debug(e);
         }
     }
 
-    /**
-     * Create a new bot connection.
-     * This should probably be in some kind of connection factory
-     * 
-     * @param server server we're to connect to
-     * @param channels list of channels to join on connect
-     * @return
-     */
     private static BotConnection createConnection(String server,
             int port,
             List<String> channels,
-            BotLogger logger) {
-        BotConnection bcon = null;
+            BotLogger logger)
+    {
+        BotConnection bconn = null;
 
         if (port > 0) {
-            bcon = new BotConnection(server, port);
+            bconn = new BotConnection(server, port);
         } else {
-            bcon = new BotConnection(server);
+            bconn = new BotConnection(server);
         }
 
-        bcon.setBotLogger(logger);
-        bcon.addIRCEventListener(new BotListener(bcon, channels));
-        bcon.setPong(true);
-        bcon.setDaemon(false);
-        bcon.setTimeout(SO_TIMEOUT);
-        bcon.setEncoding("UTF-8");
+        bconn.setBotLogger(logger);
+        bconn.addIRCEventListener(new BotListener(bconn, channels));
+        bconn.setPong(true);
+        bconn.setDaemon(false);
+        bconn.setTimeout(SO_TIMEOUT);
+        bconn.setEncoding("UTF-8");
 
-        return bcon;
+        return bconn;
     }
 }
