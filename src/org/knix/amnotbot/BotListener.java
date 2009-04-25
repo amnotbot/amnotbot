@@ -75,7 +75,6 @@ public class BotListener implements IRCEventListener
         SearchClient yahooClient = new SearchClient("G7RklHzV34Gs_AYiBU0xA4wak1J3plPRonFhFfwJEeXMVP4PrpvwiflgxXa4uw--");
         this.macroCommand.add(new YahooWebSearchCommand(yahooClient));
         this.macroCommand.add(new YahooNewsSearchCommand(yahooClient));
-//        this.macroCommand.add(new GoogleYouTubeCommand());
 //        this.macroCommand.add(new URLSearchCommand(yahooClient));
         this.macroCommand.add(new WordsCommand());
         this.macroCommand.add(new LinesCommand());
