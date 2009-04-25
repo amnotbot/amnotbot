@@ -5,46 +5,48 @@ import java.util.LinkedList;
 
 import org.schwering.irc.lib.IRCUser;
 
-public class MacroCommand extends AmnotbotCommandImp {
+public class MacroCommand extends AmnotbotCommandImp
+{
 
     private LinkedList<AmnotbotCommand> commands;
-    //private AmnotbotCommand aReceiver;
     private LinkedList<AmnotbotCommand> receivers;
 
-    public MacroCommand() {
-        //this.aReceiver = null;
+    public MacroCommand()
+    {
         super(null, null);
 
         this.commands = new LinkedList<AmnotbotCommand>();
         this.receivers = new LinkedList<AmnotbotCommand>();
     }
 
-    public void add(AmnotbotCommand command) {
-        BotLogger.getDebugLogger().debug("Class = " + command.getClass().getName());
+    public void add(AmnotbotCommand command)
+    {
+        BotLogger.getDebugLogger().debug(command.getClass().getName());
         this.commands.add(command);
     }
 
-    public void remove(AmnotbotCommand command) {
+    public void remove(AmnotbotCommand command)
+    {
         this.commands.remove(command);
     }
 
-    public LinkedList<AmnotbotCommand> getCommands() {
+    public LinkedList<AmnotbotCommand> getCommands()
+    {
         return this.commands;
     }
 
-    public boolean matches(String msg) {
+    public boolean matches(String msg)
+    {
         this.receivers.clear();
-
-        Iterator<AmnotbotCommand> it = commands.iterator();
+        
         boolean match = false;
+        Iterator<AmnotbotCommand> it = this.commands.iterator();
         while (it.hasNext()) {
             AmnotbotCommand command = it.next();
 
             if (command.matches(msg)) {
-                //this.aReceiver = command;
                 this.receivers.add(command);
                 match = true;
-                //return true;
             }
         }
 
@@ -52,10 +54,8 @@ public class MacroCommand extends AmnotbotCommandImp {
     }
 
     public void execute(BotConnection con, String chan, IRCUser user,
-        String msg) {
-        //if (this.aReceiver != null)
-        //	this.aReceiver.execute(con, chan, user, msg);
-
+            String msg)
+    {
         Iterator<AmnotbotCommand> it = this.receivers.iterator();
         while (it.hasNext()) {
             AmnotbotCommand command = it.next();
