@@ -24,24 +24,25 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
 package org.knix.amnotbot.command;
 
 import org.knix.amnotbot.*;
 import org.schwering.irc.lib.IRCUser;
 
-public class SpellCommand extends BotCommandImp {
+public class SpellCommand extends BotCommandImp
+{
 
-	private DictHelper aReceiver;
+    private DictHelper aReceiver;
 
-	public SpellCommand(DictHelper aReceiver) {
-		super("^!spell\\s+(.*)", "spell");
+    public SpellCommand(DictHelper aReceiver)
+    {
+        super("^!spell\\s+(.*)", "spell");
 
-		this.aReceiver = aReceiver;
-	}
+        this.aReceiver = aReceiver;
+    }
 
-	public void execute(BotConnection con, String chan, IRCUser user, String msg)
-	{
-		this.aReceiver.runQuery(chan, user.getNick(), this.getGroup(1), true);
-	}
+    public void execute(BotConnection con, String chan, IRCUser user, String m)
+    {
+        this.aReceiver.runQuery(chan, user.getNick(), this.getGroup(1), true);
+    }
 }
