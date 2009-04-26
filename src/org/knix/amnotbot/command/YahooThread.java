@@ -18,211 +18,215 @@ import com.yahoo.search.WebSearchRequest;
 import com.yahoo.search.WebSearchResult;
 import com.yahoo.search.WebSearchResults;
 
-/**
- * Created by IntelliJ IDEA.
- * User: gpoppino
- * Date: Oct 25, 2007
- * Time: 12:12:40 AM
- * To change this template use File | Settings | File Templates.
- */
-public class YahooThread extends Thread {
+public class YahooThread extends Thread
+{
 
-	SearchClient yahooClient;
-	BotConnection con;
-	String chan;
-	IRCUser user;
-	String msg;
-	String query;
-	CommandOptions opts;
+    SearchClient yahooClient;
+    BotConnection con;
+    String chan;
+    IRCUser user;
+    String msg;
+    String query;
+    CommandOptions opts;
 
-	public enum searchType { WEB_SEARCH, NEWS_SEARCH }
+    public enum searchType
+    {
+        WEB_SEARCH, NEWS_SEARCH
+    }
+    searchType sType;
 
-	searchType sType;
+    public YahooThread(SearchClient yahooClient,
+            BotConnection con,
+            String chan,
+            IRCUser user,
+            String msg,
+            searchType sType)
+    {
+        this.yahooClient = yahooClient;
+        this.con = con;
+        this.chan = chan;
+        this.user = user;
+        this.msg = msg;
+        this.sType = sType;
 
-	public YahooThread(SearchClient yahooClient, BotConnection con, String chan, IRCUser user, String msg, searchType sType) {
-		this.yahooClient = yahooClient;
-		this.con = con;
-		this.chan = chan;
-		this.user = user;
-		this.msg = msg;
-		this.sType = sType;
-		
-		this.opts = new CommandOptions(msg);
-		
-		this.opts.addOption(new CmdStringOption("region"));
-		this.opts.addOption(new CmdStringOption("format"));
-		this.opts.addOption(new CmdStringOption("language"));
-		this.opts.addOption(new CmdStringOption("country"));
-		this.opts.addOption(new CmdStringOption("site"));
-		this.opts.addOption(new CmdStringOption("adult_ok"));
-		this.opts.addOption(new CmdStringOption("license"));
-		this.opts.addOption(new CmdStringOption("type"));
-		
-		start();
-	}
+        this.opts = new CommandOptions(msg);
 
-	public void run()
-	{
-		this.opts.buildArgs();
-		
-		if (this.opts.hasOptions())
-			this.query = this.msg.substring(0, this.opts.optionStartAt());
-		else
-			this.query = this.msg;
-		
-		BotLogger.getDebugLogger().debug("query:" + this.query);
-		
-		switch (this.sType) {
-			case NEWS_SEARCH:
-				this.newsSearch();
-				break;
-			case WEB_SEARCH:
-				this.webSearch();
-				break;
-		}		
-	}
+        this.opts.addOption(new CmdStringOption("region"));
+        this.opts.addOption(new CmdStringOption("format"));
+        this.opts.addOption(new CmdStringOption("language"));
+        this.opts.addOption(new CmdStringOption("country"));
+        this.opts.addOption(new CmdStringOption("site"));
+        this.opts.addOption(new CmdStringOption("adult_ok"));
+        this.opts.addOption(new CmdStringOption("license"));
+        this.opts.addOption(new CmdStringOption("type"));
 
-	private void webSearch()
-	{
-		WebSearchRequest request = new WebSearchRequest(this.query);
-						
-		request.setResults(1);
-		
-		if (this.opts.getOption("language").hasValue())
-			request.setLanguage(this.opts.getOption("language").stringValue());
-		else
-			request.setLanguage("en");
-			
-		if (this.opts.getOption("country").hasValue())
-			request.setCountry(this.opts.getOption("country").stringValue());
-		
-		if (this.opts.getOption("format").hasValue())
-			request.setFormat(this.opts.getOption("format").stringValue());
-		
-		if (this.opts.getOption("region").hasValue())
-			request.setRegion(this.opts.getOption("region").stringValue());
-		
-		if (this.opts.getOption("adult_ok").hasValue()) {
-			String adult_ok = this.opts.getOption("adult_ok").stringValue();
-			if (adult_ok == "yes")
-				request.setAdultOk(true);
-			else
-				request.setAdultOk(false);
-		}
-		
-		if (this.opts.getOption("type").hasValue())
-			request.setType(this.opts.getOption("type").stringValue());
-		
-		if (this.opts.getOption("license").hasValue())
-			request.addLicense(this.opts.getOption("license").stringValue());
-		
-		if (this.opts.getOption("site").hasValue())
-			request.addSite(this.opts.getOption("site").stringValue());
-		
-		BotLogger.getDebugLogger().debug("parameters:" + request.getParameters());
-		
-		try {
-			// Execute the search.
-			WebSearchResults results = this.yahooClient.webSearch(request);			
+        start();
+    }
 
-			// Print out how many hits were found.
-			BotLogger.getDebugLogger().debug("Found " + results.getTotalResultsAvailable() +
-				" hits for " + this.msg + "! Displaying the first " +
-				results.getTotalResultsReturned() + ".");
-			BotLogger.getDebugLogger().debug("Performed search:" + this.msg);
+    public void run()
+    {
+        this.opts.buildArgs();
 
-			// Iterate over the results.
-			//for (int i = 0; i < results.listResults().length; i++) {
+        if (this.opts.hasOptions()) {
+            this.query = this.msg.substring(0, this.opts.optionStartAt());
+        } else {
+            this.query = this.msg;
+        }
 
-			//WebSearchResult result = results.listResults()[i];
-			if (results.listResults().length != 0) {				
-				//BigInteger firstPos = results.getFirstResultPosition();
-				//BotLogger.getDebugLogger().debug("First position: " + firstPos.toString());
-				WebSearchResult result = results.listResults()[0];				
+        BotLogger.getDebugLogger().debug("query:" + this.query);
 
-				// Print out the document title and URL.
-				BotLogger.getDebugLogger().debug("  : " + result.getTitle() + " - " +
-					result.getUrl());
-				this.con.doPrivmsg(this.chan, result.getTitle());
-				this.con.doPrivmsg(this.chan, result.getUrl());
-				this.con.doPrivmsg(this.chan, result.getSummary());
-			} else {
-				this.con.doPrivmsg(this.chan, "Nothing found.");
-			}
-		}
-		catch (IOException e) {
-			// Most likely a network exception of some sort.
-			BotLogger.getDebugLogger().debug("Error calling Yahoo! Search Service: " +
-				e.toString());
-			e.printStackTrace(System.err);
-		}
-		catch (SearchException e) {
-			// An issue with the XML or with the service.
-			BotLogger.getDebugLogger().debug("Error calling Yahoo! Search Service: " +
-				e.toString());
-			e.printStackTrace(System.err);
-			this.con.doPrivmsg(this.chan, "Invalid parameters! Check: http://developer.yahoo.com/search/web/V1/webSearch.html");
-		}
-	}
+        switch (this.sType) {
+            case NEWS_SEARCH:
+                this.newsSearch();
+                break;
+            case WEB_SEARCH:
+                this.webSearch();
+                break;
+        }
+    }
 
-	private void newsSearch()
-	{
-		NewsSearchRequest request = new NewsSearchRequest(this.query);
+    private WebSearchRequest prepareWebSearchRequest(String query)
+    {
+        WebSearchRequest request = new WebSearchRequest(this.query);
 
-		request.setResults(1);
-		if (this.opts.getOption("language").hasValue())
-			request.setLanguage(this.opts.getOption("language").stringValue());
-		else
-			request.setLanguage("en");
-		
-		BotLogger.getDebugLogger().debug("parameters:" + request.getParameters());
+        request.setResults(1);
 
-		try {
-			// Execute the search.
-			NewsSearchResults results = this.yahooClient.newsSearch(request);		
+        if (this.opts.getOption("language").hasValue()) {
+            request.setLanguage(this.opts.getOption("language").stringValue());
+        } else {
+            request.setLanguage("en");
+        }
 
-			// Print out how many hits were found.
-			BotLogger.getDebugLogger().debug("Found " + results.getTotalResultsAvailable() +
-				" hits for " + this.msg + "! Displaying the first " +
-				results.getTotalResultsReturned() + ".");
-			BotLogger.getDebugLogger().debug("Performed search:" + this.msg);
+        if (this.opts.getOption("country").hasValue()) {
+            request.setCountry(this.opts.getOption("country").stringValue());
+        }
 
-			// Iterate over the results.
-			//for (int i = 0; i < results.listResults().length; i++) {
+        if (this.opts.getOption("format").hasValue()) {
+            request.setFormat(this.opts.getOption("format").stringValue());
+        }
 
-			//WebSearchResult result = results.listResults()[i];
-			if (results.listResults().length != 0) {
-				//BigInteger firstPos = results.getFirstResultPosition();
-				//BotLogger.getDebugLogger().debug("First position: " + firstPos.toString());
-				NewsSearchResult result = results.listResults()[0];
+        if (this.opts.getOption("region").hasValue()) {
+            request.setRegion(this.opts.getOption("region").stringValue());
+        }
 
-				// Print out the document title and URL.
-				BotLogger.getDebugLogger().debug("  : " + result.getTitle() + " - " +
-					result.getUrl());
-		
-				SimpleDateFormat publishDate = new SimpleDateFormat("MMM dd, yyyy");
-				Long ts = new Long( result.getPublishDate() );
-				long timestamp =  ts.longValue() * 1000;
-				String mDate = publishDate.format( new Date(timestamp) );
-				
-				this.con.doPrivmsg(this.chan, result.getTitle() + " - " + result.getNewsSource() + " - " + mDate);
-				this.con.doPrivmsg(this.chan, result.getUrl());
-				this.con.doPrivmsg(this.chan, result.getSummary());
-			} else {
-				this.con.doPrivmsg(this.chan, "Nothing found.");
-			}
-		}
-		catch (IOException e) {
-			// Most likely a network exception of some sort.
-			BotLogger.getDebugLogger().debug("Error calling Yahoo! Search Service: " +
-				e.toString());
-			e.printStackTrace(System.err);
-		}
-		catch (SearchException e) {
-			// An issue with the XML or with the service.
-			BotLogger.getDebugLogger().debug("Error calling Yahoo! Search Service: " +
-				e.toString());
-			e.printStackTrace(System.err);
-		}
-	}
+        if (this.opts.getOption("adult_ok").hasValue()) {
+            String adult_ok = this.opts.getOption("adult_ok").stringValue();
+            String _yes = new String("yes");
+            if (adult_ok.equals(_yes)) {
+                request.setAdultOk(true);
+            } else {
+                request.setAdultOk(false);
+            }
+        }
+
+        if (this.opts.getOption("type").hasValue()) {
+            request.setType(this.opts.getOption("type").stringValue());
+        }
+
+        if (this.opts.getOption("license").hasValue()) {
+            request.addLicense(this.opts.getOption("license").stringValue());
+        }
+
+        if (this.opts.getOption("site").hasValue()) {
+            request.addSite(this.opts.getOption("site").stringValue());
+        }
+
+        BotLogger.getDebugLogger().debug("parameters:" +
+                request.getParameters());
+
+        return request;
+    }
+
+    private void webSearch()
+    {
+        WebSearchRequest request = this.prepareWebSearchRequest(this.query);
+
+        try {
+            WebSearchResults results = this.yahooClient.webSearch(request);
+
+            BotLogger.getDebugLogger().debug("Found " +
+                    results.getTotalResultsAvailable() +
+                    " hits for " + this.msg + "! Displaying the first " +
+                    results.getTotalResultsReturned() + ".");
+            BotLogger.getDebugLogger().debug("Performed search:" + this.msg);
+
+            if (results.listResults().length != 0) {
+                WebSearchResult result = results.listResults()[0];
+                
+                BotLogger.getDebugLogger().debug("  : " + result.getTitle() + 
+                        " - " + result.getUrl());
+                this.con.doPrivmsg(this.chan, result.getTitle());
+                this.con.doPrivmsg(this.chan, result.getUrl());
+                this.con.doPrivmsg(this.chan, result.getSummary());
+            } else {
+                this.con.doPrivmsg(this.chan, "Nothing found.");
+            }
+        } catch (IOException e) {
+            BotLogger.getDebugLogger().debug("Error calling Yahoo! : " +
+                    e.toString());
+        } catch (SearchException e) {
+            BotLogger.getDebugLogger().debug("Error calling Yahoo! : " +
+                    e.toString());
+            this.con.doPrivmsg(this.chan, "Invalid parameters! Check: " +
+                    "http://developer.yahoo.com/search/web/V1/webSearch.html");
+        }
+    }
+
+    private NewsSearchRequest prepareNewsSearchRequest(String query)
+    {
+        NewsSearchRequest request = new NewsSearchRequest(query);
+
+        request.setResults(1);
+        if (this.opts.getOption("language").hasValue()) {
+            request.setLanguage(this.opts.getOption("language").stringValue());
+        } else {
+            request.setLanguage("en");
+        }
+
+        BotLogger.getDebugLogger().debug("parameters:" +
+                request.getParameters());
+
+        return request;
+    }
+
+    private void newsSearch()
+    {
+        NewsSearchRequest request = this.prepareNewsSearchRequest(this.query);
+
+        try {
+            NewsSearchResults results = this.yahooClient.newsSearch(request);
+
+            BotLogger.getDebugLogger().debug("Found " +
+                    results.getTotalResultsAvailable() +
+                    " hits for " + this.msg + "! Displaying the first " +
+                    results.getTotalResultsReturned() + ".");
+            BotLogger.getDebugLogger().debug("Performed search:" + this.msg);
+            
+            if (results.listResults().length != 0) {
+                NewsSearchResult result = results.listResults()[0];
+
+                BotLogger.getDebugLogger().debug("  : " + result.getTitle() + 
+                        " - " + result.getUrl());
+
+                SimpleDateFormat publishDate =
+                        new SimpleDateFormat("MMM dd, yyyy");
+                Long ts = new Long(result.getPublishDate());
+                long timestamp = ts.longValue() * 1000;
+                String mDate = publishDate.format(new Date(timestamp));
+
+                this.con.doPrivmsg(this.chan, result.getTitle() + " - " +
+                        result.getNewsSource() + " - " + mDate);
+                this.con.doPrivmsg(this.chan, result.getUrl());
+                this.con.doPrivmsg(this.chan, result.getSummary());
+            } else {
+                this.con.doPrivmsg(this.chan, "Nothing found.");
+            }
+        } catch (IOException e) {
+            BotLogger.getDebugLogger().debug("Error calling Yahoo! : " +
+                    e.toString());
+        } catch (SearchException e) {
+            BotLogger.getDebugLogger().debug("Error calling Yahoo! :" +
+                    e.toString());
+        }
+    }
 }
