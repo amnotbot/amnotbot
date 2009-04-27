@@ -13,6 +13,7 @@ public class LinesCommand extends BotCommandImp
 
     public void execute(BotConnection con, String chan, IRCUser user, String msg)
     {
-        new WordsCommandThread(con, chan, user, this.getGroup(1), true);
+        new WordsCommandThread(con, chan, user, this.getGroup(1),
+                WordsCommandThread.countOperation.LINES);
     }
 }
