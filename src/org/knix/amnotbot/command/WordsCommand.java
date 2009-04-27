@@ -3,18 +3,21 @@ package org.knix.amnotbot.command;
 import org.knix.amnotbot.*;
 import org.schwering.irc.lib.IRCUser;
 
-public class WordsCommand extends BotCommandImp {
+public class WordsCommand extends BotCommandImp
+{
 
-    public WordsCommand() {
+    public WordsCommand()
+    {
         super("^!(w(ords)?)\\s?(.*)", "w words");
     }
 
-    public void execute(BotConnection con, String chan, IRCUser user,
-        String msg) {
-        new WordsCommandThread(con, chan, user, this.getGroup(3), false);
+    public void execute(BotConnection con, String chan, IRCUser user, String m)
+    {
+        new WordsCommandThread(con, chan, user, this.getGroup(3),
+                WordsCommandThread.countOperation.WORDS);
     }
 
-    public String help() 
+    public String help()
     {
         String msg;
 
