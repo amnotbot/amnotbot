@@ -5,173 +5,274 @@ import org.knix.amnotbot.command.utils.CommandOptions;
 import org.knix.amnotbot.command.utils.CmdStringOption;
 import org.knix.amnotbot.*;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.LinkedList;
 
+import javax.naming.directory.InvalidAttributeValueException;
+import org.knix.amnotbot.command.utils.CmdOption;
 import org.knix.amnotbot.config.BotConfiguration;
 import org.schwering.irc.lib.IRCUser;
 
-public class WordsCommandThread extends Thread {
-	
-	private BotConnection con;
-	String chan;
-	String msg;
-	IRCUser user;
-	WordCounter wordCounter;
-	CommandOptions opts;
-	boolean lines;
-	String target;
+public class WordsCommandThread extends Thread
+{
 
-	public WordsCommandThread(BotConnection con
-			, String chan
-			, IRCUser user
-			, String msg
-			, boolean lines) 
-	{
-		this.con = con;
-		this.chan = chan;
-		this.user = user;
-		this.msg = msg;
-		this.lines = lines;
-		
-		opts = new CommandOptions(msg);
-		
-		opts.addOption( new CmdCommaSeparatedOption("nick") );
-		opts.addOption( new CmdCommaSeparatedOption("word") );
-		opts.addOption( new CmdStringOption("number") );
-		opts.addOption( new CmdStringOption("date") );
-		opts.addOption( new CmdStringOption("op") );
-		opts.addOption( new CmdStringOption("channel") );
-		
-		start();
-	}
+    private BotConnection conn;
+    String chan;
+    String msg;
+    IRCUser user;
+    CommandOptions opts;
+    String target;
 
-	private boolean init()
-	{
-		this.opts.buildArgs();
+    public enum countOperation {
+        WORDS, LINES
+    }
+    countOperation countOp;
 
-		this.target = this.chan;
-		if (this.opts.getOption("channel").hasValue()) {
-			this.target = this.opts.getOption("channel").stringValue(); 
-		}
+    public WordsCommandThread(BotConnection con, 
+            String chan,
+            IRCUser user,
+            String msg,
+            countOperation op)
+    {
+        this.conn = con;
+        this.chan = chan;
+        this.user = user;
+        this.msg = msg;
+        this.countOp = op;
 
-		BotLogger.getDebugLogger().debug("Channel = " + this.target);
+        opts = new CommandOptions(msg);
 
-		if (this.target.charAt(0) != '#') {
-			this.con.doPrivmsg(this.chan, "Not a valid channel: (" + this.target + "). Use the 'channel:' option.");
-			return false;
-		}
-		
-		String db_file = this.con.getBotLogger().getLoggingPath() + "/" + this.target;		
-		if (!this.dbExists(db_file)) {
-		    this.con.doPrivmsg(this.chan, "Statistics not available for: (" + this.target + ").");
-		    return false;
-		}
-				
-		BotLogger.getDebugLogger().debug( BotConfiguration.getConfig().getString("ignored_words_file") );
-		String wCounterImp = BotConfiguration.getConfig().getString("word_counter_imp");
-		BotLogger.getDebugLogger().debug(wCounterImp);
+        opts.addOption(new CmdCommaSeparatedOption("nick"));
+        opts.addOption(new CmdCommaSeparatedOption("word"));
+        opts.addOption(new CmdStringOption("number"));
+        opts.addOption(new CmdStringOption("date"));
+        opts.addOption(new CmdStringOption("op"));
+        opts.addOption(new CmdStringOption("channel"));
 
-		if (wCounterImp.compareTo("textfile") == 0) {
-			this.wordCounter = new WordCounterTextFile( 
-					BotConfiguration.getConfig().getString("ignored_words_file"),
-					db_file);
-		} else if (wCounterImp.compareTo("sqlite") == 0) {			
-			BotLogger.getDebugLogger().debug("SQLITE");
-			this.wordCounter = new WordCounterSqlite(db_file);
-		}
-		
-		return true;
-	}
-	
-	boolean dbExists(String path) 
-	{
-	    File db_file = new File(path);
-	    
-	    if (!db_file.exists())
-		return false;	    
-	    
-	    return true;
-	}
-	
-	public void run()
-	{
-		String words;
+        start();
+    }
 
-		if (!this.init())
-		    return;
-		
-		String nWords = this.opts.getOption("number").stringValue();
-		
-		int n = nWords == null ? 5 : Integer.parseInt( nWords );
-		
-		String outMsg;
+    public void run()
+    {
+        this.init();
 
-		String nickList = null;
-		if (opts.getOption("nick").hasValue()) {
-			nickList = this.opts.getOption("nick").stringValue(" ").toLowerCase();
-		}
+        String db_file = null;
+        try {
+            db_file = this.selectDBFile();
+        } catch (Exception e) {
+            BotLogger.getDebugLogger().debug(e.getMessage());
+            e.printStackTrace();
+            return;
+        }
+        
+        this.processRequest( this.selectBackend(db_file) );
+    }
 
-		if (!this.lines) {		
-			if (this.opts.getOption("word").hasValue()) {
-				words = this.wordCounter.mostUsedWordsBy(n, 
-							this.opts.getOption("word").stringValue(" ").trim(), 
-							this.opts.getOption("date").stringValue()
-				);
-			} else {
-				words = this.wordCounter.mostUsedWords(n, nickList,
-							this.opts.getOption("date").stringValue()
-				);
-			}
-			outMsg = "Most used words for ";
-		} else {
-			String op = "";
-			if (this.opts.getOption("op").hasValue()) {
-				op = this.opts.getOption("op").stringValue();
-			}
-			if (op.compareTo("avg") == 0) {
-				words = this.wordCounter.avgWordsLine(n, nickList,
-						this.opts.getOption("date").stringValue()
-				);
-				outMsg = "Avg. words per line per user for ";
-			} else {
-				words = this.wordCounter.topLines(n, this.opts.getOption("date").stringValue());
-				outMsg = "Lines per user for ";
-			}
-		}
-		
-		if (words.length() == 0) {
-			this.con.doPrivmsg(this.chan, "Could not find any match!");
-		} else {
-			LinkedList<String> w = new LinkedList<String>();
-			int trunc = 0, truncationConstant = 430;	// irc client truncates everything over 440 chars
-			while ((words.length() + outMsg.length()) - trunc > truncationConstant) {
-				int truncPos = words.indexOf(' ', (truncationConstant / 2) + trunc);
-				w.add( words.substring(trunc, truncPos) );
-				trunc = truncPos;
-			}
-			w.add( words.substring(trunc, words.length()) );
+    private void init()
+    {
+        this.opts.buildArgs();
+    }
 
-			if (opts.getOption("nick").hasValue()) {
-				this.con.doPrivmsg(this.chan, outMsg 
-					+ "'" 
-					+ opts.getOption("nick").stringValue().trim() 
-					+ "': " + w.getFirst());
-			} else {
-				this.con.doPrivmsg(this.chan, outMsg + "'" + this.target + "': " + w.getFirst());
-			}
+    private String selectDBFile()
+            throws FileNotFoundException, InvalidAttributeValueException
+    {
+        this.target = this.chan;
+        if (this.opts.getOption("channel").hasValue()) {
+            this.target = this.opts.getOption("channel").stringValue();
+        }
 
-			for (int j = 1; j < w.size(); ++j) {
-				this.con.doPrivmsg(this.chan, w.get(j));
+        if (this.target.charAt(0) != '#') {
+            throw new InvalidAttributeValueException("Not a valid channel: " +
+                    this.target + "). Use the 'channel:' option.");
+        }
 
-				try {
-					Thread.sleep(300 * j);	// avoid being disconnected by flooding
-				} catch (InterruptedException e) {
-					BotLogger.getDebugLogger().debug(e.getMessage());
-					break;
-				}
-			}
-			BotLogger.getDebugLogger().debug(words);
-		}
+        String db_file = this.conn.getBotLogger().getLoggingPath() +
+                "/" + this.target;
+        if (!this.dbExists(db_file)) {
+            throw new FileNotFoundException("Statistics not available for: " +
+                    this.target);
+        }
 
-	}	
+        return db_file;
+    }
+
+    boolean dbExists(String path)
+    {
+        File db_file = new File(path);
+
+        if (!db_file.exists()) return false;
+
+        return true;
+    }
+
+    private WordCounter selectBackend(String db_file)
+    {
+        String wCounter;
+        wCounter = BotConfiguration.getConfig().getString("word_counter_imp");
+        if (wCounter.compareTo("sqlite") == 0) {
+            return ( new WordCounterSqlite(db_file) );
+        }
+
+        String i_file;
+        i_file = BotConfiguration.getConfig().getString("ignored_words_file");
+        return (new WordCounterTextFile(i_file, db_file) );
+    }
+
+    private void processRequest(WordCounter wordCounter)
+    {
+        String num = this.opts.getOption("number").stringValue();
+        int n = num == null ? 5 : Integer.parseInt(num);
+
+        String nickList = null;
+        if (opts.getOption("nick").hasValue()) {
+            CmdOption nickOpt = this.opts.getOption("nick");
+            nickList = nickOpt.stringValue(" ").toLowerCase();
+        }
+
+        WordResults results = new WordResults();
+        switch (this.countOp) {
+            case WORDS:
+                results = this.countWords(wordCounter, n, nickList);
+                break;
+            case LINES:
+                results = this.countLines(wordCounter, n, nickList);
+                break;
+        }
+        this.showResults(results);
+    }
+
+    private WordResults countWords(WordCounter wordCounter,
+            int n,
+            String nickList)
+    {
+        String words;
+        WordResults results = new WordResults();
+        if (this.opts.getOption("word").hasValue()) {
+            words = wordCounter.mostUsedWordsBy(n,
+                    this.opts.getOption("word").stringValue(" ").trim(),
+                    this.opts.getOption("date").stringValue());
+        } else {
+            words = wordCounter.mostUsedWords(n, nickList,
+                    this.opts.getOption("date").stringValue());
+        }
+        results.setOutputMessage("Most used words for ");
+        results.setWords(words);
+
+        return results;
+    }
+
+    private WordResults countLines(WordCounter wordCounter,
+            int n,
+            String nickList)
+    {
+        String op = "";
+        if (this.opts.getOption("op").hasValue()) {
+            op = this.opts.getOption("op").stringValue();
+        }
+
+        String words;
+        WordResults results = new WordResults();
+        if (op.compareTo("avg") == 0) {
+            words = wordCounter.avgWordsLine(n, nickList,
+                    this.opts.getOption("date").stringValue());
+            results.setOutputMessage("Avg. words per line per user for ");
+        } else {
+            words = wordCounter.topLines(n,
+                    this.opts.getOption("date").stringValue());
+            results.setOutputMessage("Lines per user for ");
+        }
+        results.setWords(words);
+        
+        return results;
+    }
+
+    private void showResults(WordResults results)
+    {
+        if (!results.hasResults()) {
+            this.conn.doPrivmsg(this.chan, "Could not find any match!");
+            return;
+        }
+
+        LinkedList<String> output = this.truncateOutput(results);
+        if (opts.getOption("nick").hasValue()) {
+            this.conn.doPrivmsg(this.chan, results.getOutputMessage() + "'" +
+                    opts.getOption("nick").stringValue().trim() +
+                    "': " + output.getFirst());
+        } else {
+            this.conn.doPrivmsg(this.chan, results.getOutputMessage() + "'" +
+                    this.target + "': " + output.getFirst());
+        }
+
+        for (int j = 1; j < output.size(); ++j) {
+            this.conn.doPrivmsg(this.chan, output.get(j));
+            try {
+                // avoid being disconnected by flooding
+                Thread.sleep(300 * j);
+            } catch (InterruptedException e) {
+                BotLogger.getDebugLogger().debug(e.getMessage());
+                break;
+            }
+        }
+    }
+
+    private LinkedList<String> truncateOutput(WordResults results)
+    {
+        LinkedList<String> wList = new LinkedList<String>();
+        // irc client truncates everything over 440 chars
+        int position = 0, maxChars = 430;
+        String words = results.getWords();
+        int wordsLength = results.getWords().length();
+        int msgLength = results.getOutputMessage().length();
+        while ((wordsLength + msgLength) - position > maxChars) {
+            int truncPosition;
+            truncPosition = words.indexOf(' ', (maxChars / 2) + position);
+            wList.add(words.substring(position, truncPosition));
+            position = truncPosition;
+        }
+        wList.add(words.substring(position, wordsLength));        
+        return wList;
+    }
+
+    private class WordResults
+    {
+        private String words;
+        private String outputMessage;
+
+        WordResults() 
+        {
+            this.words = null;
+            this.outputMessage = null;
+        }
+                
+        WordResults(String words, String outputMessage)
+        {
+            this.words = words;
+            this.outputMessage = outputMessage;
+        }
+
+        public boolean hasResults()
+        {
+            return (this.words != null);
+        }
+
+        public String getWords()
+        {
+            return this.words;
+        }
+
+        public String getOutputMessage()
+        {
+            return this.outputMessage;
+        }
+
+        public void setWords(String words)
+        {
+            this.words = words;
+        }
+
+        public void setOutputMessage(String msg)
+        {
+            this.outputMessage = msg;
+        }
+    }
 }
