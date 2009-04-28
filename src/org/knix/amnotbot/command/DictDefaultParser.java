@@ -24,22 +24,27 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
 package org.knix.amnotbot.command;
 
 import java.util.Vector;
 
-public class DefaultDictParser implements DictParser {
+public class DictDefaultParser implements DictParser
+{
+    private final int MAX_LINES = 10;
 
-	public Vector<String> firstDefinition(Definition definition) {
-		Vector<String> myDefinition = new Vector<String>();
+    public Vector<String> firstDefinition(DictDefinition definition)
+    {
+        Vector<String> firstDef;
 
-		if (definition.getDefinition().split("\n").length > 10)
-			myDefinition.add(new String("Definition too long! Please, try with a different dictionary. Skipping ..."));
-		else
-			myDefinition.add(definition.getDefinition());
+        firstDef = new Vector<String>();
+        int len = definition.getDefinition().split("\n").length;
+        if (len > MAX_LINES) {
+            firstDef.add(new String("Definition too long! Please, try with a " +
+                    "different dictionary. Skipping ..."));
+        } else {
+            firstDef.add(definition.getDefinition());
+        }
 
-		return myDefinition;
-	}
-
+        return firstDef;
+    }
 }

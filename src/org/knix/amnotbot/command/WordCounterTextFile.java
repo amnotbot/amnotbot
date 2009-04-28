@@ -100,7 +100,6 @@ public class WordCounterTextFile implements WordCounter
                         continue;
                     }
                 }
-
                 if (botPattern.matcher(line).matches()) continue;
 
                 if (urlPattern.matcher(line).matches()) continue;

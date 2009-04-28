@@ -24,7 +24,6 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
 package org.knix.amnotbot.command;
 
 import org.knix.amnotbot.*;
@@ -32,17 +31,18 @@ import org.schwering.irc.lib.IRCUser;
 
 public class DictCommand extends BotCommandImp
 {
-	private DictHelper aReceiver;
 
-	public DictCommand(DictHelper aReceiver)
-	{
-		super("^!(dict|define)\\s+(.*)", "dict define");
+    private DictHelper aReceiver;
 
-		this.aReceiver = aReceiver;
-	}
+    public DictCommand(DictHelper aReceiver)
+    {
+        super("^!(dict|define)\\s+(.*)", "dict define");
 
-	public void execute(BotConnection con, String chan, IRCUser user, String msg)
-	{
-		this.aReceiver.runQuery(chan, user.getNick(), this.getGroup(2), false);
-	}
+        this.aReceiver = aReceiver;
+    }
+
+    public void execute(BotConnection con, String chan, IRCUser user, String m)
+    {
+        this.aReceiver.runQuery(chan, user.getNick(), this.getGroup(2), false);
+    }
 }

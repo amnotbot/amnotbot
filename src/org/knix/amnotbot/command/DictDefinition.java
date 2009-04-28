@@ -27,7 +27,6 @@
  *	NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  *	EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
 package org.knix.amnotbot.command;
 
 /**
@@ -37,63 +36,70 @@ package org.knix.amnotbot.command;
  *  the word that was being queried and its definition.
  *  @see org.knix.amnotbot.DICTClient
  */
-public class Definition {
-	private String databaseShort;
-	private String databaseLong;
-	private String word;
-	private String definition;
+public class DictDefinition
+{
 
-	/**
-	 *  Constructs a new definition object.
-	 *  @param databaseShort The short name of the database, for example
-	 *  "web1913".
-	 *  @param databaseLong The full name of the database which the definition
-	 *  comes from, for example "Webster's Revised Unabridged Dictionary
-	 *  (1913)".
-	 *  @param word The word being defined, for example "sausage".
-	 *  @param definition The full definition of the word.
-	 */
-	public Definition(String databaseShort, String databaseLong, String word, 
-			String definition) {
-		this.databaseShort = databaseShort;
-		this.databaseLong = databaseLong;
-		this.word = word;
-		this.definition = definition;
-	}
+    private String databaseShort;
+    private String databaseLong;
+    private String word;
+    private String definition;
 
-	/**
-	 *  Returns the short name of the database from which the defintion was
-	 *  received.
-	 *  @return The short name of the database.
-	 */
-	public String getDatabaseShort() {
-		return databaseShort;
-	}
+    /**
+     *  Constructs a new definition object.
+     *  @param databaseShort The short name of the database, for example
+     *  "web1913".
+     *  @param databaseLong The full name of the database which the definition
+     *  comes from, for example "Webster's Revised Unabridged Dictionary
+     *  (1913)".
+     *  @param word The word being defined, for example "sausage".
+     *  @param definition The full definition of the word.
+     */
+    public DictDefinition(String databaseShort, String databaseLong, String word,
+            String definition)
+    {
+        this.databaseShort = databaseShort;
+        this.databaseLong = databaseLong;
+        this.word = word;
+        this.definition = definition;
+    }
 
-	/**
-	 *  Gets the full name of the database from which this definition was
-	 *  received.
-	 *  @return The full name of the database.
-	 */
-	public String getDatabaseLong() {
-		return databaseLong;
-	}
+    /**
+     *  Returns the short name of the database from which the defintion was
+     *  received.
+     *  @return The short name of the database.
+     */
+    public String getDatabaseShort()
+    {
+        return databaseShort;
+    }
 
-	/**
-	 *  Returns the word which is being defined.
-	 *  @return The word being defined.
-	 */
-	public String getWord() {
-		return word;
-	}
+    /**
+     *  Gets the full name of the database from which this definition was
+     *  received.
+     *  @return The full name of the database.
+     */
+    public String getDatabaseLong()
+    {
+        return databaseLong;
+    }
 
-	/**
-	 *  Returns the actual definition of the word. This is usually formatted 
-	 *  with newlines and indents, etc. Some databases put a '{' and '}' around 
-	 *  references to other words.
-	 *  @return The defintion of the word as given by that database.
-	 */
-	public String getDefinition() {
-		return definition;
-	}
+    /**
+     *  Returns the word which is being defined.
+     *  @return The word being defined.
+     */
+    public String getWord()
+    {
+        return word;
+    }
+
+    /**
+     *  Returns the actual definition of the word. This is usually formatted
+     *  with newlines and indents, etc. Some databases put a '{' and '}' around
+     *  references to other words.
+     *  @return The defintion of the word as given by that database.
+     */
+    public String getDefinition()
+    {
+        return definition;
+    }
 }

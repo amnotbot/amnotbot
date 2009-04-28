@@ -24,64 +24,65 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
 package org.knix.amnotbot.command;
 
+import org.apache.commons.configuration.Configuration;
 import org.knix.amnotbot.*;
 import org.knix.amnotbot.config.BotConfiguration;
 
-public class DictHelper {
+public class DictHelper
+{
 
-	private BotConnection con;
-	private DictThread dictThread;
-	private DICTClient dictClient;
-	
-	private String defaultServer;
-	private String defaultDict;
-	private String defaultStrategy;
+    private BotConnection con;
+    private DictThread dictThread;
+    private DictClient dictClient;
+    private String defaultServer;
+    private String defaultDict;
+    private String defaultStrategy;
 
-	public DictHelper(BotConnection con) {
-		this.con = con;      
-		this.dictThread = new DictThread(this.con);
-		
-		this.defaultServer = BotConfiguration.getConfig().getString("dictionary_server");
-		this.defaultDict = BotConfiguration.getConfig().getString("default_dictionary");
-		this.defaultStrategy = BotConfiguration.getConfig().getString("default_dictionary_strategy");
-	}
+    public DictHelper(BotConnection con)
+    {
+        this.con = con;
+        this.dictThread = new DictThread(this.con);
 
-	public void runQuery(String chan, String nick, String query, boolean isSpelling)
-	{
-		if(this.dictThread.isAlive()) {
-			BotLogger.getDebugLogger().debug("Query still running. Skipping: " + query);
-			return; 
-		}
+        Configuration config = BotConfiguration.getConfig();
+        this.defaultServer = config.getString("dictionary_server");
+        this.defaultDict = config.getString("default_dictionary");
+        this.defaultStrategy = config.getString("default_dictionary_strategy");
+    }
 
-		if (this.dictThread.getState() == Thread.State.TERMINATED) {
-			this.dictThread = null;
-			this.dictThread = new DictThread(this.con);
-		}
+    public void runQuery(String chan,
+            String nick,
+            String query,
+            boolean isSpelling)
+    {
+        if (this.dictThread.isAlive()) return;
 
-		if (this.initDictClient()) {
-			this.dictThread.performQuery(this.dictClient, 
-				chan,
-				nick, 
-				query, 
-				this.defaultDict, 
-				this.defaultStrategy, isSpelling);
-		}
-	}
+        if (this.dictThread.getState() == Thread.State.TERMINATED) {
+            this.dictThread = null;
+            this.dictThread = new DictThread(this.con);
+        }
 
-	private boolean initDictClient()
-	{
-		if (this.dictClient == null) {
-			try {
-				this.dictClient  = new DICTClient(this.defaultServer);
-			} catch (Exception ex) {
-				BotLogger.getDebugLogger().debug(ex.getMessage());
-				return false;
-			}
-		}
+        if (this.initDictClient()) {
+            this.dictThread.performQuery(this.dictClient,
+                    chan,
+                    nick,
+                    query,
+                    this.defaultDict,
+                    this.defaultStrategy, isSpelling);
+        }
+    }
 
-		return true;
-	}
+    private boolean initDictClient()
+    {
+        if (this.dictClient == null) {
+            try {
+                this.dictClient = new DictClient(this.defaultServer);
+            } catch (Exception e) {
+                BotLogger.getDebugLogger().debug(e);
+                return false;
+            }
+        }
+        return true;
+    }
 }

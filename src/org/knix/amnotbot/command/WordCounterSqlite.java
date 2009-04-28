@@ -221,7 +221,7 @@ class MostUsedWordsTableFmt implements SQLite.Callback
         String out;
         float rv = fv - iv;        
         if (rv != 0) {
-            /* Obtain a number with just to decimals */
+            // Obtain a number with just two decimals
             out = String.valueOf(Math.round(Float.valueOf(arg0[1]) * 100.0)
                     / 100.0);
         } else {
