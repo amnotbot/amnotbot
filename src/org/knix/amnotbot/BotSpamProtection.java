@@ -219,12 +219,12 @@ class ChannelSpamDetector
     }
 }
 
-class SpamDetector
+class BotSpamDetector
 {
 
     private Hashtable<String, ChannelSpamDetector> chanSpamDetector;
 
-    public SpamDetector(List<String> channels)
+    public BotSpamDetector(List<String> channels)
     {
         this.chanSpamDetector = new Hashtable<String, ChannelSpamDetector>();
 
