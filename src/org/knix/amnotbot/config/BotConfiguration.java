@@ -9,8 +9,8 @@ import org.knix.amnotbot.BotLogger;
 public class BotConfiguration
 {
 
-    private static BotConfiguration botConfig = null;
     private static Configuration config = null;
+    private static BotConfiguration botConfig = null;
 
     protected BotConfiguration()
     {
@@ -22,15 +22,13 @@ public class BotConfiguration
             botConfig = new BotConfiguration();
 
             PropertyConfigurator.configure("log4j.properties");
-
             try {
                 config = new PropertiesConfiguration("amnotbot.config");
             } catch (ConfigurationException e) {
                 e.printStackTrace();
-                BotLogger.getDebugLogger().debug(e.getMessage());
+                BotLogger.getDebugLogger().debug(e);
             }
         }
-
         return config;
     }
 }

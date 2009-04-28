@@ -1,7 +1,5 @@
 package org.knix.amnotbot.command.utils;
 
-import org.knix.amnotbot.*;
-
 public class CmdStringOption implements CmdOption
 {
 
