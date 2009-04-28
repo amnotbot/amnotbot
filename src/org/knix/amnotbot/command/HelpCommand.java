@@ -28,7 +28,6 @@ public class HelpCommand extends BotCommandImp
             BotCommandInterface command = it.next();
 
             String keywords = command.getKeywords();
-
             if (keywords == null) continue;
 
             String[] k = keywords.split(" ");
@@ -42,21 +41,17 @@ public class HelpCommand extends BotCommandImp
             Matcher m = Pattern.compile(
                     regexp,
                     Pattern.CASE_INSENSITIVE).matcher(this.getGroup(1));
-
             if (m.find()) {
                 String helpMsg = command.help();
-
                 if (helpMsg != null) {
                     con.doPrivmsg(chan, helpMsg);
                 } else {
                     con.doPrivmsg(chan, this.noHelp());
                 }
-                
                 found = true;
                 break;
             }
         }
-
         if (!found) {
             con.doPrivmsg(chan, this.help());
         }
@@ -70,9 +65,7 @@ public class HelpCommand extends BotCommandImp
     public String noHelp()
     {
         String msg;
-
         msg = "No help available for command";
-
         return msg;
     }
 
@@ -86,7 +79,6 @@ public class HelpCommand extends BotCommandImp
             BotCommandInterface command = it.next();
 
             String keywords = command.getKeywords();
-
             if (keywords == null) continue;
 
             if (msg == null) {
