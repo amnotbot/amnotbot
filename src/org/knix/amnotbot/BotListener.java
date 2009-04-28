@@ -30,12 +30,10 @@ import org.knix.amnotbot.command.QuoteCommand;
 import org.knix.amnotbot.command.HelpCommand;
 import org.knix.amnotbot.command.QurlRequestCommand;
 import org.knix.amnotbot.command.DeliciousCommand;
-import org.knix.amnotbot.command.DictCommand;
 import org.knix.amnotbot.command.GoogleCommand;
 import org.knix.amnotbot.command.LinesCommand;
 import org.knix.amnotbot.command.SpellCommand;
 import org.knix.amnotbot.command.WordsCommand;
-import org.knix.amnotbot.command.DictHelper;
 import org.knix.amnotbot.command.GoogleBookSearchCommand;
 import org.knix.amnotbot.command.YahooWebSearchCommand;
 import org.knix.amnotbot.command.YahooNewsSearchCommand;
@@ -78,9 +76,7 @@ public class BotListener implements IRCEventListener
             this.macroCommand.add(new DeliciousCommand(true));
         }
 
-        DictHelper dictHelper = new DictHelper(con);
-        this.macroCommand.add(new DictCommand(dictHelper));
-        this.macroCommand.add(new SpellCommand(dictHelper));
+        //this.macroCommand.add(new SpellCommand());
 
         this.macroCommand.add(new QurlRequestCommand());
         this.macroCommand.add(new GoogleCommand());

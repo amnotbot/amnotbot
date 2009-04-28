@@ -32,17 +32,12 @@ import org.schwering.irc.lib.IRCUser;
 public class SpellCommand extends BotCommandImp
 {
 
-    private DictHelper aReceiver;
-
-    public SpellCommand(DictHelper aReceiver)
+    public SpellCommand()
     {
         super("^!spell\\s+(.*)", "spell");
-
-        this.aReceiver = aReceiver;
     }
 
     public void execute(BotConnection con, String chan, IRCUser user, String m)
     {
-        this.aReceiver.runQuery(chan, user.getNick(), this.getGroup(1), true);
     }
 }
