@@ -62,10 +62,10 @@ public class CmdCommaSeparatedOptionTest
     public void stringValueTest()
     {
         this.colours.buildArgs(this.colour1);
-        assertTrue(this.colours.stringValue().equals(this.colour1Val1));
+        assertEquals(this.colours.stringValue(), this.colour1Val1);
 
         this.colours.buildArgs(this.colour2);
-        assertTrue(this.colours.stringValue().equals(this.colour2Val1));
+        assertEquals(this.colours.stringValue(), this.colour2Val1);
 
         this.colours.buildArgs(null);
         assertTrue(this.colours.stringValue().isEmpty());
@@ -81,10 +81,10 @@ public class CmdCommaSeparatedOptionTest
     public void stringValueSepTest()
     {
         this.colours.buildArgs(this.colour1);        
-        assertTrue(this.colours.stringValue(" ").equals(this.colour1Val2));
+        assertEquals(this.colours.stringValue(" "), this.colour1Val2);
 
         this.colours.buildArgs(this.colour2);
-        assertTrue(this.colours.stringValue(" ").equals(this.colour2Val2));
+        assertEquals(this.colours.stringValue(" "), this.colour2Val2);
 
         this.colours.buildArgs(null);
         assertTrue(this.colours.stringValue(" ").isEmpty());
@@ -97,17 +97,21 @@ public class CmdCommaSeparatedOptionTest
 
         this.colours.buildArgs("colours:verde, negro.blanco,gris violeta a:12");
         String tmp1 = this.colours.stringValue("|");
-        assertTrue(tmp1.equals("verde|negro.blanco|gris violeta"));
+        assertEquals(tmp1, "verde|negro.blanco|gris violeta");
+
+        this.colours.buildArgs("op1:abc colours:verde,gris claro op:12 op3:de");
+        String tmp2 = this.colours.stringValue(":");      
+        assertEquals(tmp2, "verde:gris claro");
     }
 
     @Test
     public void stringValueCharjoinTest()
     {
         this.colours.buildArgs(this.colour1);
-        assertTrue(this.colours.stringValue(" ", ".").equals(this.colour1Val2));
+        assertEquals(this.colours.stringValue(" ", "."), this.colour1Val2);
 
         this.colours.buildArgs(this.colour2);
-        assertTrue(this.colours.stringValue(" ", ".").equals(this.colour2Val3));
+        assertEquals(this.colours.stringValue(" ", "."), this.colour2Val3);
 
         this.colours.buildArgs(null);
         assertTrue(this.colours.stringValue(" ", ".").isEmpty());
@@ -118,17 +122,17 @@ public class CmdCommaSeparatedOptionTest
         this.colours.buildArgs(this.colour);
         assertTrue(this.colours.stringValue(" ", ".").isEmpty());
 
-        this.colours.buildArgs("colours:green, blue, yellow,black");
+        this.colours.buildArgs("colours:green, blue, yellow ,black");
         String tmp1 = this.colours.stringValue(" ", ".");
-        assertTrue(tmp1.equals("green blue yellow black"));
+        assertEquals(tmp1, "green blue yellow black");
         
-        this.colours.buildArgs("colours:green,strong blue,soft pink opt2:abc");
+        this.colours.buildArgs("colours: green,strong blue,soft pink opt2:abc");
         String tmp2 = this.colours.stringValue(":", "-");
-        assertTrue(tmp2.equals("green:strong-blue:soft-pink"));
+        assertEquals(tmp2, "green:strong-blue:soft-pink");
 
-        this.colours.buildArgs("opt2:abc colours:green,strong blue,soft pink");
+        this.colours.buildArgs("opt2:abc colours: green,strong blue,soft pink");
         String tmp3 = this.colours.stringValue("|", "_");
-        assertTrue(tmp3.equals("green|strong_blue|soft_pink"));
+        assertEquals(tmp3, "green|strong_blue|soft_pink");
     }
 
     @After

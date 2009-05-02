@@ -16,38 +16,44 @@ public class CmdStringOption implements CmdOption
 
     public CmdStringOption(String name)
     {
-        this.delim = ' ';
+        this.delim = '"';
         this.arg0 = null;
         this.name = name;
     }
 
     public void buildArgs(String msg)
     {
-        int index;
-        String arg = new String();
-
         this.arg0 = null;
-
         if (msg == null) return;
+     
+        int index = msg.indexOf(this.name + ":");
+        if (index < 0) return;
 
-        int dlen = this.delim == ' ' ? 0 : 1;
-        index = msg.indexOf(this.name + ":");
-        if (index >= 0) {
-            index += this.name.length() + 1 + dlen; // skip ':'
-            if (index < msg.length()) {
-                for (int i = index; i < msg.length(); ++i) {
-                    char c;
+        msg = msg.trim();
+        index += this.name.length() + 1;
+        index += msg.charAt(index) == this.delim ? 1 : 0;
+        if (index > msg.length()) return;
 
-                    c = msg.charAt(i);
-                    if (c == this.delim) break;
- 
-                    arg += c;
-                }
+        int rindex = msg.indexOf(':', index);
+        for (int j = (rindex - 1); j > index; --j) {
+            char c;
+            c = msg.charAt(j);
+            if (!Character.isLetterOrDigit(c)) break;
+            rindex = j;
+        }
+        if (rindex < index) rindex = msg.length();
 
-                if (arg.length() > 0) {
-                    this.arg0 = arg.trim();
-                }
-            }
+        String arg = new String();
+        for (int i = index; i < rindex; ++i) {
+            char c;
+            c = msg.charAt(i);
+            if (c == '\n' || c == '\0' || c == '\r' || c == this.delim) break;
+
+            arg += c;
+        }
+
+        if (arg.length() > 0) {
+            this.arg0 = arg.trim();
         }
     }
 
@@ -68,7 +74,10 @@ public class CmdStringOption implements CmdOption
 
     public String stringValue()
     {
-        return this.arg0;
+        if (this.hasValue()) {
+            return this.arg0;
+        }
+        return "";
     }
 
     public boolean hasValue()

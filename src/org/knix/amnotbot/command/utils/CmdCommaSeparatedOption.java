@@ -24,7 +24,7 @@ public class CmdCommaSeparatedOption implements CmdOption
         index += this.name.length() + 1;
         if (index > msg.length()) return;
 
-        int rindex = msg.lastIndexOf(':');
+        int rindex = msg.indexOf(':', index);
         for (int j = (rindex - 1); j > index; --j) {
             char c;
             c = msg.charAt(j);          
