@@ -20,24 +20,19 @@ public class CmdStringOptionTest
         CmdStringOption cmd;
         cmd = new CmdStringOption("text");
 
-        cmd.buildArgs("text:message");
-        System.err.println(cmd.stringValue());
+        cmd.buildArgs("text:message");      
         assertEquals(cmd.stringValue(), "message");
 
-        cmd.buildArgs("op1:tom text:My message op2:123 op3:abc");
-        System.err.println(cmd.stringValue());
+        cmd.buildArgs("op1:tom text:My message op2:123 op3:abc");      
         assertEquals(cmd.stringValue(), "My message");
 
-        cmd.buildArgs("text:\"This is a long sentence.\"");
-        System.err.println(cmd.stringValue());
+        cmd.buildArgs("text:\"This is a long sentence.\"");        
         assertEquals(cmd.stringValue(), "This is a long sentence.");
 
-        cmd.buildArgs("This is a message");
-        System.err.println(cmd.stringValue());
+        cmd.buildArgs("This is a message");     
         assertEquals(cmd.stringValue(), "");
 
-        cmd.buildArgs("text:This is a short message.");
-        System.err.println(cmd.stringValue());
+        cmd.buildArgs("text:This is a short message.");        
         assertEquals(cmd.stringValue(), "This is a short message.");
 
         CmdStringOption cmd1;
@@ -60,5 +55,8 @@ public class CmdStringOptionTest
 
         cmd.buildArgs("text:This is a message");
         assertTrue(cmd.hasValue());
+
+        cmd.buildArgs("option:Testing option");
+        assertFalse(cmd.hasValue());
     }
 }
