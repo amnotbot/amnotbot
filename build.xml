@@ -4,9 +4,11 @@
 	</description>
 
 	<property name="src"   location="src/" />
+	<property name="test"   location="test/" />
 	<property name="build" location="build/" />
 	<property name="dist"  location="dist/" />
 	<property name="lib"   location="lib/" />
+	<property name="tmp"   location="tmp/" />
 	
 	<!-- Great utility allowing Amnotbot to run on older VMs (eg. Bland) -->
 	<taskdef name="retroweaver"
@@ -18,7 +20,14 @@
 
 	<path id="classpath">
 		<fileset dir="${lib}" includes="*.jar" />
-        <pathelement location="${lib}" />
+		<pathelement location="${lib}" />
+	</path>
+
+	<path id="classpath.test">
+		<pathelement location="${lib}/junit-4.5.jar" />
+		<pathelement location="${build}" />
+		<pathelement location="${test}" />
+		<path refid="classpath" />
 	</path>
 
 	<target name="clean">
@@ -38,6 +47,26 @@
 			   debug="true"
                target="1.5"
 			   classpathref="classpath"/>
+	</target>
+
+	<target name="compile-test" depends="compile">
+		<javac srcdir="${test}"
+			   destdir="${build}"
+			   debug="true" target="1.5"
+			   classpathref="classpath.test"/>
+		
+	</target>
+
+	<target name="test" depends="compile-test">
+		<junit>
+			<classpath refid="classpath.test" />
+			<formatter type="brief" usefile="false" />
+			<batchtest todir="${tmp}">
+				<fileset dir="${build}">
+					<include name="**/*Test.class"/>
+				</fileset>
+			</batchtest>
+		</junit>
 	</target>
 
 	<target name="dist" depends="compile">
