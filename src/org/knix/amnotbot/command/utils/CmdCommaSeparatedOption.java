@@ -14,22 +14,30 @@ public class CmdCommaSeparatedOption implements CmdOption
 
     public void buildArgs(String msg)
     {
+        this.arg0 = null;        
         if (msg == null) return;
-
-        this.arg0 = null;
-
+       
         int index = msg.indexOf(this.name + ":");
         if (index < 0) return;
 
+        msg = msg.trim();
         index += this.name.length() + 1;
         if (index > msg.length()) return;
 
-        String arg = new String();
-        for (int i = index; i < msg.length(); ++i) {
+        int rindex = msg.lastIndexOf(':');
+        for (int j = (rindex - 1); j > index; --j) {
             char c;
+            c = msg.charAt(j);          
+            if (!Character.isLetterOrDigit(c)) break;
+            rindex = j;
+        }
+        if (rindex < index) rindex = msg.length();
 
+        String arg = new String();
+        for (int i = index; i < rindex; ++i) {
+            char c;
             c = msg.charAt(i);
-            if (c == ' ' || c == '\n' || c == '\0') break;
+            if (c == '\n' || c == '\0' || c == '\r') break;
 
             arg += c;
         }
@@ -46,40 +54,26 @@ public class CmdCommaSeparatedOption implements CmdOption
 
     public String stringValue(String sep, String joinChar)
     {
-        String[] keywords;
-        String value = "";
+        String value;
+        String[] keywords;        
 
-        if (this.arg0 != null) {
-            String arg = this.arg0;
-  
-            keywords = arg.split(",");
-            for (int j = 0; j < keywords.length; ++j) {
+        value = new String();
+        if (this.hasValue()) {
+            keywords = this.stringValue().split(",");
+            value += keywords[0].trim();
+            for (int j = 1; j < keywords.length; ++j) {
                 String word = keywords[j];
                 word = word.trim();
                 word = word.replaceAll("\\s", joinChar);
-                value += word + sep;
-            }
+                value += sep + word;
+            }            
         }
-
         return value.toLowerCase();
     }
 
     public String stringValue(String sep)
     {
-        String[] keywords;
-        String value = "";
-
-        if (this.arg0 == null) return null;
-       
-        String arg = this.arg0;
-        keywords = arg.split(",");
-        for (int j = 0; j < keywords.length; ++j) {
-            String word = keywords[j];
-            word = word.trim();
-            value += word + sep;
-        }
-    
-        return value.toLowerCase();
+        return this.stringValue(sep, " ");
     }
 
     public String stringValue()
@@ -87,7 +81,7 @@ public class CmdCommaSeparatedOption implements CmdOption
         if (this.hasValue()) {
             return this.arg0.toLowerCase();
         }
-        return this.arg0;
+        return "";
     }
 
     public boolean hasValue()
