@@ -11,36 +11,24 @@ import java.util.LinkedList;
 import javax.naming.directory.InvalidAttributeValueException;
 import org.knix.amnotbot.command.utils.CmdOption;
 import org.knix.amnotbot.config.BotConfiguration;
-import org.schwering.irc.lib.IRCUser;
 
 public class WordsCommandThread extends Thread
 {
-
-    private BotConnection conn;
-    String chan;
-    String msg;
-    IRCUser user;
-    CommandOptions opts;
-    String target;
+    
+    BotMessage msg;
+    CommandOptions opts;    
 
     public enum countOperation {
         WORDS, LINES
     }
     countOperation countOp;
 
-    public WordsCommandThread(BotConnection con, 
-            String chan,
-            IRCUser user,
-            String msg,
-            countOperation op)
+    public WordsCommandThread(BotMessage msg, countOperation op)
     {
-        this.conn = con;
-        this.chan = chan;
-        this.user = user;
         this.msg = msg;
         this.countOp = op;
 
-        opts = new CommandOptions(msg);
+        opts = new CommandOptions(msg.getText());
 
         opts.addOption(new CmdCommaSeparatedOption("nick"));
         opts.addOption(new CmdCommaSeparatedOption("word"));
@@ -76,23 +64,22 @@ public class WordsCommandThread extends Thread
     private String selectDBFile()
             throws FileNotFoundException, InvalidAttributeValueException
     {
-        this.target = this.chan;
+        String target = this.msg.getTarget();
         if (this.opts.getOption("channel").hasValue()) {
-            this.target = this.opts.getOption("channel").stringValue();
+            target = this.opts.getOption("channel").stringValue();
         }
 
-        if (this.target.charAt(0) != '#') {
+        if (target.charAt(0) != '#') {
             throw new InvalidAttributeValueException("Not a valid channel: " +
-                    this.target + "). Use the 'channel:' option.");
+                    target + "). Use the 'channel:' option.");
         }
 
-        String db_file = this.conn.getBotLogger().getLoggingPath() +
-                "/" + this.target;
+        String db_file = this.msg.getConn().getBotLogger().getLoggingPath() +
+                "/" + target;
         if (!this.dbExists(db_file)) {
             throw new FileNotFoundException("Statistics not available for: " +
-                    this.target);
+                    target);
         }
-
         return db_file;
     }
 
@@ -188,23 +175,28 @@ public class WordsCommandThread extends Thread
 
     private void showResults(WordResults results)
     {
+        String target;
+        BotConnection conn;
+
+        conn = this.msg.getConn();
+        target = this.msg.getTarget();
         if (!results.hasResults()) {
-            this.conn.doPrivmsg(this.chan, "Could not find any match!");
+            conn.doPrivmsg(target, "Could not find any match!");
             return;
         }
 
         LinkedList<String> output = this.truncateOutput(results);
         if (opts.getOption("nick").hasValue()) {
-            this.conn.doPrivmsg(this.chan, results.getOutputMessage() + "'" +
+            conn.doPrivmsg(target, results.getOutputMessage() + "'" +
                     opts.getOption("nick").stringValue().trim() +
                     "': " + output.getFirst());
         } else {
-            this.conn.doPrivmsg(this.chan, results.getOutputMessage() + "'" +
-                    this.target + "': " + output.getFirst());
+            conn.doPrivmsg(target, results.getOutputMessage() + "'" +
+                    target + "': " + output.getFirst());
         }
 
         for (int j = 1; j < output.size(); ++j) {
-            this.conn.doPrivmsg(this.chan, output.get(j));
+            conn.doPrivmsg(target, output.get(j));
             try {
                 // avoid being disconnected by flooding
                 Thread.sleep(300 * j);

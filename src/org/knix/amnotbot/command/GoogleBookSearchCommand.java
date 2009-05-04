@@ -1,16 +1,19 @@
 package org.knix.amnotbot.command;
 
 import org.knix.amnotbot.*;
-import org.schwering.irc.lib.IRCUser;
 
-public class GoogleBookSearchCommand extends BotCommandImp {
-
-    public GoogleBookSearchCommand() {
-        super("^!gbook?\\s+(.*)", "gbook");
+public class GoogleBookSearchCommand implements BotCommand
+{
+  
+    public void execute(BotMessage message)
+    {
+        new GoogleBookSearchThread(message);
     }
 
-    public void execute(BotConnection con, String chan, IRCUser user,
-        String msg) {
-        new GoogleBookSearchThread(con, chan, user.getNick(), this.getGroup(1));
+    public String help()
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
+
+
 }

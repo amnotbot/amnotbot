@@ -1,25 +1,22 @@
 package org.knix.amnotbot.command;
 
 import org.knix.amnotbot.*;
-import org.schwering.irc.lib.IRCUser;
 
 import com.yahoo.search.SearchClient;
 
-public class YahooWebSearchCommand extends BotCommandImp
+public class YahooWebSearchCommand implements BotCommand
 {
 
     private SearchClient yahooClient;
 
     public YahooWebSearchCommand(SearchClient yahooClient)
-    {
-        super("^!y(ahoo)?\\s+(.*)", "y yahoo");
-
+    {       
         this.yahooClient = yahooClient;
     }
 
-    public void execute(BotConnection con, String chan, IRCUser user, String msg)
+    public void execute(BotMessage message)
     {
-        new YahooThread(this.yahooClient, con, chan, user, this.getGroup(2),
+        new YahooThread(this.yahooClient, message,
                 YahooThread.searchType.WEB_SEARCH);
     }
 
@@ -27,8 +24,7 @@ public class YahooWebSearchCommand extends BotCommandImp
     {
         String msg;
 
-        msg = "Description: Yahoo! search command.";
-        msg += " Keywords: " + this.getKeywords() + ".";
+        msg = "Description: Yahoo! search command.";      
         msg += " Parameters: search keywords.";
         msg += " Example: !y airplanes";
 

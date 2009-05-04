@@ -1,18 +1,21 @@
 package org.knix.amnotbot.command;
 
 import org.knix.amnotbot.*;
-import org.schwering.irc.lib.IRCUser;
 
-public class QurlRequestCommand extends BotCommandImp
+public class QurlRequestCommand implements BotCommand
 {
 
     public QurlRequestCommand()
-    {
-        super("(https?://\\S{75,})", null);
+    {       
     }
 
-    public void execute(BotConnection con, String chan, IRCUser user, String m)
+    public void execute(BotMessage message)
     {
-        new QurlRequest(con, chan, user.getNick(), this.getGroup(1));
+        new QurlRequest(message);
+    }
+
+    public String help()
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 }

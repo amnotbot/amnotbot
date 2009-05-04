@@ -9,33 +9,25 @@ import java.util.Date;
 public class DeliciousThread extends Thread
 {
 
-    private String chan;
     private String url;
-    private String nick;
-    private int maxTagLength;
-    private BotConnection con;
+    private BotMessage msg;
+    private int maxTagLength;    
     private boolean showTitle;
     private CommandOptions opts;
     private BotHTMLParser parser;
     private DeliciousBookmarks delicious;
 
-    public DeliciousThread(DeliciousBookmarks delicious, BotConnection con,
-            String chan,
-            String nick,
-            String url,
-            String msg,
+    public DeliciousThread(DeliciousBookmarks delicious, BotMessage msg,
             int maxTagLength,
             boolean showTitle)
     {
-        this.con = con;
-        this.chan = chan;
-        this.nick = nick;
-        this.url = url;
+        this.msg = msg;
         this.delicious = delicious;
         this.showTitle = showTitle;
+        this.url = msg.getText();
         this.maxTagLength = maxTagLength;
 
-        opts = new CommandOptions(msg);
+        opts = new CommandOptions(msg.getText());
 
         opts.addOption(new CmdStringOption("title", '"'));
         opts.addOption(new CmdCommaSeparatedOption("tags"));
@@ -78,9 +70,9 @@ public class DeliciousThread extends Thread
         tmpTags += this.getPageTags();
 
         if (tmpTags.trim().length() > 0) {
-            tmpTags += " " + this.nick;
+            tmpTags += " " + this.msg.getText();
         } else {
-            tmpTags = this.nick;
+            tmpTags = this.msg.getUser().getNick();
         }
 
         String[] str = tmpTags.split(" ");
@@ -126,7 +118,7 @@ public class DeliciousThread extends Thread
         comment = this.opts.getOption("comment").stringValue();
 
         if (this.showTitle && this.isPageTitle()) {
-            this.con.doPrivmsg(this.chan, title);
+            this.msg.getConn().doPrivmsg(this.msg.getTarget(), title);
         }
 
         Boolean success;

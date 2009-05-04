@@ -1,16 +1,20 @@
 package org.knix.amnotbot.command;
 
 import org.knix.amnotbot.*;
-import org.schwering.irc.lib.IRCUser;
 
-public class GoogleCommand extends BotCommandImp {
+public class GoogleCommand implements BotCommand
+{
 
-    public GoogleCommand() {
-        super("^!g(oogle)?\\s+(.*)", "g google");
+    public GoogleCommand() 
+    {
     }
 
-    public void execute(BotConnection con, String chan, IRCUser user,
-        String msg) {
-        new GoogleWebSearchThread(con, chan, user.getNick(), this.getGroup(2));
+    public void execute(BotMessage message) {
+        new GoogleWebSearchThread(message);
+    }
+
+    public String help()
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 }

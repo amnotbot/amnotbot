@@ -1,19 +1,17 @@
 package org.knix.amnotbot.command;
 
 import org.knix.amnotbot.*;
-import org.schwering.irc.lib.IRCUser;
 
-public class WordsCommand extends BotCommandImp
+public class WordsCommand implements BotCommand
 {
 
     public WordsCommand()
     {
-        super("^!(w(ords)?)\\s?(.*)", "w words");
     }
 
-    public void execute(BotConnection con, String chan, IRCUser user, String m)
+    public void execute(BotMessage message)
     {
-        new WordsCommandThread(con, chan, user, this.getGroup(3),
+        new WordsCommandThread(message,
                 WordsCommandThread.countOperation.WORDS);
     }
 

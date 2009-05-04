@@ -27,17 +27,20 @@
 package org.knix.amnotbot.command;
 
 import org.knix.amnotbot.*;
-import org.schwering.irc.lib.IRCUser;
 
-public class SpellCommand extends BotCommandImp
+public class SpellCommand implements BotCommand
 {
 
     public SpellCommand()
-    {
-        super("^!spell\\s+(.*)", "spell");
+    {        
     }
 
-    public void execute(BotConnection con, String chan, IRCUser user, String m)
+    public void execute(BotMessage message)
     {
+    }
+
+    public String help()
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 }

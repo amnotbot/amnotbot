@@ -27,12 +27,10 @@
 package org.knix.amnotbot;
 
 import org.knix.amnotbot.command.QuoteCommand;
-import org.knix.amnotbot.command.HelpCommand;
 import org.knix.amnotbot.command.QurlRequestCommand;
 import org.knix.amnotbot.command.DeliciousCommand;
 import org.knix.amnotbot.command.GoogleCommand;
 import org.knix.amnotbot.command.LinesCommand;
-import org.knix.amnotbot.command.SpellCommand;
 import org.knix.amnotbot.command.WordsCommand;
 import org.knix.amnotbot.command.GoogleBookSearchCommand;
 import org.knix.amnotbot.command.YahooWebSearchCommand;
@@ -56,9 +54,7 @@ public class BotListener implements IRCEventListener
 {
     private BotConnection con;
     private List<String> channels;
-    private BotSpamDetector spamDetector;
-    /** Stores all Commands **/
-    private BotMacroCommand macroCommand;
+    private BotCommandInterpreter cmdInterpreter;
 
     /**
      * Create a new BotListener object
@@ -68,29 +64,38 @@ public class BotListener implements IRCEventListener
     public BotListener(BotConnection con, List<String> channels)
     {
         this.con = con;
-        this.channels = channels;
-        this.spamDetector = new BotSpamDetector(channels);
-        this.macroCommand = new BotMacroCommand();
+        this.channels = channels;    
+        this.cmdInterpreter =
+                new BotCommandInterpreter(new BotSpamDetector(channels));
 
         if (BotConfiguration.getConfig().getBoolean("delicious_enabled")) {
-            this.macroCommand.add(new DeliciousCommand(true));
+            this.cmdInterpreter.addLinkListener(new DeliciousCommand());
         }
 
-        //this.macroCommand.add(new SpellCommand());
+        //this.cmdInterpreter.add(new SpellCommand());
 
-        this.macroCommand.add(new QurlRequestCommand());
-        this.macroCommand.add(new GoogleCommand());
-        this.macroCommand.add(new GoogleBookSearchCommand());
+        this.cmdInterpreter.addLinkListener(new QurlRequestCommand());
+        this.cmdInterpreter.addListener(new BotCommandEvent("g"),
+                new GoogleCommand()
+                );
+        this.cmdInterpreter.addListener(new BotCommandEvent("gbook"),
+                new GoogleBookSearchCommand()
+                );
         SearchClient yahooClient = new SearchClient("G7RklHzV34Gs_AYiBU0xA4wak1J3plPRonFhFfwJEeXMVP4PrpvwiflgxXa4uw--");
-        this.macroCommand.add(new YahooWebSearchCommand(yahooClient));
-        this.macroCommand.add(new YahooNewsSearchCommand(yahooClient));
-        this.macroCommand.add(new WordsCommand());
-        this.macroCommand.add(new LinesCommand());
-        this.macroCommand.add(new QuoteCommand());
-
-        HelpCommand helpCommand = new HelpCommand();
-        helpCommand.addCommands(this.macroCommand.getCommands());
-        this.macroCommand.add(helpCommand);
+        this.cmdInterpreter.addListener(new BotCommandEvent("y"),
+                new YahooWebSearchCommand(yahooClient)
+                );
+        this.cmdInterpreter.addListener(new BotCommandEvent("news"),
+                new YahooNewsSearchCommand(yahooClient)
+                );
+        this.cmdInterpreter.addListener(new BotCommandEvent("w"),
+                new WordsCommand());
+        this.cmdInterpreter.addListener(new BotCommandEvent("lines"),
+                new LinesCommand()
+                );
+        this.cmdInterpreter.addListener(new BotCommandEvent("quote"),
+                new QuoteCommand()
+                );
     }
 
     public void onPrivmsg(String target, IRCUser user, String msg)
@@ -99,22 +104,7 @@ public class BotListener implements IRCEventListener
 
         if (con.isSilent()) return;
 
-        boolean targetIsMe = false;
-        if ( target.equals(this.con.getNick()) ) {
-            target = user.getNick();
-            targetIsMe = true;
-        }
-
-        if (this.macroCommand.matches(msg)) {
-            if (!targetIsMe) {
-                if (this.spamDetector.checkForSpam(target, user)) {
-                    BotLogger.getDebugLogger().debug("Spam Detected!");
-                    return;
-                }
-            }
-
-            this.macroCommand.execute(this.con, target, user, msg);
-        }
+        this.cmdInterpreter.run( new BotMessage(this.con, target, user, msg) );
     }
 
     public void onDisconnected()

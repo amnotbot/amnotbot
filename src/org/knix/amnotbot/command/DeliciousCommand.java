@@ -5,31 +5,28 @@ import org.knix.amnotbot.*;
 import org.schwering.irc.lib.IRCUser;
 import org.knix.amnotbot.config.BotConfiguration;
 
-public class DeliciousCommand extends BotCommandImp
+public class DeliciousCommand implements BotCommand
 {
 
     private boolean showURL;
     private int maxTagLength;
     private DeliciousBookmarks delicious;
 
-    public DeliciousCommand(boolean showURL)
+    public DeliciousCommand()
     {
-        super("^((http://([a-zA-Z]*.)?[a-zA-Z0-9]+(.[a-z]{2,4})+\\S*).*)",
-                "delicious");
-
-        this.showURL = showURL;
+//super("^((http://([a-zA-Z]*.)?[a-zA-Z0-9]+(.[a-z]{2,4})+\\S*).*)",
+//                "delicious");
+      
         this.delicious = new DeliciousBookmarks();
         Configuration config = BotConfiguration.getConfig();
         this.maxTagLength =
                 config.getInteger("delicious_max_tag_length", 30).intValue();
     }
 
-    public void execute(BotConnection con, String chan, IRCUser user, String m)
+    public void execute(BotMessage message)
     {
         new DeliciousThread(this.delicious,
-                con, chan, user.getNick(),
-                this.getGroup(2).split(" ")[0],
-                m, this.maxTagLength, this.showURL);
+                message, this.maxTagLength, true);
     }
 
     public String help()

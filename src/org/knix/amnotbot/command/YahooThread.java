@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import org.schwering.irc.lib.IRCUser;
 
 import com.yahoo.search.NewsSearchRequest;
 import com.yahoo.search.NewsSearchResult;
@@ -21,13 +20,10 @@ import com.yahoo.search.WebSearchResults;
 public class YahooThread extends Thread
 {
 
-    SearchClient yahooClient;
-    BotConnection con;
-    String chan;
-    IRCUser user;
-    String msg;
     String query;
+    BotMessage msg;
     CommandOptions opts;
+    SearchClient yahooClient;    
 
     public enum searchType
     {
@@ -36,20 +32,14 @@ public class YahooThread extends Thread
     searchType sType;
 
     public YahooThread(SearchClient yahooClient,
-            BotConnection con,
-            String chan,
-            IRCUser user,
-            String msg,
+            BotMessage msg,
             searchType sType)
     {
         this.yahooClient = yahooClient;
-        this.con = con;
-        this.chan = chan;
-        this.user = user;
         this.msg = msg;
         this.sType = sType;
 
-        this.opts = new CommandOptions(msg);
+        this.opts = new CommandOptions(msg.getText());
 
         this.opts.addOption(new CmdStringOption("region"));
         this.opts.addOption(new CmdStringOption("format"));
@@ -67,10 +57,11 @@ public class YahooThread extends Thread
     {
         this.opts.buildArgs();
 
+        String str = this.msg.getText();
         if (this.opts.hasOptions()) {
-            this.query = this.msg.substring(0, this.opts.optionStartAt());
+            this.query = str.substring(0, this.opts.optionStartAt());
         } else {
-            this.query = this.msg;
+            this.query = str;
         }
 
         BotLogger.getDebugLogger().debug("query:" + this.query);
@@ -130,10 +121,6 @@ public class YahooThread extends Thread
         if (this.opts.getOption("site").hasValue()) {
             request.addSite(this.opts.getOption("site").stringValue());
         }
-
-        BotLogger.getDebugLogger().debug("parameters:" +
-                request.getParameters());
-
         return request;
     }
 
@@ -144,30 +131,29 @@ public class YahooThread extends Thread
         try {
             WebSearchResults results = this.yahooClient.webSearch(request);
 
-            BotLogger.getDebugLogger().debug("Found " +
-                    results.getTotalResultsAvailable() +
-                    " hits for " + this.msg + "! Displaying the first " +
-                    results.getTotalResultsReturned() + ".");
-            BotLogger.getDebugLogger().debug("Performed search:" + this.msg);
-
             if (results.listResults().length != 0) {
                 WebSearchResult result = results.listResults()[0];
                 
                 BotLogger.getDebugLogger().debug("  : " + result.getTitle() + 
                         " - " + result.getUrl());
-                this.con.doPrivmsg(this.chan, result.getTitle());
-                this.con.doPrivmsg(this.chan, result.getUrl());
-                this.con.doPrivmsg(this.chan, result.getSummary());
+                this.msg.getConn().doPrivmsg(this.msg.getTarget(),
+                        result.getTitle());
+                this.msg.getConn().doPrivmsg(this.msg.getTarget(),
+                        result.getUrl());
+                this.msg.getConn().doPrivmsg(this.msg.getTarget(),
+                        result.getSummary());
             } else {
-                this.con.doPrivmsg(this.chan, "Nothing found.");
+                this.msg.getConn().doPrivmsg(this.msg.getTarget(),
+                        "Nothing found.");
             }
         } catch (IOException e) {
             BotLogger.getDebugLogger().debug("Error calling Yahoo! : " +
                     e.toString());
         } catch (SearchException e) {
             BotLogger.getDebugLogger().debug("Error calling Yahoo! : " +
-                    e.toString());
-            this.con.doPrivmsg(this.chan, "Invalid parameters! Check: " +
+                    e);
+            this.msg.getConn().doPrivmsg(this.msg.getTarget(),
+                    "Invalid parameters! Check: " +
                     "http://developer.yahoo.com/search/web/V1/webSearch.html");
         }
     }
@@ -182,10 +168,6 @@ public class YahooThread extends Thread
         } else {
             request.setLanguage("en");
         }
-
-        BotLogger.getDebugLogger().debug("parameters:" +
-                request.getParameters());
-
         return request;
     }
 
@@ -195,18 +177,9 @@ public class YahooThread extends Thread
 
         try {
             NewsSearchResults results = this.yahooClient.newsSearch(request);
-
-            BotLogger.getDebugLogger().debug("Found " +
-                    results.getTotalResultsAvailable() +
-                    " hits for " + this.msg + "! Displaying the first " +
-                    results.getTotalResultsReturned() + ".");
-            BotLogger.getDebugLogger().debug("Performed search:" + this.msg);
             
             if (results.listResults().length != 0) {
                 NewsSearchResult result = results.listResults()[0];
-
-                BotLogger.getDebugLogger().debug("  : " + result.getTitle() + 
-                        " - " + result.getUrl());
 
                 SimpleDateFormat publishDate =
                         new SimpleDateFormat("MMM dd, yyyy");
@@ -214,12 +187,16 @@ public class YahooThread extends Thread
                 long timestamp = ts.longValue() * 1000;
                 String mDate = publishDate.format(new Date(timestamp));
 
-                this.con.doPrivmsg(this.chan, result.getTitle() + " - " +
+                this.msg.getConn().doPrivmsg(this.msg.getTarget(),
+                        result.getTitle() + " - " +
                         result.getNewsSource() + " - " + mDate);
-                this.con.doPrivmsg(this.chan, result.getUrl());
-                this.con.doPrivmsg(this.chan, result.getSummary());
+                this.msg.getConn().doPrivmsg(this.msg.getTarget(),
+                        result.getUrl());
+                this.msg.getConn().doPrivmsg(this.msg.getTarget(),
+                        result.getSummary());
             } else {
-                this.con.doPrivmsg(this.chan, "Nothing found.");
+                this.msg.getConn().doPrivmsg(this.msg.getTarget(),
+                        "Nothing found.");
             }
         } catch (IOException e) {
             BotLogger.getDebugLogger().debug("Error calling Yahoo! : " +

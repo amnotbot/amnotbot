@@ -13,21 +13,13 @@ import org.json.JSONObject;
  */
 public class GoogleBookSearchThread extends Thread
 {
-    private BotConnection con;
-    private String query;
-    private String chan;
-    private String nick;
 
-    public GoogleBookSearchThread(BotConnection con,
-            String chan,
-            String nick,
-            String query)
+    private BotMessage msg;
+
+    public GoogleBookSearchThread(BotMessage msg)
     {
-        this.con = con;
-        this.chan = chan;
-        this.nick = nick;
-        this.query = query;
-
+        this.msg = msg;
+        
         start();
     }
 
@@ -38,7 +30,7 @@ public class GoogleBookSearchThread extends Thread
 
             JSONObject answer;
             answer = google.search(GoogleSearch.searchType.BOOKS_SEARCH,
-                        this.query);
+                        this.msg.getText());
 
             this.showAnswer(answer);
         } catch (Exception e) {
@@ -53,10 +45,10 @@ public class GoogleBookSearchThread extends Thread
         JSONObject result = data.getJSONArray("results").getJSONObject(0);
 
         String title = result.optString("titleNoFormatting");
-        this.con.doPrivmsg(this.chan, title);
+        this.msg.getConn().doPrivmsg(this.msg.getTarget(), title);
         
         String url = URLDecoder.decode(result.optString("url"), "UTF-8");
-        this.con.doPrivmsg(this.chan, url);
+        this.msg.getConn().doPrivmsg(this.msg.getTarget(), url);
 
         String bookInfo;
         bookInfo = "by " + result.optString("authors");
@@ -65,6 +57,6 @@ public class GoogleBookSearchThread extends Thread
         bookInfo += " - " + result.optString("pageCount");
         bookInfo += " pages";
 
-        this.con.doPrivmsg(this.chan, bookInfo);
+        this.msg.getConn().doPrivmsg(this.msg.getTarget(), bookInfo);
     }
 }

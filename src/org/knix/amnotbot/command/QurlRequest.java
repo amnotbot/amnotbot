@@ -33,7 +33,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 
-import org.apache.log4j.Logger;
 
 /**
  * Request a shortened URL from Qurl.org
@@ -43,21 +42,12 @@ import org.apache.log4j.Logger;
 public class QurlRequest extends Thread
 {
 
-    private BotConnection conn;
-    private String chan;
-    private String nick;
-    private String query;
+    private BotMessage msg;
     public static final String QURL_REGEX = ".*a href=\"(http://qurl.org.*)\".*";
  
-    public QurlRequest(BotConnection conn,
-            String chan,
-            String nick,
-            String query)
+    public QurlRequest(BotMessage msg)
     {
-        this.conn = conn;
-        this.chan = chan;
-        this.nick = nick;
-        this.query = query;
+        this.msg = msg;
 
         start();
     }
@@ -65,6 +55,7 @@ public class QurlRequest extends Thread
     public void run()
     {
         try {
+            String query = this.msg.getText();
             String encoded = URLEncoder.encode(query, "UTF-8");
 
             URL url = new URL("http://qurl.org/submit.jsp?url=" + encoded);
@@ -76,17 +67,19 @@ public class QurlRequest extends Thread
             String buf = reader.readLine();
             if (buf.matches(QURL_REGEX)) {
                 String qurl = buf.replaceFirst(QURL_REGEX, "$1");
-                String domain;
-                domain = this.query.replaceFirst(".*https?://([\\w.-]+)/.*",
+                String domain;               
+                domain = query.replaceFirst(".*https?://([\\w.-]+)/.*",
                                                                         "<$1>");
                 if (domain.equals(query)) {
                     domain = "";
                 }
 
-                this.conn.doPrivmsg(chan, nick + ": " + qurl + " " + domain);
+                this.msg.getConn().doPrivmsg(this.msg.getTarget(),
+                        this.msg.getUser().getNick() + ": " + qurl +
+                        " " + domain);
             }
         } catch (Exception e) {
-            BotLogger.getDebugLogger().debug(e.getMessage());
+            BotLogger.getDebugLogger().debug(e);
         }
     }
 }

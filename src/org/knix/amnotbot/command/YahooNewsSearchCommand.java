@@ -1,25 +1,27 @@
 package org.knix.amnotbot.command;
 
 import org.knix.amnotbot.*;
-import org.schwering.irc.lib.IRCUser;
 
 import com.yahoo.search.SearchClient;
 
-public class YahooNewsSearchCommand extends BotCommandImp
+public class YahooNewsSearchCommand implements BotCommand
 {
 
     private SearchClient yahooClient;
 
     public YahooNewsSearchCommand(SearchClient yahooClient)
-    {
-        super("^!(y)?news\\s+(.*)", "ynews news");
-
+    {   
         this.yahooClient = yahooClient;
     }
 
-    public void execute(BotConnection con, String chan, IRCUser user, String msg)
+    public void execute(BotMessage message)
     {
-        new YahooThread(this.yahooClient, con, chan, user, this.getGroup(2),
+        new YahooThread(this.yahooClient, message,
                 YahooThread.searchType.NEWS_SEARCH);
+    }
+
+    public String help()
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 }
