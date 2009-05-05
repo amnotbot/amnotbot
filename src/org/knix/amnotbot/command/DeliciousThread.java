@@ -27,9 +27,9 @@ public class DeliciousThread extends Thread
 
         opts = new CommandOptions(msg.getText());
 
-        opts.addOption(new CmdStringOption("title"));
-        opts.addOption(new CmdCommaSeparatedOption("tags"));
-        opts.addOption(new CmdStringOption("comment"));
+        opts.addOption(new CmdOptionImp("title"));
+        opts.addOption(new CmdOptionImp("tags", ","));
+        opts.addOption(new CmdOptionImp("comment"));
 
         this.parser = new BotHTMLParser(this.url);
 

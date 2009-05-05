@@ -1,5 +1,6 @@
 package org.knix.amnotbot.command.utils;
 
+import java.util.Arrays;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -7,18 +8,18 @@ import static org.junit.Assert.*;
  *
  * @author gpoppino
  */
-public class CmdStringOptionTest
+public class CmdOptionImpTest
 {
 
-    public CmdStringOptionTest()
+    public CmdOptionImpTest()
     {
     }
 
     @Test
     public void testBuildArgs()
     {
-        CmdStringOption cmd;
-        cmd = new CmdStringOption("text");
+        CmdOptionImp cmd;
+        cmd = new CmdOptionImp("text");
 
         cmd.buildArgs("text:message");      
         assertEquals(cmd.tokens()[0], "message");
@@ -34,18 +35,34 @@ public class CmdStringOptionTest
 
         cmd.buildArgs("text:This is a short message.");        
         assertEquals(cmd.tokens()[0], "This is a short message.");
+    }
 
-        CmdStringOption cmd1;
-        cmd1 = new CmdStringOption("m", '\'');
-        cmd1.buildArgs("m:'Brief message'");
-        assertEquals(cmd1.tokens()[0], "Brief message");
+    @Test
+    public void testTokenizerBuildArgs()
+    {
+        CmdOptionImp colours = new CmdOptionImp("colours", ",");
+
+        colours.buildArgs("colours:yellow,orange,black,green,white");
+        assertTrue(Arrays.equals(colours.tokens(), 
+                new String[] {"yellow", "orange", "black", "green", "white"})
+                );
+
+        colours.buildArgs("colours:violet,strong blue,soft pink");
+        assertTrue(Arrays.equals(colours.tokens(), 
+                new String[] {"violet", "strong blue", "soft pink"})
+                );
+
+        colours.buildArgs("colours: green,strong blue,soft pink opt2:abc");
+        assertTrue(Arrays.equals(colours.tokens(),
+                new String [] {"green", "strong blue", "soft pink"})
+                );
     }
 
     @Test
     public void testHasValue()
     {
-        CmdStringOption cmd;
-        cmd = new CmdStringOption("text");
+        CmdOptionImp cmd;
+        cmd = new CmdOptionImp("text");
 
         cmd.buildArgs("text:message");
         assertTrue(cmd.hasValue());
@@ -53,7 +70,7 @@ public class CmdStringOptionTest
         cmd.buildArgs(null);
         assertFalse(cmd.hasValue());
 
-        cmd.buildArgs("text:This is a message");
+        cmd.buildArgs("op1:abc,def,ghi text:\"This is a message\" op2:123");
         assertTrue(cmd.hasValue());
 
         cmd.buildArgs("option:Testing option");

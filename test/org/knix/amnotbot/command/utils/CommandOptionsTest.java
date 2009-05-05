@@ -32,9 +32,9 @@ public class CommandOptionsTest
     public void setUp()
     {                
         this.cmdOptions.addOption(
-                new CmdCommaSeparatedOption(this.tags_option)
+                new CmdOptionImp(this.tags_option, ",")
                 );
-        this.cmdOptions.addOption(new CmdStringOption(this.text_option));
+        this.cmdOptions.addOption(new CmdOptionImp(this.text_option));
     }
 
     @After
@@ -64,8 +64,7 @@ public class CommandOptionsTest
         assertEquals(textOpt.getName(), this.text_option);
 
         CmdOption commaOpt;
-        commaOpt = (CmdCommaSeparatedOption) 
-                this.cmdOptions.getOption(this.tags_option);
+        commaOpt = this.cmdOptions.getOption(this.tags_option);
         assertEquals(commaOpt.getName(), this.tags_option);
 
         assertNull(this.cmdOptions.getOption("comment"));

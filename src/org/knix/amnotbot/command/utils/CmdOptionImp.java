@@ -1,22 +1,23 @@
 package org.knix.amnotbot.command.utils;
 
-public class CmdStringOption implements CmdOption
+public class CmdOptionImp implements CmdOption
 {
 
-    private String name;
-    private String arg0;
     private char delim;
+    private String name, arg0, tokenizer;
 
-    public CmdStringOption(String name, char delim)
+    public CmdOptionImp(String name, String tokenizer)
     {
-        this.delim = delim;
+        this.delim = '"';
+        this.tokenizer = tokenizer;
         this.arg0 = null;
         this.name = name;
     }
 
-    public CmdStringOption(String name)
+    public CmdOptionImp(String name)
     {
         this.delim = '"';
+        this.tokenizer = "\0";
         this.arg0 = null;
         this.name = name;
     }
@@ -75,10 +76,17 @@ public class CmdStringOption implements CmdOption
         return (this.arg0 != null);
     }
 
-    public String[] tokens()
+    public String [] tokens()
     {
-        String [] keywords;       
-        keywords = new String[] { this.stringValue().trim() };
-        return keywords;
+        String[] values;
+
+        if (this.hasValue()) {
+            values = this.stringValue().split(this.tokenizer);
+            for (int i = 0; i < values.length; ++i) {
+                values[i] = values[i].trim();
+            }
+            return values;
+        }
+        return new String [] { "" };
     }
 }

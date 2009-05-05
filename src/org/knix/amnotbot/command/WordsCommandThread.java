@@ -1,8 +1,7 @@
 package org.knix.amnotbot.command;
 
-import org.knix.amnotbot.command.utils.CmdCommaSeparatedOption;
 import org.knix.amnotbot.command.utils.CommandOptions;
-import org.knix.amnotbot.command.utils.CmdStringOption;
+import org.knix.amnotbot.command.utils.CmdOptionImp;
 import org.knix.amnotbot.*;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -29,12 +28,12 @@ public class WordsCommandThread extends Thread
 
         opts = new CommandOptions(msg.getText());
 
-        opts.addOption(new CmdCommaSeparatedOption("nick"));
-        opts.addOption(new CmdCommaSeparatedOption("word"));
-        opts.addOption(new CmdStringOption("number"));
-        opts.addOption(new CmdStringOption("date"));
-        opts.addOption(new CmdStringOption("op"));
-        opts.addOption(new CmdStringOption("channel"));
+        opts.addOption(new CmdOptionImp("nick", ","));
+        opts.addOption(new CmdOptionImp("word", ","));
+        opts.addOption(new CmdOptionImp("number"));
+        opts.addOption(new CmdOptionImp("date"));
+        opts.addOption(new CmdOptionImp("op"));
+        opts.addOption(new CmdOptionImp("channel"));
 
         start();
     }

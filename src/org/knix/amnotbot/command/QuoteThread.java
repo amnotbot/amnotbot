@@ -4,7 +4,7 @@
 package org.knix.amnotbot.command;
 
 import org.knix.amnotbot.command.utils.CommandOptions;
-import org.knix.amnotbot.command.utils.CmdStringOption;
+import org.knix.amnotbot.command.utils.CmdOptionImp;
 import org.knix.amnotbot.*;
 import java.util.Random;
 
@@ -30,9 +30,9 @@ public class QuoteThread extends Thread
         this.db = new Database();
         this.opts = new CommandOptions(msg.getText());
 
-        this.opts.addOption(new CmdStringOption("text"));
-        this.opts.addOption(new CmdStringOption("id"));
-        this.opts.addOption(new CmdStringOption("op"));
+        this.opts.addOption(new CmdOptionImp("text"));
+        this.opts.addOption(new CmdOptionImp("id"));
+        this.opts.addOption(new CmdOptionImp("op"));
 
         start();
     }

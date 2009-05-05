@@ -1,7 +1,7 @@
 package org.knix.amnotbot.command;
 
 import org.knix.amnotbot.command.utils.CommandOptions;
-import org.knix.amnotbot.command.utils.CmdStringOption;
+import org.knix.amnotbot.command.utils.CmdOptionImp;
 import org.knix.amnotbot.*;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -41,14 +41,14 @@ public class YahooThread extends Thread
 
         this.opts = new CommandOptions(msg.getText());
 
-        this.opts.addOption(new CmdStringOption("region"));
-        this.opts.addOption(new CmdStringOption("format"));
-        this.opts.addOption(new CmdStringOption("language"));
-        this.opts.addOption(new CmdStringOption("country"));
-        this.opts.addOption(new CmdStringOption("site"));
-        this.opts.addOption(new CmdStringOption("adult_ok"));
-        this.opts.addOption(new CmdStringOption("license"));
-        this.opts.addOption(new CmdStringOption("type"));
+        this.opts.addOption(new CmdOptionImp("region"));
+        this.opts.addOption(new CmdOptionImp("format"));
+        this.opts.addOption(new CmdOptionImp("language"));
+        this.opts.addOption(new CmdOptionImp("country"));
+        this.opts.addOption(new CmdOptionImp("site"));
+        this.opts.addOption(new CmdOptionImp("adult_ok"));
+        this.opts.addOption(new CmdOptionImp("license"));
+        this.opts.addOption(new CmdOptionImp("type"));
 
         start();
     }
