@@ -62,17 +62,7 @@ public class CmdStringOption implements CmdOption
         return name;
     }
 
-    public String stringValue(String sep)
-    {
-        return this.stringValue();
-    }
-
-    public String stringValue(String sep, String joinChar)
-    {
-        return this.stringValue();
-    }
-
-    public String stringValue()
+    private String stringValue()
     {
         if (this.hasValue()) {
             return this.arg0;
@@ -83,5 +73,12 @@ public class CmdStringOption implements CmdOption
     public boolean hasValue()
     {
         return (this.arg0 != null);
+    }
+
+    public String[] tokens()
+    {
+        String [] keywords;       
+        keywords = new String[] { this.stringValue().trim() };
+        return keywords;
     }
 }

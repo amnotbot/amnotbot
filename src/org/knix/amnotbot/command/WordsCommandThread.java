@@ -9,7 +9,6 @@ import java.io.FileNotFoundException;
 import java.util.LinkedList;
 
 import javax.naming.directory.InvalidAttributeValueException;
-import org.knix.amnotbot.command.utils.CmdOption;
 import org.knix.amnotbot.config.BotConfiguration;
 
 public class WordsCommandThread extends Thread
@@ -66,7 +65,7 @@ public class WordsCommandThread extends Thread
     {
         String target = this.msg.getTarget();
         if (this.opts.getOption("channel").hasValue()) {
-            target = this.opts.getOption("channel").stringValue();
+            target = this.opts.getOption("channel").tokens()[0];
         }
 
         if (target.charAt(0) != '#') {
@@ -107,22 +106,20 @@ public class WordsCommandThread extends Thread
 
     private void processRequest(WordCounter wordCounter)
     {
-        String num = this.opts.getOption("number").stringValue();
-        int n = num == null ? 5 : Integer.parseInt(num);
+        String num;
+        String [] nicks;
 
-        String nickList = null;
-        if (opts.getOption("nick").hasValue()) {
-            CmdOption nickOpt = this.opts.getOption("nick");
-            nickList = nickOpt.stringValue(" ").toLowerCase();
-        }
+        num = this.opts.getOption("number").tokens()[0];
+        int n = num == null ? 5 : Integer.parseInt(num);
+        nicks = this.opts.getOption("nick").tokens();
 
         WordResults results = new WordResults();
         switch (this.countOp) {
             case WORDS:
-                results = this.countWords(wordCounter, n, nickList);
+                results = this.countWords(wordCounter, n, nicks);
                 break;
             case LINES:
-                results = this.countLines(wordCounter, n, nickList);
+                results = this.countLines(wordCounter, n, nicks);
                 break;
         }
         this.showResults(results);
@@ -130,42 +127,41 @@ public class WordsCommandThread extends Thread
 
     private WordResults countWords(WordCounter wordCounter,
             int n,
-            String nickList)
+            String [] nicks)
     {
         String words;
         WordResults results = new WordResults();
         if (this.opts.getOption("word").hasValue()) {
             words = wordCounter.mostUsedWordsBy(n,
-                    this.opts.getOption("word").stringValue(" ").trim(),
-                    this.opts.getOption("date").stringValue());
+                    this.opts.getOption("word").tokens(),
+                    this.opts.getOption("date").tokens()[0]);
         } else {
-            words = wordCounter.mostUsedWords(n, nickList,
-                    this.opts.getOption("date").stringValue());
+            words = wordCounter.mostUsedWords(n, nicks,
+                    this.opts.getOption("date").tokens()[0]);
         }
         results.setOutputMessage("Most used words for ");
         results.setWords(words);
-
         return results;
     }
 
     private WordResults countLines(WordCounter wordCounter,
             int n,
-            String nickList)
+            String [] nicks)
     {
         String op = "";
         if (this.opts.getOption("op").hasValue()) {
-            op = this.opts.getOption("op").stringValue();
+            op = this.opts.getOption("op").tokens()[0];
         }
 
         String words;
         WordResults results = new WordResults();
         if (op.compareTo("avg") == 0) {
-            words = wordCounter.avgWordsLine(n, nickList,
-                    this.opts.getOption("date").stringValue());
+            words = wordCounter.avgWordsLine(n, nicks,
+                    this.opts.getOption("date").tokens()[0]);
             results.setOutputMessage("Avg. words per line per user for ");
         } else {
             words = wordCounter.topLines(n,
-                    this.opts.getOption("date").stringValue());
+                    this.opts.getOption("date").tokens()[0]);
             results.setOutputMessage("Lines per user for ");
         }
         results.setWords(words);
@@ -188,7 +184,7 @@ public class WordsCommandThread extends Thread
         LinkedList<String> output = this.truncateOutput(results);
         if (opts.getOption("nick").hasValue()) {
             conn.doPrivmsg(target, results.getOutputMessage() + "'" +
-                    opts.getOption("nick").stringValue().trim() +
+                    opts.getOption("nick").tokens()[0] +
                     "': " + output.getFirst());
         } else {
             conn.doPrivmsg(target, results.getOutputMessage() + "'" +

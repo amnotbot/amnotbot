@@ -1,8 +1,6 @@
 package org.knix.amnotbot.command;
 
-import org.knix.amnotbot.command.utils.CmdCommaSeparatedOption;
-import org.knix.amnotbot.command.utils.CommandOptions;
-import org.knix.amnotbot.command.utils.CmdStringOption;
+import org.knix.amnotbot.command.utils.*;
 import org.knix.amnotbot.*;
 import java.util.Date;
 
@@ -29,9 +27,9 @@ public class DeliciousThread extends Thread
 
         opts = new CommandOptions(msg.getText());
 
-        opts.addOption(new CmdStringOption("title", '"'));
+        opts.addOption(new CmdStringOption("title"));
         opts.addOption(new CmdCommaSeparatedOption("tags"));
-        opts.addOption(new CmdStringOption("comment", '"'));
+        opts.addOption(new CmdStringOption("comment"));
 
         this.parser = new BotHTMLParser(this.url);
 
@@ -60,11 +58,13 @@ public class DeliciousThread extends Thread
     {
         String tmpTags = "";
         String finalTags = "";
-        CmdCommaSeparatedOption tagOption;
+        CmdOption tagOption;
 
-        tagOption = (CmdCommaSeparatedOption) this.opts.getOption("tags");
+        tagOption = this.opts.getOption("tags");
         if (tagOption.hasValue()) {
-            tmpTags += tagOption.stringValue(" ", ".");
+            for(String t : tagOption.tokens()) {
+                tmpTags += t.replaceAll("\\s", ".");
+            }
         }
 
         tmpTags += this.getPageTags();
@@ -86,11 +86,11 @@ public class DeliciousThread extends Thread
 
     private String getTitle()
     {
-        CmdStringOption titleOption;
+        CmdOption titleOption;
 
-        titleOption = (CmdStringOption) this.opts.getOption("title");
+        titleOption = this.opts.getOption("title");
         if (titleOption.hasValue()) {
-            return titleOption.stringValue();
+            return titleOption.tokens()[0];
         }
 
         String title = this.parser.getTitle();
@@ -115,7 +115,7 @@ public class DeliciousThread extends Thread
 
         tags = this.getTags();
         title = this.getTitle();
-        comment = this.opts.getOption("comment").stringValue();
+        comment = this.opts.getOption("comment").tokens()[0];
 
         if (this.showTitle && this.isPageTitle()) {
             this.msg.getConn().doPrivmsg(this.msg.getTarget(), title);

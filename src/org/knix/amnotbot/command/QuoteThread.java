@@ -30,7 +30,7 @@ public class QuoteThread extends Thread
         this.db = new Database();
         this.opts = new CommandOptions(msg.getText());
 
-        this.opts.addOption(new CmdStringOption("text", '"'));
+        this.opts.addOption(new CmdStringOption("text"));
         this.opts.addOption(new CmdStringOption("id"));
         this.opts.addOption(new CmdStringOption("op"));
 
@@ -50,16 +50,16 @@ public class QuoteThread extends Thread
         this.opts.buildArgs();
 
         if (this.opts.getOption("op").hasValue()) {
-            String op = this.opts.getOption("op").stringValue();
+            String op = this.opts.getOption("op").tokens()[0];
 
             if (op.compareTo("set") == 0) {
-                this.createNewQuote(this.opts.getOption("text").stringValue());
+                this.createNewQuote(this.opts.getOption("text").tokens()[0]);
             } else if (op.compareTo("del") == 0) {
-                this.deleteQuote(this.opts.getOption("id").stringValue());
+                this.deleteQuote(this.opts.getOption("id").tokens()[0]);
             } else if (op.compareTo("get") == 0) {
                 this.getRandomQuote();
             } else if (op.compareTo("info") == 0) {
-                this.getInfoAboutQuote(this.opts.getOption("id").stringValue());
+                this.getInfoAboutQuote(this.opts.getOption("id").tokens()[0]);
             }
         } else {
             this.getRandomQuote();

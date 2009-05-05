@@ -21,24 +21,24 @@ public class CmdStringOptionTest
         cmd = new CmdStringOption("text");
 
         cmd.buildArgs("text:message");      
-        assertEquals(cmd.stringValue(), "message");
+        assertEquals(cmd.tokens()[0], "message");
 
         cmd.buildArgs("op1:tom text:My message op2:123 op3:abc");      
-        assertEquals(cmd.stringValue(), "My message");
+        assertEquals(cmd.tokens()[0], "My message");
 
         cmd.buildArgs("text:\"This is a long sentence.\"");        
-        assertEquals(cmd.stringValue(), "This is a long sentence.");
+        assertEquals(cmd.tokens()[0], "This is a long sentence.");
 
         cmd.buildArgs("This is a message");     
-        assertEquals(cmd.stringValue(), "");
+        assertEquals(cmd.tokens()[0], "");
 
         cmd.buildArgs("text:This is a short message.");        
-        assertEquals(cmd.stringValue(), "This is a short message.");
+        assertEquals(cmd.tokens()[0], "This is a short message.");
 
         CmdStringOption cmd1;
         cmd1 = new CmdStringOption("m", '\'');
         cmd1.buildArgs("m:'Brief message'");
-        assertEquals(cmd1.stringValue(), "Brief message");
+        assertEquals(cmd1.tokens()[0], "Brief message");
     }
 
     @Test

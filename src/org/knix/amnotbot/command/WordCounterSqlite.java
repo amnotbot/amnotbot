@@ -16,9 +16,8 @@ public class WordCounterSqlite implements WordCounter
         this.db = new Database();
     }
 
-    public String getNickWhereClause(String nickList)
-    {
-        String[] nicks = nickList.split(" ");
+    public String getNickWhereClause(String [] nicks)
+    {       
         if (nicks.length == 0) return null;
 
         String where = "";
@@ -44,15 +43,14 @@ public class WordCounterSqlite implements WordCounter
         return where;
     }
 
-    private String getWordsWhereClause(String words)
+    private String getWordsWhereClause(String [] words)
     {
         String where = "";
-        String[] w = words.split(" ");
-        for (int i = 0; i < w.length; ++i) {
+        for (int i = 0; i < words.length; ++i) {
             if (i > 0) {
                 where += " OR ";
             }
-            where += "word = '" + w[i] + "'";
+            where += "word = '" + words[i] + "'";
         }
         return where;
     }
@@ -84,11 +82,11 @@ public class WordCounterSqlite implements WordCounter
         return table.getResults();
     }
 
-    public String mostUsedWords(int numberOfWords, String nickList, String date)
+    public String mostUsedWords(int numberOfWords, String [] nicks, String date)
     {
         String where = null;
-        if (nickList != null) {
-            where = this.getNickWhereClause(nickList);
+        if (nicks != null) {
+            where = this.getNickWhereClause(nicks);
         }
 
         if (date != null) {
@@ -114,10 +112,12 @@ public class WordCounterSqlite implements WordCounter
         return this.runQuery(query);
     }
 
-    public String mostUsedWordsBy(int numberOfWords, String words, String date)
+    public String mostUsedWordsBy(int numberOfWords, 
+            String [] words,
+            String date)
     {
         String where = null;
-        if (words.compareTo("*") != 0) {
+        if (words != null) {
             where = this.getWordsWhereClause(words);
         }
 
@@ -160,11 +160,11 @@ public class WordCounterSqlite implements WordCounter
         return this.runQuery(query);
     }
 
-    public String avgWordsLine(int numberOfusers, String nickList, String date)
+    public String avgWordsLine(int numberOfusers, String [] nicks, String date)
     {
         String where = null;
-        if (nickList != null) {
-            where = this.getNickWhereClause(nickList);
+        if (nicks != null) {
+            where = this.getNickWhereClause(nicks);
         }
 
         if (date != null) {

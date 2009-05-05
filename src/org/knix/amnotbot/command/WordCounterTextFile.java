@@ -61,7 +61,7 @@ public class WordCounterTextFile implements WordCounter
         }
     }
 
-    private void buildWordsList(String nicks)
+    private void buildWordsList(String [] nicks)
     {
         Pattern botPattern;
         Pattern urlPattern;
@@ -119,12 +119,10 @@ public class WordCounterTextFile implements WordCounter
         }
     }
 
-    private String buildNickPattern(String nicklist)
+    private String buildNickPattern(String [] nicks)
     {
-        String[] nicks;
         String nickPattern = new String();
-        
-        nicks = nicklist.split(" ");
+               
         nickPattern = "\\[.*\\]\\s(";
         for (int i = 0; i < nicks.length; ++i) {
             if (i > 0) {
@@ -167,14 +165,14 @@ public class WordCounterTextFile implements WordCounter
     }
 
     public String mostUsedWords(int n,
-            String nickList,
+            String [] nicks,
             String ignoreDate)
     {
         WordComparator<WordNumber> c = new WordComparator<WordNumber>();
         PriorityQueue<WordNumber> wordsCounted =
                 new PriorityQueue<WordNumber>(this.htWords.size() + 10, c);
 
-        this.buildWordsList(nickList);
+        this.buildWordsList(nicks);
 
         String word;
         Enumeration<String> k;
@@ -211,6 +209,16 @@ public class WordCounterTextFile implements WordCounter
     {
         String val = "Not yet implemented";
         return val;
+    }
+
+    public String mostUsedWordsBy(int numberOfWords, String[] words, String date)
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public String avgWordsLine(int numberOfusers, String[] nicks, String date)
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 }
 class WordNumber

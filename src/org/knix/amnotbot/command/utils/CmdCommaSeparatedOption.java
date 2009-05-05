@@ -52,31 +52,21 @@ public class CmdCommaSeparatedOption implements CmdOption
         return name;
     }
 
-    public String stringValue(String sep, String joinChar)
+    public String [] tokens()
     {
-        String value;
-        String[] keywords;        
+        String[] values;
 
-        value = new String();
         if (this.hasValue()) {
-            keywords = this.stringValue().split(",");
-            value += keywords[0].trim();
-            for (int j = 1; j < keywords.length; ++j) {
-                String word = keywords[j];
-                word = word.trim();
-                word = word.replaceAll("\\s", joinChar);
-                value += sep + word;
-            }            
+            values = this.stringValue().split(",");
+            for (int i = 0; i < values.length; ++i) {
+                values[i] = values[i].trim();
+            }
+            return values;
         }
-        return value.toLowerCase();
+        return null;
     }
 
-    public String stringValue(String sep)
-    {
-        return this.stringValue(sep, " ");
-    }
-
-    public String stringValue()
+    private String stringValue()
     {
         if (this.hasValue()) {
             return this.arg0.toLowerCase();

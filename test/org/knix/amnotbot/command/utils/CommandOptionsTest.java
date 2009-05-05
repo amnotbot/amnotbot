@@ -1,5 +1,6 @@
 package org.knix.amnotbot.command.utils;
 
+import java.util.Arrays;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -12,7 +13,8 @@ import static org.junit.Assert.*;
 public class CommandOptionsTest
 {
 
-    String tags_option, tags_option_value;
+    String tags_option;
+    String [] tags_option_value;
     String text_option, text_option_value;
     CommandOptions cmdOptions;
 
@@ -23,7 +25,7 @@ public class CommandOptionsTest
         this.tags_option = new String("tags");
         this.text_option = new String("text");
         this.text_option_value = new String("message");
-        this.tags_option_value = new String("abc,def,ghi");
+        this.tags_option_value = new String [] {"abc", "def", "ghi"};
     }
 
     @Before
@@ -32,7 +34,7 @@ public class CommandOptionsTest
         this.cmdOptions.addOption(
                 new CmdCommaSeparatedOption(this.tags_option)
                 );
-        this.cmdOptions.addOption(new CmdStringOption(this.text_option, '"'));
+        this.cmdOptions.addOption(new CmdStringOption(this.text_option));
     }
 
     @After
@@ -45,24 +47,23 @@ public class CommandOptionsTest
     {
         this.cmdOptions.buildArgs();
 
-        CmdStringOption textOpt;
-        textOpt = (CmdStringOption) this.cmdOptions.getOption(this.text_option);
-        assertEquals(textOpt.stringValue(), this.text_option_value);
+        CmdOption textOpt;
+        textOpt = this.cmdOptions.getOption(this.text_option);
+        assertEquals(textOpt.tokens()[0], this.text_option_value);
 
-        CmdCommaSeparatedOption commaOpt;
-        commaOpt = (CmdCommaSeparatedOption)
-                this.cmdOptions.getOption(this.tags_option);
-        assertEquals(commaOpt.stringValue(), this.tags_option_value);      
+        CmdOption commaOpt;
+        commaOpt = this.cmdOptions.getOption(this.tags_option);
+        assertTrue(Arrays.equals(commaOpt.tokens(), this.tags_option_value));
     }
 
     @Test
     public void testGetOption()
     {
-        CmdStringOption textOpt;
-        textOpt = (CmdStringOption) this.cmdOptions.getOption(this.text_option);
+        CmdOption textOpt;
+        textOpt = this.cmdOptions.getOption(this.text_option);
         assertEquals(textOpt.getName(), this.text_option);
 
-        CmdCommaSeparatedOption commaOpt;
+        CmdOption commaOpt;
         commaOpt = (CmdCommaSeparatedOption) 
                 this.cmdOptions.getOption(this.tags_option);
         assertEquals(commaOpt.getName(), this.tags_option);

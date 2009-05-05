@@ -83,25 +83,25 @@ public class YahooThread extends Thread
         request.setResults(1);
 
         if (this.opts.getOption("language").hasValue()) {
-            request.setLanguage(this.opts.getOption("language").stringValue());
+            request.setLanguage(this.opts.getOption("language").tokens()[0]);
         } else {
             request.setLanguage("en");
         }
 
         if (this.opts.getOption("country").hasValue()) {
-            request.setCountry(this.opts.getOption("country").stringValue());
+            request.setCountry(this.opts.getOption("country").tokens()[0]);
         }
 
         if (this.opts.getOption("format").hasValue()) {
-            request.setFormat(this.opts.getOption("format").stringValue());
+            request.setFormat(this.opts.getOption("format").tokens()[0]);
         }
 
         if (this.opts.getOption("region").hasValue()) {
-            request.setRegion(this.opts.getOption("region").stringValue());
+            request.setRegion(this.opts.getOption("region").tokens()[0]);
         }
 
         if (this.opts.getOption("adult_ok").hasValue()) {
-            String adult_ok = this.opts.getOption("adult_ok").stringValue();
+            String adult_ok = this.opts.getOption("adult_ok").tokens()[0];
             String _yes = new String("yes");
             if (adult_ok.equals(_yes)) {
                 request.setAdultOk(true);
@@ -111,15 +111,15 @@ public class YahooThread extends Thread
         }
 
         if (this.opts.getOption("type").hasValue()) {
-            request.setType(this.opts.getOption("type").stringValue());
+            request.setType(this.opts.getOption("type").tokens()[0]);
         }
 
         if (this.opts.getOption("license").hasValue()) {
-            request.addLicense(this.opts.getOption("license").stringValue());
+            request.addLicense(this.opts.getOption("license").tokens()[0]);
         }
 
         if (this.opts.getOption("site").hasValue()) {
-            request.addSite(this.opts.getOption("site").stringValue());
+            request.addSite(this.opts.getOption("site").tokens()[0]);
         }
         return request;
     }
@@ -164,7 +164,7 @@ public class YahooThread extends Thread
 
         request.setResults(1);
         if (this.opts.getOption("language").hasValue()) {
-            request.setLanguage(this.opts.getOption("language").stringValue());
+            request.setLanguage(this.opts.getOption("language").tokens()[0]);
         } else {
             request.setLanguage("en");
         }
