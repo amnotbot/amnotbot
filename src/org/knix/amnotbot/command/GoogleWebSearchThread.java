@@ -15,10 +15,12 @@ import org.json.JSONObject;
 public class GoogleWebSearchThread extends Thread
 {
     private BotMessage msg;
+    private GoogleSearch.searchType sType;
 
-    public GoogleWebSearchThread(BotMessage msg)
+    public GoogleWebSearchThread(GoogleSearch.searchType s, BotMessage msg)
     {
         this.msg = msg;
+        this.sType = s;
 
         start();
     }
@@ -29,9 +31,7 @@ public class GoogleWebSearchThread extends Thread
             GoogleSearch google = new GoogleSearch();
             
             JSONObject answer;
-            answer = google.search(GoogleSearch.searchType.WEB_SEARCH,
-                        this.msg.getText());
-
+            answer = google.search(this.sType, this.msg.getText());
             this.showAnswer(answer);
          } catch (Exception e) {
             BotLogger.getDebugLogger().debug(e.getMessage());

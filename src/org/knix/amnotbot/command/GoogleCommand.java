@@ -9,8 +9,9 @@ public class GoogleCommand implements BotCommand
     {
     }
 
-    public void execute(BotMessage message) {
-        new GoogleWebSearchThread(message);
+    public void execute(BotMessage message)
+    {
+        new GoogleWebSearchThread(GoogleSearch.searchType.WEB_SEARCH, message);
     }
 
     public String help()
