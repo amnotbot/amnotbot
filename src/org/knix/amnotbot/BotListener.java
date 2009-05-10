@@ -41,7 +41,6 @@ import org.knix.amnotbot.config.BotConfiguration;
 import org.schwering.irc.lib.IRCEventListener;
 import org.schwering.irc.lib.IRCModeParser;
 import org.schwering.irc.lib.IRCUser;
-import com.yahoo.search.SearchClient;
 import org.apache.commons.configuration.Configuration;
 
 /**
@@ -52,7 +51,7 @@ import org.apache.commons.configuration.Configuration;
  */
 public class BotListener implements IRCEventListener
 {
-    private BotConnection con;
+    private BotConnection conn;
     private List<String> channels;
     private BotCommandInterpreter cmdInterpreter;
 
@@ -61,115 +60,91 @@ public class BotListener implements IRCEventListener
      * @param con IRC Connection we're handling
      * @param channels Channels to join on connect
      */
-    public BotListener(BotConnection con, List<String> channels)
+    public BotListener(BotConnection conn, List<String> channels)
     {
-        this.con = con;
-        this.channels = channels;    
-        this.cmdInterpreter =
-                new BotCommandInterpreter(new BotSpamDetector(channels));
+        this.conn = conn;
+        this.channels = channels;
 
-        if (BotConfiguration.getConfig().getBoolean("delicious_enabled")) {
-            this.cmdInterpreter.addLinkListener(new DeliciousCommand());
-        }
+        BotCommandInterpreterConstructor c =
+                new BotCommandInterpreterConstructor(
+                                new BotCommandInterpreterBuilderFile()
+                );
 
-        //this.cmdInterpreter.add(new SpellCommand());
-
-        this.cmdInterpreter.addLinkListener(new QurlRequestCommand());
-        this.cmdInterpreter.addListener(new BotCommandEvent("g"),
-                new GoogleCommand()
-                );
-        this.cmdInterpreter.addListener(new BotCommandEvent("gbook"),
-                new GoogleBookSearchCommand()
-                );
-        SearchClient yahooClient = new SearchClient("G7RklHzV34Gs_AYiBU0xA4wak1J3plPRonFhFfwJEeXMVP4PrpvwiflgxXa4uw--");
-        this.cmdInterpreter.addListener(new BotCommandEvent("y"),
-                new YahooWebSearchCommand(yahooClient)
-                );
-        this.cmdInterpreter.addListener(new BotCommandEvent("news"),
-                new YahooNewsSearchCommand(yahooClient)
-                );
-        this.cmdInterpreter.addListener(new BotCommandEvent("w"),
-                new WordsCommand());
-        this.cmdInterpreter.addListener(new BotCommandEvent("lines"),
-                new LinesCommand()
-                );
-        this.cmdInterpreter.addListener(new BotCommandEvent("quote"),
-                new QuoteCommand()
-                );
+        this.cmdInterpreter = c.construct(conn);
     }
 
     public void onPrivmsg(String target, IRCUser user, String msg)
     {
-        con.print(target, user.getNick() + "> " + msg);
+        conn.print(target, user.getNick() + "> " + msg);
 
-        if (con.isSilent()) return;
+        if (conn.isSilent()) return;
 
-        this.cmdInterpreter.run( new BotMessage(this.con, target, user, msg) );
+        this.cmdInterpreter.run( new BotMessage(this.conn, target, user, msg) );
     }
 
     public void onDisconnected()
     {
-        con.print(BotConstants.getBotConstants().getAppPFX() +
+        conn.print(BotConstants.getBotConstants().getAppPFX() +
                 " DISCONNECTED!");
     }
 
     public void onError(int num, String msg)
     {
-        con.print(BotConstants.getBotConstants().getServerPFX() +
+        conn.print(BotConstants.getBotConstants().getServerPFX() +
                 " ERROR #" + num + " !!!!!");
-        con.print("\t" + msg);
+        conn.print("\t" + msg);
 
         switch (num) {
             case 432:
             case 433:
-                con.alternateNick();
+                conn.alternateNick();
                 break;
         }
     }
 
     public void onError(String msg)
     {
-        con.print(BotConstants.getBotConstants().getServerPFX() + " ERROR!!!!");
-        con.print("\t" + msg);
+        conn.print(BotConstants.getBotConstants().getServerPFX() + " ERROR!!!!");
+        conn.print("\t" + msg);
     }
 
     public void onInvite(String chan, IRCUser user, String pNick)
     {
-        con.print(chan, BotConstants.getBotConstants().getServerPFX() +
+        conn.print(chan, BotConstants.getBotConstants().getServerPFX() +
                 " " + pNick + " invited " +
-                ((pNick.compareTo(con.getNick()) == 0) ? "you" : pNick) +
+                ((pNick.compareTo(conn.getNick()) == 0) ? "you" : pNick) +
                 " to join " + chan);
     }
 
     public void onJoin(String chan, IRCUser user)
     {
-        con.print(chan, BotConstants.getBotConstants().getServerPFX() +
+        conn.print(chan, BotConstants.getBotConstants().getServerPFX() +
                 " " + user.getNick() +
                 " [" + user.getHost() + "] has joined " + chan);
     }
 
     public void onKick(String chan, IRCUser user, String pNick, String msg)
     {
-        this.con.print(chan, BotConstants.getBotConstants().getServerPFX() +
+        this.conn.print(chan, BotConstants.getBotConstants().getServerPFX() +
                 " " + user.getNick() + " [" + user.getHost() + "] has kicked " +
                 pNick + " from " + chan + " with message [" + msg + "]");
 
-        if ( pNick.equals(this.con.getNick()) ) {
+        if ( pNick.equals(this.conn.getNick()) ) {
             if (BotConfiguration.getConfig().getBoolean("auto_rejoin")) {
-                this.con.doJoin(chan);
+                this.conn.doJoin(chan);
             }
         }
     }
 
     public void onNick(IRCUser nick, String newNick)
     {
-        this.con.print(BotConstants.getBotConstants().getServerPFX() +
+        this.conn.print(BotConstants.getBotConstants().getServerPFX() +
                 " " + nick.getNick() + " is now known as " + newNick);
     }
 
     public void onNotice(String target, IRCUser user, String msg)
     {
-        this.con.print(BotConstants.getBotConstants().getServerPFX() +
+        this.conn.print(BotConstants.getBotConstants().getServerPFX() +
                 " NOTICE " + user.getNick() + ": " + msg);
 
         if (user.getNick() == null) return;
@@ -183,7 +158,7 @@ public class BotListener implements IRCEventListener
                 String identifyMsg = new String("IDENTIFY");
                 if (msg.toLowerCase().contains(identifyMsg.toLowerCase())) {
                     String passwd = config.getString("nickserv_password");
-                    this.con.doPrivmsg(user.getNick(), "IDENTIFY " + passwd);
+                    this.conn.doPrivmsg(user.getNick(), "IDENTIFY " + passwd);
                 }
             }
         }
@@ -191,20 +166,20 @@ public class BotListener implements IRCEventListener
 
     public void onPart(String chan, IRCUser user, String msg)
     {
-        this.con.print(chan, BotConstants.getBotConstants().getServerPFX() +
+        this.conn.print(chan, BotConstants.getBotConstants().getServerPFX() +
                 " " + user.getNick() + " [" + user.getHost() + "] has left " +
                 chan + " [" + msg + "]");
     }
 
     public void onPing(String ping)
     {
-        this.con.print(BotConstants.getBotConstants().getServerPFX() +
+        this.conn.print(BotConstants.getBotConstants().getServerPFX() +
                 " PING: " + ping);
     }
 
     public void onQuit(IRCUser user, String msg)
     {
-        this.con.print(BotConstants.getBotConstants().getServerPFX() +
+        this.conn.print(BotConstants.getBotConstants().getServerPFX() +
                 " " + user + " [" + user.getHost() + "] has quit [" + msg + "]");
     }
 
@@ -213,11 +188,11 @@ public class BotListener implements IRCEventListener
      */
     public void onRegistered()
     {
-        this.con.print(BotConstants.getBotConstants().getServerPFX() +
-                " SUCCESS: " + this.con.getHost() + " connection registered");
+        this.conn.print(BotConstants.getBotConstants().getServerPFX() +
+                " SUCCESS: " + this.conn.getHost() + " connection registered");
 
         for (String channel : channels) {
-            this.con.doJoin(channel);
+            this.conn.doJoin(channel);
         }
     }
 
@@ -228,7 +203,7 @@ public class BotListener implements IRCEventListener
         /* 
          * TODO - actually use the parser instead of calling getLine()
          */
-        this.con.print(chan,
+        this.conn.print(chan,
                 BotConstants.getBotConstants().getServerPFX() +
                 " mode/" + chan + " [" + mParser.getLine() + "] " +
                 "by " + user.getNick());
@@ -236,23 +211,23 @@ public class BotListener implements IRCEventListener
 
     public void onMode(IRCUser user, String pNick, String mode)
     {
-        this.con.print(user.getNick() + " has changed user mode for " +
+        this.conn.print(user.getNick() + " has changed user mode for " +
                 (user.getNick().equals(pNick) ? "himself" : pNick) +
                 " to " + mode);
     }
 
     public void onTopic(String chan, IRCUser user, String topic)
     {
-        this.con.print(chan, user.getNick() +
+        this.conn.print(chan, user.getNick() +
                 " has changed the topic to: " + topic);
     }
 
     public void unknown(String pfx, String cmd, String middle, String end)
     {
-        this.con.print(BotConstants.getBotConstants().getAppPFX() +
+        this.conn.print(BotConstants.getBotConstants().getAppPFX() +
                 " Received UNKNOWN Event: " + cmd);
-        this.con.print("\tprefix: '" + pfx + "'");
-        this.con.print("\tmiddle: '" + middle + "'");
-        this.con.print("\tend:    '" + end + "'");
+        this.conn.print("\tprefix: '" + pfx + "'");
+        this.conn.print("\tmiddle: '" + middle + "'");
+        this.conn.print("\tend:    '" + end + "'");
     }
 }

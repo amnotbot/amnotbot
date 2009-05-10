@@ -1,5 +1,6 @@
 package org.knix.amnotbot.config;
 
+import java.io.File;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
@@ -10,6 +11,7 @@ public class BotConfiguration
 {
 
     private static Configuration config = null;
+    private static Configuration commands = null;
     private static BotConfiguration botConfig = null;
 
     protected BotConfiguration()
@@ -20,15 +22,33 @@ public class BotConfiguration
     {
         if (botConfig == null) {
             botConfig = new BotConfiguration();
-
-            PropertyConfigurator.configure("log4j.properties");
-            try {
+            
+            String log4j = "log4j.properties";
+            boolean exists = (new File(log4j)).exists();
+            if (exists) {
+                PropertyConfigurator.configure(log4j);
+            }
+            try {                
                 config = new PropertiesConfiguration("amnotbot.config");
             } catch (ConfigurationException e) {
-                e.printStackTrace();
                 BotLogger.getDebugLogger().debug(e);
+                if (config == null) {
+                    config = new PropertiesConfiguration();
+                }
             }
         }
         return config;
+    }
+
+    public static Configuration getCommandsConfig()
+    {
+        if (commands == null) {
+            try {
+                commands = new PropertiesConfiguration("commands.config");
+            } catch (ConfigurationException e) {
+                BotLogger.getDebugLogger().debug(e);
+            }
+        }
+        return commands;
     }
 }

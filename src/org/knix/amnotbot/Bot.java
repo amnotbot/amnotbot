@@ -103,7 +103,7 @@ public class Bot extends Thread implements IBot
         } else {
             bconn = new BotConnection(server);
         }
-
+        
         bconn.setBotLogger(logger);
         bconn.addIRCEventListener(new BotListener(bconn, channels));
         bconn.setPong(true);

@@ -62,7 +62,7 @@ public class BotConstants
         try {
             this.nick = BotConfiguration.getConfig().getString("nick");
         } catch (Exception e) {
-            e.printStackTrace();
+            BotLogger.getDebugLogger().debug(e);
         }
 
         if (this.nick == null) {

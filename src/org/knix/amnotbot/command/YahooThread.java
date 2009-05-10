@@ -31,11 +31,9 @@ public class YahooThread extends Thread
     }
     searchType sType;
 
-    public YahooThread(SearchClient yahooClient,
-            BotMessage msg,
-            searchType sType)
+    public YahooThread(BotMessage msg, searchType sType)
     {
-        this.yahooClient = yahooClient;
+        this.yahooClient = new SearchClient("G7RklHzV34Gs_AYiBU0xA4wak1J3plPRonFhFfwJEeXMVP4PrpvwiflgxXa4uw--");
         this.msg = msg;
         this.sType = sType;
 

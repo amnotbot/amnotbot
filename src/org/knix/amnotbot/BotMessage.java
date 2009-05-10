@@ -33,6 +33,11 @@ public class BotMessage
         return this.target;
     }
 
+    public void setTarget(String target)
+    {
+        this.target = target;
+    }
+
     public String getText()
     {
         return this.text;

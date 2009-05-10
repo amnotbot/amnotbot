@@ -13,15 +13,13 @@ public class BotCommandInterpreter
 
     private Character cmdTrigger;
     private BotSpamDetector spamDetector;
-    private LinkedList<BotCommand> commands;
     private LinkedList<BotCommand> linkListeners;
     private HashMap<BotCommandEvent, LinkedList<BotCommand>> cmdListeners;
 
     public BotCommandInterpreter(BotSpamDetector spamDetector)
     {    
         this.spamDetector = spamDetector;
-        this.cmdTrigger = new Character('!');
-        this.commands = new LinkedList<BotCommand>();     
+        this.cmdTrigger = new Character('.');     
         this.cmdListeners = new 
                 HashMap<BotCommandEvent, LinkedList<BotCommand>>();
         this.linkListeners = new LinkedList<BotCommand>();
@@ -32,13 +30,12 @@ public class BotCommandInterpreter
         BotLogger.getDebugLogger().debug(command.getClass().getName());
         LinkedList<BotCommand> cmds;
         if (this.cmdListeners.containsKey(e)) {
-            cmds = this.cmdListeners.get(e);
-            cmds.add(command);
+            cmds = this.cmdListeners.get(e);            
         } else {
             cmds = new LinkedList<BotCommand>();
         }
-        this.cmdListeners.put(e, cmds);
-        this.commands.add(command);
+        cmds.add(command);
+        this.cmdListeners.put(e, cmds);     
     }
 
     public void addLinkListener(BotCommand command)
@@ -46,22 +43,12 @@ public class BotCommandInterpreter
         this.linkListeners.add(command);
     }
 
-    public void remove(BotCommand command)
-    {
-        this.commands.remove(command);
-    }
-
-    public LinkedList<BotCommand> getCommands()
-    {
-        return this.commands;
-    }
-
     private boolean isCommand(BotMessage msg)
     {
         if (msg.getText().charAt(0) != this.cmdTrigger) return false;
         return true;
     }
-
+    
     private boolean isLink(BotMessage msg)
     {
         String url;
@@ -94,32 +81,38 @@ public class BotCommandInterpreter
 
     public void run(BotMessage msg)
     {
-        if (!this.isCommand(msg) &&
-                !this.isLink(msg) ||
-                this.isEmpty()) return;
-       
+        if (this.isEmpty()) return;
+        
+        if (this.isCommand(msg)) {
+            this.processMessage(msg);
+        } else if (this.isLink(msg)) {
+            this.execute(this.linkListeners, msg);
+        }
+    }
+
+    private void processMessage(BotMessage msg)
+    {
+        String trigger = this.getTrigger(msg);
         Iterator<BotCommandEvent> it = this.cmdListeners.keySet().iterator();
         while (it.hasNext()) {
-            BotCommandEvent event = it.next();
-            String trigger = this.getTrigger(msg);
-            if (event.test(trigger)) {
+            BotCommandEvent event = it.next();            
+            if (event.test(trigger)) {               
                 IRCUser user = msg.getUser();
                 String target = msg.getTarget();
-                if (this.spamDetector.checkForSpam(target, user)) {
+                if (this.spamDetector.checkForSpam(target, user)) {          
                     BotLogger.getDebugLogger().debug("Spam Detected!");
                     return;
                 }
-                if (this.isCommand(msg))
-                    this.removeTriggerString(msg);
-                this.execute(event, msg);
+                this.removeTriggerString(msg);
+                this.execute(this.cmdListeners.get(event), msg);
             }
         }     
     }
 
-    private void execute(BotCommandEvent event, BotMessage msg)
+    private void execute(LinkedList<BotCommand> l, BotMessage msg)
     {
         Iterator<BotCommand> cmds;
-        cmds = this.cmdListeners.get(event).iterator();
+        cmds = l.iterator();
         while (cmds.hasNext()) {
             BotCommand command = cmds.next();
             command.execute(msg);
@@ -131,5 +124,5 @@ public class BotCommandInterpreter
         String text = msg.getText();
         text = text.substring(this.getTrigger(msg).length() + 1, text.length());
         msg.setText(text);
-    }
+    }    
 }

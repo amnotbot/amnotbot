@@ -31,6 +31,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.schwering.irc.lib.IRCEventListener;
+import org.schwering.irc.lib.IRCModeParser;
 import org.schwering.irc.lib.IRCUser;
 
 class SpamConstants
@@ -119,14 +121,13 @@ class ChannelSpamDetector
     {
         if (this.globalQueriesQueue.isEmpty()) {
             this.globalQueriesQueue.offer(new QueryTime(this.getQueryTime()));
-
             return false;
         }
 
         if (this.checkGlobalMinGap()) return true;
 
         if (this.checkGlobalMaxQueriesPerUnitTime()) return true;
-
+        
         return false;
     }
 
@@ -144,22 +145,20 @@ class ChannelSpamDetector
     private boolean checkGlobalMaxQueriesPerUnitTime()
     {
         int qSize = this.globalQueriesQueue.size();
-        if ( qSize < SpamConstants.GLOBAL_MAX_QUERIES_PER_UNIT_TIME) {
+        if (qSize < SpamConstants.GLOBAL_MAX_QUERIES_PER_UNIT_TIME) {
             this.globalQueriesQueue.offer(new QueryTime(this.getQueryTime()));
-
             return false;
         }
 
         QueryTime firstQuery = this.globalQueriesQueue.poll();
         long diff = this.getQueryTime() - firstQuery.getQueryTime();
-        
+
         this.globalQueriesQueue.offer(new QueryTime(this.getQueryTime()));
         if (SpamConstants.GLOBAL_UNIT_TIME > diff) return true;
 
         while (this.globalQueriesQueue.size() > 1) {
-                this.globalQueriesQueue.remove();
+            this.globalQueriesQueue.remove();
         }
-
         return false;
     }
 
@@ -177,10 +176,9 @@ class ChannelSpamDetector
             return false;
         }
 
-
         if (this.checkPerUserMinGap(amnotbotUser)) return true;
-
-        if (this.checkPerUserMaxQueriesPerUnitTime(amnotbotUser)) return true;
+        
+        if (this.checkPerUserMaxQueriesPerUnitTime(amnotbotUser)) return true;        
 
         return false;
     }
@@ -190,9 +188,8 @@ class ChannelSpamDetector
         QueryTime lastQuery;
         lastQuery = (QueryTime) amnotbotUser.queriesQueue.getLast(); // tail
         long diff = this.getQueryTime() - lastQuery.getQueryTime();
-        
-        if (SpamConstants.MIN_DIFF_ALLOWED > diff) return true;
 
+        if (SpamConstants.MIN_DIFF_ALLOWED > diff) return true;
         return false;
     }
 
@@ -201,7 +198,6 @@ class ChannelSpamDetector
         int qSize = amnotbotUser.queriesQueue.size();
         if (qSize < SpamConstants.MAX_QUERIES_PER_UNIT_TIME) {
             amnotbotUser.queriesQueue.offer(new QueryTime(this.getQueryTime()));
-
             return false;
         }
 
@@ -214,12 +210,11 @@ class ChannelSpamDetector
         while (amnotbotUser.queriesQueue.size() > 1) {
             amnotbotUser.queriesQueue.remove();
         }
- 
         return false;
     }
 }
 
-class BotSpamDetector
+public class BotSpamDetector
 {
 
     private Hashtable<String, ChannelSpamDetector> chanSpamDetector;
@@ -236,23 +231,132 @@ class BotSpamDetector
         }
     }
 
+    public BotSpamDetector()
+    {
+        this.chanSpamDetector = new Hashtable<String, ChannelSpamDetector>();
+    }
+
     public void addChannel(String chan)
     {
-        this.chanSpamDetector.put(chan, new ChannelSpamDetector());
+        if (!this.chanSpamDetector.contains(chan)) {
+            this.chanSpamDetector.put(chan, new ChannelSpamDetector());
+        }
+    }
+
+    public void removeChannel(String chan)
+    {
+        this.chanSpamDetector.remove(chan);
     }
 
     public boolean checkForSpam(String channel, IRCUser user)
     {
-        ChannelSpamDetector spamDetector = this.chanSpamDetector.get(channel);
-
-        if (spamDetector == null) {
-            this.addChannel(channel);
-        }
+        ChannelSpamDetector spamDetector;
 
         spamDetector = this.chanSpamDetector.get(channel);
-
+        if (spamDetector == null) return false;
+           
         if (spamDetector.checkForSpam(user)) return true;
-
         return false;
+    }
+}
+
+class IRCListenerSpamDetectorAdapter implements IRCEventListener
+{
+
+    private BotSpamDetector spamDetector;
+
+    public IRCListenerSpamDetectorAdapter(BotSpamDetector spamDetector)
+    {
+        this.spamDetector = spamDetector;
+    }
+
+    public void onJoin(String chan, IRCUser user)
+    {
+        this.spamDetector.addChannel(chan);
+    }
+
+    public void onPart(String chan, IRCUser user, String msg)
+    {
+        this.spamDetector.removeChannel(chan);
+    }
+
+    public void onRegistered()
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public void onDisconnected()
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public void onError(String arg0)
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public void onError(int arg0, String arg1)
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public void onInvite(String arg0, IRCUser arg1, String arg2)
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public void onKick(String arg0, IRCUser arg1, String arg2, String arg3)
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public void onMode(String arg0, IRCUser arg1, IRCModeParser arg2)
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public void onMode(IRCUser arg0, String arg1, String arg2)
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public void onNick(IRCUser arg0, String arg1)
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public void onNotice(String arg0, IRCUser arg1, String arg2)
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public void onPing(String arg0)
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public void onPrivmsg(String arg0, IRCUser arg1, String arg2)
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public void onQuit(IRCUser arg0, String arg1)
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public void onReply(int arg0, String arg1, String arg2)
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public void onTopic(String arg0, IRCUser arg1, String arg2)
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public void unknown(String arg0, String arg1, String arg2, String arg3)
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 }
