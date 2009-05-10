@@ -1,5 +1,6 @@
-package org.knix.amnotbot;
+package org.knix.amnotbot.command.utils;
 
+import org.knix.amnotbot.*;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;

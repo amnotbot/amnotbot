@@ -1,5 +1,6 @@
 package org.knix.amnotbot.command;
 
+import org.knix.amnotbot.command.utils.BotHTMLParser;
 import org.knix.amnotbot.command.utils.*;
 import org.knix.amnotbot.*;
 import java.util.Date;
