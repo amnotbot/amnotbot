@@ -1,6 +1,5 @@
 package org.knix.amnotbot.command;
 
-import org.knix.amnotbot.command.utils.BotHTMLParser;
 import org.knix.amnotbot.command.utils.*;
 import org.knix.amnotbot.*;
 import java.util.Date;
@@ -119,7 +118,8 @@ public class DeliciousThread extends Thread
         comment = this.opts.getOption("comment").tokens()[0];
 
         if (this.showTitle && this.isPageTitle()) {
-            this.msg.getConn().doPrivmsg(this.msg.getTarget(), title);
+            this.msg.getConn().doPrivmsg(this.msg.getTarget(), 
+                    "[ " + title + " ]");
         }
 
         Boolean success;

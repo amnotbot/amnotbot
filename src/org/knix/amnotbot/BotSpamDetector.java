@@ -31,8 +31,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.schwering.irc.lib.IRCEventListener;
-import org.schwering.irc.lib.IRCModeParser;
+import org.schwering.irc.lib.IRCEventAdapter;
 import org.schwering.irc.lib.IRCUser;
 
 class SpamConstants
@@ -260,7 +259,7 @@ public class BotSpamDetector
     }
 }
 
-class IRCListenerSpamDetectorAdapter implements IRCEventListener
+class IRCListenerSpamDetectorAdapter extends IRCEventAdapter
 {
 
     private BotSpamDetector spamDetector;
@@ -279,84 +278,5 @@ class IRCListenerSpamDetectorAdapter implements IRCEventListener
     {
         this.spamDetector.removeChannel(chan);
     }
-
-    public void onRegistered()
-    {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public void onDisconnected()
-    {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public void onError(String arg0)
-    {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public void onError(int arg0, String arg1)
-    {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public void onInvite(String arg0, IRCUser arg1, String arg2)
-    {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public void onKick(String arg0, IRCUser arg1, String arg2, String arg3)
-    {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public void onMode(String arg0, IRCUser arg1, IRCModeParser arg2)
-    {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public void onMode(IRCUser arg0, String arg1, String arg2)
-    {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public void onNick(IRCUser arg0, String arg1)
-    {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public void onNotice(String arg0, IRCUser arg1, String arg2)
-    {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public void onPing(String arg0)
-    {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public void onPrivmsg(String arg0, IRCUser arg1, String arg2)
-    {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public void onQuit(IRCUser arg0, String arg1)
-    {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public void onReply(int arg0, String arg1, String arg2)
-    {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public void onTopic(String arg0, IRCUser arg1, String arg2)
-    {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public void unknown(String arg0, String arg1, String arg2, String arg3)
-    {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
+    
 }
