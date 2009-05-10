@@ -5,6 +5,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 
 import org.htmlparser.util.ParserUtils;
+import org.htmlparser.util.Translate;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -50,8 +51,7 @@ public class GoogleWebSearchThread extends Thread
         String url = URLDecoder.decode(result.optString("url"), "UTF-8");
         this.msg.getConn().doPrivmsg(this.msg.getTarget(), url);
 
-        String snippet = result.optString("content");
-        this.msg.getConn().doPrivmsg(this.msg.getTarget(),
-                ParserUtils.trimAllTags(snippet, false));
+        String snippet = Translate.decode( result.optString("content") );
+        this.msg.getConn().doPrivmsg(this.msg.getTarget(), snippet);
     }
 }
