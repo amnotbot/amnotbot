@@ -1,4 +1,4 @@
 TODO
 ====
 
- - New "Action" framework
+ - Use "factories" for object creation where appropiate. eg. with cmdoption.
