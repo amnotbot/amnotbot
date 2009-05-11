@@ -73,7 +73,6 @@ public class QurlRequest extends Thread
                 if (domain.equals(query)) {
                     domain = "";
                 }
-
                 this.msg.getConn().doPrivmsg(this.msg.getTarget(),
                         this.msg.getUser().getNick() + ": " + qurl +
                         " " + domain);
