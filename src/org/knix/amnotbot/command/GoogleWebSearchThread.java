@@ -52,6 +52,8 @@ public class GoogleWebSearchThread extends Thread
         this.msg.getConn().doPrivmsg(this.msg.getTarget(), url);
 
         String snippet = Translate.decode( result.optString("content") );
-        this.msg.getConn().doPrivmsg(this.msg.getTarget(), snippet);
+        this.msg.getConn().doPrivmsg(this.msg.getTarget(),
+                ParserUtils.trimAllTags(snippet, false)
+                );
     }
 }
