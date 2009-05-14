@@ -46,7 +46,9 @@ public class GoogleWebSearchThread extends Thread
         JSONObject result = data.getJSONArray("results").getJSONObject(0);
 
         String title = result.optString("titleNoFormatting");
-        this.msg.getConn().doPrivmsg(this.msg.getTarget(), title);
+        this.msg.getConn().doPrivmsg(this.msg.getTarget(),
+                Translate.decode(title)
+                );
 
         String url = URLDecoder.decode(result.optString("url"), "UTF-8");
         this.msg.getConn().doPrivmsg(this.msg.getTarget(), url);
