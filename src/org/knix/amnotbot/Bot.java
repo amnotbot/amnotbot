@@ -67,7 +67,9 @@ public class Bot extends Thread implements IBot
 
     public void shutdown()
     {
-        this.conn.doQuit();
+        if (this.conn.isConnected()) {
+            this.conn.doQuit();
+        }
     }
 
     public void run()
