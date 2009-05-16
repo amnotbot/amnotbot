@@ -45,6 +45,7 @@ public class BotCommandInterpreter
 
     private boolean isCommand(BotMessage msg)
     {
+        if (msg.getText().isEmpty()) return false;
         if (msg.getText().charAt(0) != this.cmdTrigger) return false;
         return true;
     }
