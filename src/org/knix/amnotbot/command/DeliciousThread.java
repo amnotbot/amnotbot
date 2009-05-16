@@ -22,7 +22,7 @@ public class DeliciousThread extends Thread
         this.msg = msg;
         this.delicious = delicious;
         this.showTitle = showTitle;
-        this.url = msg.getText();
+        this.url = msg.getText().trim().split("\\s+")[0];
         this.maxTagLength = maxTagLength;
 
         opts = new CommandOptions(msg.getText());
