@@ -21,7 +21,7 @@ public class BotCommandEvent
     {
         Matcher m;
         m = this.trigger.matcher(msg);
-        if (m.find()) return true;
+        if (m.matches()) return true;
         return false;
     }
 }
