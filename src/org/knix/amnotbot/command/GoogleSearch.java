@@ -19,7 +19,8 @@ public class GoogleSearch
 {
 
     public enum searchType {
-        BOOKS_SEARCH, NEWS_SEARCH, WEB_SEARCH
+        BOOKS_SEARCH, NEWS_SEARCH, WEB_SEARCH, PATENT_SEARCH, BLOGS_SEARCH,
+        VIDEOS_SEARCH
     }
 
     private final String SEARCH_URL =
@@ -55,6 +56,15 @@ public class GoogleSearch
                 break;
             case NEWS_SEARCH:
                 url = this.SEARCH_URL + "news?v=1.0&q=";
+                break;
+            case PATENT_SEARCH:
+                url = this.SEARCH_URL + "patent?v=1.0&q=";
+                break;
+            case BLOGS_SEARCH:
+                url = this.SEARCH_URL + "blogs?v=1.0&q=";
+                break;
+            case VIDEOS_SEARCH:
+                url = this.SEARCH_URL + "video?v=1.0&q=";
                 break;
         }
 

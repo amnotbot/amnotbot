@@ -1,26 +1,25 @@
 package org.knix.amnotbot.command;
 
-import org.knix.amnotbot.BotCommand;
-import org.knix.amnotbot.BotMessage;
+import org.knix.amnotbot.*;
 
-/**
- *
- * @author gpoppino
- */
-public class GoogleNewsSearchCommand implements BotCommand
+public class GoogleWebSearchCommand implements BotCommand
 {
+
+    public GoogleWebSearchCommand()
+    {
+    }
 
     public void execute(BotMessage message)
     {
         new GoogleSearchThread(
-                GoogleSearch.searchType.NEWS_SEARCH,
+                GoogleSearch.searchType.WEB_SEARCH,
                 new GoogleResultOutputWebStrategy(),
-                message);
+                message
+                );
     }
 
     public String help()
     {
         throw new UnsupportedOperationException("Not supported yet.");
     }
-
 }

@@ -7,14 +7,14 @@ import org.knix.amnotbot.BotMessage;
  *
  * @author gpoppino
  */
-public class GoogleNewsSearchCommand implements BotCommand
+public class GoogleBlogsSearchCommand implements BotCommand
 {
 
     public void execute(BotMessage message)
     {
         new GoogleSearchThread(
-                GoogleSearch.searchType.NEWS_SEARCH,
-                new GoogleResultOutputWebStrategy(),
+                GoogleSearch.searchType.BLOGS_SEARCH,
+                new GoogleResultOutputBlogsStrategy(),
                 message);
     }
 

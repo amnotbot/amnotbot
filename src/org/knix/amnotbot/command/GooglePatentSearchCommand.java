@@ -7,20 +7,22 @@ import org.knix.amnotbot.BotMessage;
  *
  * @author gpoppino
  */
-public class GoogleNewsSearchCommand implements BotCommand
+public class GooglePatentSearchCommand implements BotCommand
 {
 
     public void execute(BotMessage message)
     {
         new GoogleSearchThread(
-                GoogleSearch.searchType.NEWS_SEARCH,
-                new GoogleResultOutputWebStrategy(),
-                message);
+                GoogleSearch.searchType.PATENT_SEARCH,
+                new GoogleResultOutputPatentStrategy(),
+                message
+                );
     }
 
     public String help()
     {
         throw new UnsupportedOperationException("Not supported yet.");
     }
+
 
 }

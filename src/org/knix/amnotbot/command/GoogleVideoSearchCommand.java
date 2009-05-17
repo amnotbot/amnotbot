@@ -7,14 +7,16 @@ import org.knix.amnotbot.BotMessage;
  *
  * @author gpoppino
  */
-public class GoogleNewsSearchCommand implements BotCommand
+public class GoogleVideoSearchCommand implements BotCommand
 {
 
     public void execute(BotMessage message)
     {
+        if (message.getText().isEmpty()) return;
+        
         new GoogleSearchThread(
-                GoogleSearch.searchType.NEWS_SEARCH,
-                new GoogleResultOutputWebStrategy(),
+                GoogleSearch.searchType.VIDEOS_SEARCH,
+                new GoogleResultOutputVideosStrategy(),
                 message);
     }
 
