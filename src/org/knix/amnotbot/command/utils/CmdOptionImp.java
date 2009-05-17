@@ -26,11 +26,11 @@ public class CmdOptionImp implements CmdOption
     {
         this.arg0 = null;
         if (msg == null) return;
-     
-        int index = msg.indexOf(this.name + ":");
-        if (index < 0) return;
 
         msg = msg.trim();
+        int index = msg.indexOf(this.name + ":");
+        if (index < 0) return;
+        
         index += this.name.length() + 1;
         index += msg.charAt(index) == this.delim ? 1 : 0;
         if (index > msg.length()) return;

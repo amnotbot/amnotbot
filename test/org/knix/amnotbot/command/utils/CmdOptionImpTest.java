@@ -24,7 +24,7 @@ public class CmdOptionImpTest
         cmd.buildArgs("text:message");      
         assertEquals(cmd.tokens()[0], "message");
 
-        cmd.buildArgs("op1:tom text:My message op2:123 op3:abc");      
+        cmd.buildArgs(" op1:tom text:My message op2:123 op3:abc");
         assertEquals(cmd.tokens()[0], "My message");
 
         cmd.buildArgs("text:\"This is a long sentence.\"");        
