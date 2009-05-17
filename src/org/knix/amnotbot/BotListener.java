@@ -26,15 +26,6 @@
  */
 package org.knix.amnotbot;
 
-import org.knix.amnotbot.command.QuoteCommand;
-import org.knix.amnotbot.command.QurlRequestCommand;
-import org.knix.amnotbot.command.DeliciousCommand;
-import org.knix.amnotbot.command.GoogleCommand;
-import org.knix.amnotbot.command.LinesCommand;
-import org.knix.amnotbot.command.WordsCommand;
-import org.knix.amnotbot.command.GoogleBookSearchCommand;
-import org.knix.amnotbot.command.YahooWebSearchCommand;
-import org.knix.amnotbot.command.YahooNewsSearchCommand;
 import java.util.List;
 
 import org.knix.amnotbot.config.BotConfiguration;
