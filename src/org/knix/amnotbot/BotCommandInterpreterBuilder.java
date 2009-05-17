@@ -17,7 +17,7 @@ public abstract class BotCommandInterpreterBuilder
     {
         BotSpamDetector spamDetector = new BotSpamDetector();
         conn.addIRCEventListener(
-                new IRCListenerSpamDetectorAdapter(spamDetector)
+                new IRCListenerSpamDetectorAdapter(spamDetector, conn)
                 );
         return spamDetector;
     }

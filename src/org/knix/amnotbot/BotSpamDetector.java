@@ -262,21 +262,29 @@ public class BotSpamDetector
 class IRCListenerSpamDetectorAdapter extends IRCEventAdapter
 {
 
-    private BotSpamDetector spamDetector;
+    private BotConnection conn;
+    private BotSpamDetector spamDetector;    
 
-    public IRCListenerSpamDetectorAdapter(BotSpamDetector spamDetector)
+    public IRCListenerSpamDetectorAdapter(
+            BotSpamDetector spamDetector,
+            BotConnection conn)
     {
+        this.conn = conn;
         this.spamDetector = spamDetector;
     }
 
     public void onJoin(String chan, IRCUser user)
     {
-        this.spamDetector.addChannel(chan);
+        if (this.conn.getNick().equals( user.getNick() )) {
+           this.spamDetector.addChannel(chan);
+        }
     }
 
     public void onPart(String chan, IRCUser user, String msg)
     {
-        this.spamDetector.removeChannel(chan);
+        if (this.conn.getNick().equals( user.getNick() )) {
+            this.spamDetector.removeChannel(chan);
+        }
     }
     
 }
