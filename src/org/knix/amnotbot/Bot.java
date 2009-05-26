@@ -28,6 +28,8 @@ package org.knix.amnotbot;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /*
  * TODO - allow for multiple servers at startup
@@ -48,6 +50,7 @@ public class Bot extends Thread implements IBot
     private static final int SO_TIMEOUT = 1000 * 60 * 5;
     private BotLogger logger;
     private BotConnection conn;
+    private boolean running;
 
     public Bot(String server, List<String> channels)
     {
@@ -59,6 +62,7 @@ public class Bot extends Thread implements IBot
         this.server = server;
         this.port = port;
         this.channels = channels;
+        this.running = true;
         this.logger = new BotLogger(server);
         this.conn = null;
 
@@ -67,30 +71,42 @@ public class Bot extends Thread implements IBot
 
     public void shutdown()
     {
+        this.running = false;
         if (this.conn.isConnected()) {
             this.conn.doQuit();
         }
     }
 
     public void run()
-    {
-        try {
-            this.conn = createConnection(server, port, channels, logger);
-            this.conn.connect();
-
-            for (;;) {
-                if (!this.conn.isConnected()) {
-                    this.conn = createConnection(server, port, channels,
-                                                                    logger);
-                    this.conn.connect();
+    {         
+        while (this.running) {
+            if (!this.checkConnection()) {
+                try {
+                    this.startConnection();
+                } catch (IOException e) {
+                    BotLogger.getDebugLogger().debug(e);
                 }
-                Thread.sleep(5000);
             }
-        } catch (IOException e) {
-            BotLogger.getDebugLogger().debug(e);
-        } catch (InterruptedException e) {
-            BotLogger.getDebugLogger().debug(e);
+            try {
+                Thread.sleep(5000);
+            } catch (InterruptedException e) {
+                BotLogger.getDebugLogger().debug(e);
+            }
         }
+    }    
+
+    private boolean checkConnection()
+    {
+        if (this.conn == null) return false;
+        if (!this.conn.isConnected()) return false;
+        return true;
+    }
+
+    private void startConnection() throws IOException
+    {
+        this.conn = null;
+        this.conn = createConnection(server, port, channels, this.logger);
+        this.conn.connect();
     }
 
     private static BotConnection createConnection(String server,
