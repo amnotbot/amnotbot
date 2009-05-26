@@ -18,7 +18,8 @@ public class QurlRequestCommand implements BotCommand
 
     public void execute(BotMessage message)
     {
-        if (message.getText().length() > this.qurl_length) {
+        String url = message.getText().trim().split("\\s+")[0];
+        if (url.length() > this.qurl_length) {
             new QurlRequest(message);
         }
     }
