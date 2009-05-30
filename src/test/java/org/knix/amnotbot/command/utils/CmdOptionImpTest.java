@@ -2,6 +2,8 @@ package org.knix.amnotbot.command.utils;
 
 import java.util.Arrays;
 import org.junit.Test;
+import org.knix.amnotbot.cmd.utils.CmdOptionImp;
+
 import static org.junit.Assert.*;
 
 /**
