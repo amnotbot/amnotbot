@@ -3,9 +3,9 @@ package org.knix.amnotbot;
 public class BotShutdownHandler extends Thread
 {
 
-    private IBot bot;
+    private Bot bot;
 
-    public BotShutdownHandler(IBot bot)
+    public BotShutdownHandler(Bot bot)
     {
         this.bot = bot;
     }

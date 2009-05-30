@@ -42,6 +42,6 @@ public class Main
 
         Runtime.getRuntime().addShutdownHook(
                 new BotShutdownHandler(
-                new Bot(config.getString("server"), 6667, channels)));
+                new IRCBot(config.getString("server"), 6667, channels)));
     }
 }
