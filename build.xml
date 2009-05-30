@@ -3,8 +3,11 @@
 		Amnotbot - IRC Bot by Jimmy Mitchener
 	</description>
 
-	<property name="src"   location="src/main/java/" />
-	<property name="test"   location="src/test/java/" />
+	<property name="main.src"   location="src/main/java/" />
+	<property name="test.src"   location="src/test/java/" />
+	
+	<property name="main.resources" location="src/main/resources/" />
+	
 	<property name="build" location="build/" />
 	<property name="dist"  location="dist/" />
 	<property name="lib"   location="lib/" />
@@ -26,7 +29,7 @@
 	<path id="classpath.test">
 		<pathelement location="${lib}/junit-4.5.jar" />
 		<pathelement location="${build}" />
-		<pathelement location="${test}" />
+		<pathelement location="${test.src}" />
 		<path refid="classpath" />
 	</path>
 
@@ -42,7 +45,7 @@
 	</target>
 
 	<target name="compile" depends="init">
-		<javac srcdir="${src}"
+		<javac srcdir="${main.src}"
 			   destdir="${build}"
 			   debug="true"
                target="1.5"
@@ -50,7 +53,7 @@
 	</target>
 
 	<target name="compile-test" depends="compile">
-		<javac srcdir="${test}"
+		<javac srcdir="${test.src}"
 			   destdir="${build}"
 			   debug="true" target="1.5"
 			   classpathref="classpath.test"/>
@@ -73,10 +76,15 @@
         <jar jarfile="${dist}/amnotbot.jar" manifest="Manifest">
             <fileset dir="${build}" />
         </jar>
+		
         <copy todir="${dist}/lib">
             <fileset dir="${lib}">
             	<exclude name="retroweaver-all-2.0.jar" />
             </fileset>
+        </copy>
+		
+        <copy todir="${dist}">
+            <fileset dir="${main.resources}" />
         </copy>
 		
 		<retroweaver inputjar="${dist}/amnotbot.jar"
