@@ -5,13 +5,16 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.apache.commons.lang.StringUtils;
+import org.knix.amnotbot.config.BotConfiguration;
 import org.schwering.irc.lib.IRCUser;
 
 
 public class BotCommandInterpreter
 {
 
-    private Character cmdTrigger;
+    private String cmdTrigger;
     private BotSpamDetector spamDetector;
     private LinkedList<BotCommand> linkListeners;
     private HashMap<BotCommandEvent, LinkedList<BotCommand>> cmdListeners;
@@ -19,7 +22,7 @@ public class BotCommandInterpreter
     public BotCommandInterpreter(BotSpamDetector spamDetector)
     {    
         this.spamDetector = spamDetector;
-        this.cmdTrigger = new Character('.');     
+        this.cmdTrigger = BotConfiguration.getConfig().getString("command_trigger");     
         this.cmdListeners = new 
                 HashMap<BotCommandEvent, LinkedList<BotCommand>>();
         this.linkListeners = new LinkedList<BotCommand>();
@@ -45,9 +48,12 @@ public class BotCommandInterpreter
 
     private boolean isCommand(BotMessage msg)
     {
-        if (msg.getText().isEmpty()) return false;
-        if (msg.getText().charAt(0) != this.cmdTrigger) return false;
-        return true;
+        String text = msg.getText();
+        
+        if (StringUtils.isNotBlank(text) && text.startsWith(cmdTrigger))
+            return true;
+        else
+            return true;
     }
     
     private boolean isLink(BotMessage msg)
