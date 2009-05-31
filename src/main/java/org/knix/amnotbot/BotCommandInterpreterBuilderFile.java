@@ -33,7 +33,7 @@ public class BotCommandInterpreterBuilderFile
         while (it.hasNext()) {
             String cname, fpath;
             cname = (String) it.next();
-            fpath = "org.knix.amnotbot.command." + cname;
+            fpath = "org.knix.amnotbot.cmd." + cname;
             Object o;
             try {
                 o = Class.forName(fpath).newInstance();
