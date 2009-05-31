@@ -53,7 +53,7 @@ public class BotCommandInterpreter
         if (StringUtils.isNotBlank(text) && text.startsWith(cmdTrigger))
             return true;
         else
-            return true;
+            return false;
     }
     
     private boolean isLink(BotMessage msg)
