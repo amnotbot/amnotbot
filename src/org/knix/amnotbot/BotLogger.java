@@ -88,9 +88,11 @@ public class BotLogger
             }
 
             appender.setName(target);
+            appender.setEncoding("UTF-8");
             logger.addAppender(appender);
         }
 
         logger.info(msg);
     }
 }
+
