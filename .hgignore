@@ -1,4 +1,6 @@
 build
 dist
+debug.log
 .project
 .classpath
+.settings
