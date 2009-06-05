@@ -70,7 +70,7 @@ public class DeliciousThread extends Thread
         tmpTags += this.getPageTags();
 
         if (tmpTags.trim().length() > 0) {
-            tmpTags += " " + this.msg.getText();
+            tmpTags += " " + this.msg.getUser().getNick();
         } else {
             tmpTags = this.msg.getUser().getNick();
         }
