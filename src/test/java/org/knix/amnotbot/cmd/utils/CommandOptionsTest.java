@@ -1,12 +1,9 @@
-package org.knix.amnotbot.command.utils;
+package org.knix.amnotbot.cmd.utils;
 
 import java.util.Arrays;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.knix.amnotbot.cmd.utils.CmdOption;
-import org.knix.amnotbot.cmd.utils.CmdOptionImp;
-import org.knix.amnotbot.cmd.utils.CommandOptions;
 
 import static org.junit.Assert.*;
 
