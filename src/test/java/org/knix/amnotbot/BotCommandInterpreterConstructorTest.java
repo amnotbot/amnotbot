@@ -47,7 +47,7 @@ public class BotCommandInterpreterConstructorTest
         PropertiesConfiguration p;
         p = new PropertiesConfiguration();
 
-        p.addProperty("GoogleCommand", "g");
+        p.addProperty("GoogleWebSearchCommand", "g");
         p.addProperty("QurlRequestCommand", "URL");
         p.addProperty("YahooNewsSearchCommand", "(y|yahoo)");
 
