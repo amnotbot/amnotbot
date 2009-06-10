@@ -21,7 +21,7 @@ public class BotCommandInterpreter
     {    
         this.spamDetector = spamDetector;
         this.cmdTrigger =
-                BotConfiguration.getConfig().getString("command_trigger");
+                BotConfiguration.getConfig().getString("command_trigger", ".");
         this.cmdListeners =
                 new HashMap<BotCommandEvent, LinkedList<BotCommand>>();
         this.linkListeners = new LinkedList<BotCommand>();
@@ -74,8 +74,8 @@ public class BotCommandInterpreter
         for (int i = 1; i < text.length(); ++i) {
             char c = text.charAt(i);
             
-            if (Character.isLetterOrDigit(c))
-                trigger += c;
+            if (!Character.isLetterOrDigit(c)) break;
+            trigger += c;
         }
         
         return trigger;
