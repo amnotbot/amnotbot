@@ -3,6 +3,7 @@ package org.knix.amnotbot;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.knix.amnotbot.config.BotConfiguration;
 import org.schwering.irc.lib.IRCUser;
 import static org.junit.Assert.*;
 
@@ -37,7 +38,10 @@ public class BotCommandInterpreterTest
     {
         System.out.println("addListener");
         IRCUser user = new IRCUser("gresco1", "geronimo1", "localhost");
-        BotMessage msg = new BotMessage(this.conn, "#chan", user, ".a testA");
+        String trigger =
+                BotConfiguration.getConfig().getString("command_trigger", ".");
+        BotMessage msg = new BotMessage(this.conn, "#chan", user, 
+                trigger + "a testA");
         BotCommandInterpreter instance =
                 new BotCommandInterpreter(new BotSpamDetector());
 
@@ -48,16 +52,16 @@ public class BotCommandInterpreterTest
         instance.run(msg);
         assertEquals("A", this.s.getValue());
 
-        msg.setText(".b testB");
+        msg.setText(trigger + "b testB");
         instance.run(msg);
         assertEquals("B", this.s.getValue());
 
         this.s.setValue("C");
-        msg.setText(".g");   
+        msg.setText(trigger + "g");
         instance.run(msg);
         assertEquals("C", this.s.getValue());
 
-        msg.setText(".a testA");
+        msg.setText(trigger + "a testA");
         instance.run(msg);
         assertEquals("A", this.s.getValue());
     }
@@ -69,7 +73,7 @@ public class BotCommandInterpreterTest
         BotCommandInterpreter instance = 
                 new BotCommandInterpreter(new BotSpamDetector());
         IRCUser user = new IRCUser("gresco", "geronimo", "localhost");
-        BotMessage msg = new BotMessage(this.conn, "#chan", user, 
+        BotMessage msg = new BotMessage(this.conn, "#chan", user,
                 "http://www.abc.com");
         
         instance.addLinkListener(new CommandLink(this.s));
