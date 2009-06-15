@@ -1,5 +1,6 @@
 package org.knix.amnotbot;
 
+import java.io.File;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.junit.After;
@@ -13,6 +14,7 @@ import static org.junit.Assert.*;
  */
 public class BotCommandInterpreterConstructorTest
 {
+    private final String configFile = "commands.config";
 
     public BotCommandInterpreterConstructorTest()
     {
@@ -21,11 +23,13 @@ public class BotCommandInterpreterConstructorTest
     @Before
     public void setUp()
     {
+        this.createCommandsFile();
     }
 
     @After
     public void tearDown()
     {
+        this.deleteCommandsFile();
     }
 
     @Test
@@ -36,8 +40,7 @@ public class BotCommandInterpreterConstructorTest
         BotCommandInterpreterConstructor c =
                 new BotCommandInterpreterConstructor(
                     new BotCommandInterpreterBuilderFile()
-                    );
-        this.createCommandsFile();
+                    );        
         BotCommandInterpreter result = c.construct(conn);
         assertTrue(result != null);
     }
@@ -52,9 +55,15 @@ public class BotCommandInterpreterConstructorTest
         p.addProperty("YahooNewsSearchCommand", "(y|yahoo)");
 
         try {
-            p.save("commands.config");
+            p.save(this.configFile);
         } catch (ConfigurationException e) {
             fail("Could not create commands.config file");
         }
+    }
+
+    private void deleteCommandsFile()
+    {
+        File file = new File(this.configFile);
+        file.delete();
     }
 }
