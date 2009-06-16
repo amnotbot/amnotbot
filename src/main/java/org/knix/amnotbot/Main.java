@@ -33,7 +33,6 @@ import org.knix.amnotbot.config.BotConfiguration;
 
 public class Main
 {
-
     public static void main(String[] args)
     {
         Configuration config;
