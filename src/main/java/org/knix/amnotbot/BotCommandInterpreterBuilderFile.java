@@ -3,6 +3,7 @@ package org.knix.amnotbot;
 import java.util.Iterator;
 import org.apache.commons.configuration.Configuration;
 import org.knix.amnotbot.config.BotConfiguration;
+import org.knix.amnotbot.spam.BotSpamDetector;
 
 /**
  *
