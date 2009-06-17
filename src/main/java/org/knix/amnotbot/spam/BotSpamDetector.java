@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008 Jimmy Mitchener <jcm@packetpan.org>
+ * Copyright (c) 2007 Geronimo Poppino
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,23 +24,56 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.knix.amnotbot;
 
+package org.knix.amnotbot.spam;
+
+import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.List;
 
-import org.apache.commons.configuration.Configuration;
-import org.knix.amnotbot.config.BotConfiguration;
+import org.schwering.irc.lib.IRCUser;
 
-public class Main
+public class BotSpamDetector
 {
-    public static void main(String[] args)
-    {
-        Configuration config;
-        config = BotConfiguration.getConfig();
-        List<String> channels = config.getList("channels");
+    private Hashtable<String, ChannelSpamDetector> chanSpamDetector;
 
-        Runtime.getRuntime().addShutdownHook(
-                new BotShutdownHandler(
-                new IRCBot(config.getString("server"), 6667, channels)));
+    public BotSpamDetector(List<String> channels)
+    {
+        this.chanSpamDetector = new Hashtable<String, ChannelSpamDetector>();
+
+        String chan;
+        Iterator<String> it = channels.iterator();
+        while (it.hasNext()) {
+            chan = it.next();
+            this.addChannel(chan);
+        }
+    }
+
+    public BotSpamDetector()
+    {
+        this.chanSpamDetector = new Hashtable<String, ChannelSpamDetector>();
+    }
+
+    public void addChannel(String chan)
+    {
+        if (!this.chanSpamDetector.contains(chan)) {
+            this.chanSpamDetector.put(chan, new ChannelSpamDetector());
+        }
+    }
+
+    public void removeChannel(String chan)
+    {
+        this.chanSpamDetector.remove(chan);
+    }
+
+    public boolean checkForSpam(String channel, IRCUser user)
+    {
+        ChannelSpamDetector spamDetector;
+
+        spamDetector = this.chanSpamDetector.get(channel);
+        if (spamDetector == null) return false;
+           
+        if (spamDetector.checkForSpam(user)) return true;
+        return false;
     }
 }

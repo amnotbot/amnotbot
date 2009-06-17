@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008 Jimmy Mitchener <jcm@packetpan.org>
+ * Copyright (c) 2007 Geronimo Poppino
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,23 +24,40 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.knix.amnotbot;
 
-import java.util.List;
+package org.knix.amnotbot.spam;
 
-import org.apache.commons.configuration.Configuration;
-import org.knix.amnotbot.config.BotConfiguration;
+import java.util.LinkedList;
 
-public class Main
+public class AmnotbotUser
 {
-    public static void main(String[] args)
-    {
-        Configuration config;
-        config = BotConfiguration.getConfig();
-        List<String> channels = config.getList("channels");
+    private LinkedList<Long> queriesQueue;
 
-        Runtime.getRuntime().addShutdownHook(
-                new BotShutdownHandler(
-                new IRCBot(config.getString("server"), 6667, channels)));
+    private String nick;
+
+    public AmnotbotUser(String nick)
+    {
+        this(nick, new LinkedList<Long>());
+    }
+    
+    public AmnotbotUser(String nick, LinkedList<Long> queriesQueue)
+    {
+        this.nick = nick;
+        this.queriesQueue = queriesQueue;
+    }
+
+    public String getNick()
+    {
+        return this.nick;
+    }
+    
+    public LinkedList<Long> getQueriesQueue()
+    {
+        return queriesQueue;
+    }
+
+    public void setQueriesQueue(LinkedList<Long> queriesQueue)
+    {
+        this.queriesQueue = queriesQueue;
     }
 }

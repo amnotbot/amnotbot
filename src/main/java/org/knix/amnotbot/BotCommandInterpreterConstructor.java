@@ -5,6 +5,8 @@
 
 package org.knix.amnotbot;
 
+import org.knix.amnotbot.spam.BotSpamDetector;
+
 /**
  *
  * @author gpoppino

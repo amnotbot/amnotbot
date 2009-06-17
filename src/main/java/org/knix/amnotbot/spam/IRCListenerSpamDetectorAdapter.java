@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008 Jimmy Mitchener <jcm@packetpan.org>
+ * Copyright (c) 2007 Geronimo Poppino
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,23 +24,37 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.knix.amnotbot;
 
-import java.util.List;
+package org.knix.amnotbot.spam;
 
-import org.apache.commons.configuration.Configuration;
-import org.knix.amnotbot.config.BotConfiguration;
+import org.knix.amnotbot.BotConnection;
+import org.schwering.irc.lib.IRCEventAdapter;
+import org.schwering.irc.lib.IRCUser;
 
-public class Main
+public class IRCListenerSpamDetectorAdapter extends IRCEventAdapter
 {
-    public static void main(String[] args)
-    {
-        Configuration config;
-        config = BotConfiguration.getConfig();
-        List<String> channels = config.getList("channels");
+    private BotConnection conn;
+    private BotSpamDetector spamDetector;    
 
-        Runtime.getRuntime().addShutdownHook(
-                new BotShutdownHandler(
-                new IRCBot(config.getString("server"), 6667, channels)));
+    public IRCListenerSpamDetectorAdapter(
+            BotSpamDetector spamDetector,
+            BotConnection conn)
+    {
+        this.conn = conn;
+        this.spamDetector = spamDetector;
     }
+
+    public void onJoin(String chan, IRCUser user)
+    {
+        if (this.conn.getNick().equals( user.getNick() )) {
+           this.spamDetector.addChannel(chan);
+        }
+    }
+
+    public void onPart(String chan, IRCUser user, String msg)
+    {
+        if (this.conn.getNick().equals( user.getNick() )) {
+            this.spamDetector.removeChannel(chan);
+        }
+    }   
 }

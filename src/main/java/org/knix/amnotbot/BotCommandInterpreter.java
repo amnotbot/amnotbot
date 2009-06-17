@@ -8,6 +8,7 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
 import org.knix.amnotbot.config.BotConfiguration;
+import org.knix.amnotbot.spam.BotSpamDetector;
 import org.schwering.irc.lib.IRCUser;
 
 public class BotCommandInterpreter

@@ -4,6 +4,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.knix.amnotbot.config.BotConfiguration;
+import org.knix.amnotbot.spam.BotSpamDetector;
 import org.schwering.irc.lib.IRCUser;
 import static org.junit.Assert.*;
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008 Jimmy Mitchener <jcm@packetpan.org>
+ * Copyright (c) 2007 Geronimo Poppino
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,23 +24,23 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.knix.amnotbot;
 
-import java.util.List;
+package org.knix.amnotbot.spam;
 
-import org.apache.commons.configuration.Configuration;
-import org.knix.amnotbot.config.BotConfiguration;
+/*
+ * FIXME - Is this really necessary?
+ *         Possibly move these to a configuration file.
+ */
 
-public class Main
+/**
+ * Constants for spam detection.
+ */
+public final class SpamConstants
 {
-    public static void main(String[] args)
-    {
-        Configuration config;
-        config = BotConfiguration.getConfig();
-        List<String> channels = config.getList("channels");
-
-        Runtime.getRuntime().addShutdownHook(
-                new BotShutdownHandler(
-                new IRCBot(config.getString("server"), 6667, channels)));
-    }
+    /* milliseconds */
+    public static final int MIN_DIFF_ALLOWED = 1000 * 3;
+    public static final int MAX_QUERIES_PER_UNIT_TIME = 3;
+    public static final int GLOBAL_MAX_QUERIES_PER_UNIT_TIME = 10;
+    public static final int UNIT_TIME = 1000 * 60;
+    public static final int GLOBAL_UNIT_TIME = 1000 * 60;
 }
