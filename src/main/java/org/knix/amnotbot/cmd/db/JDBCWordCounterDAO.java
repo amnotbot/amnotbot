@@ -1,22 +1,21 @@
-package org.knix.amnotbot.cmd;
+package org.knix.amnotbot.cmd.db;
 
 import org.knix.amnotbot.*;
-import SQLite.Database;
-import SQLite.Exception;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 
-public class WordCounterSqlite implements WordCounter
-{
+public class JDBCWordCounterDAO implements WordCounterDAO
+{      
+    private Connection connection = null;
 
-    private Database db;
-    private String db_filename;
-
-    public WordCounterSqlite(String word_log_file)
-    {
-        this.db_filename = word_log_file + ".db";
-        this.db = new Database();
+    public JDBCWordCounterDAO(String db) throws SQLException
+    {      
+        this.connection = BotDBFactory.instance().getConnection(db);
     }
 
-    public String getNickWhereClause(String [] nicks)
+    private String getNickWhereClause(String [] nicks)
     {       
         if (nicks.length == 0) return null;
 
@@ -55,32 +54,57 @@ public class WordCounterSqlite implements WordCounter
         return where;
     }
 
+    private ResultSet execQuery(String query) throws SQLException
+    {
+        ResultSet rs = null;
+        Statement statement = null;
+
+        statement = this.connection.createStatement();        
+        rs = statement.executeQuery(query);
+    
+        return rs;
+    }
+
     private String runQuery(String query)
     {
+        ResultSet rs = null;
+        String result = null;
         try {
-            this.db.open(this.db_filename, 0);
-        } catch (Exception e) {
-            e.printStackTrace();
+            rs = this.execQuery(query);
+            result = this.buildResult(rs);
+            rs.close();
+        } catch (SQLException e) {
+            System.err.println(e);
             BotLogger.getDebugLogger().debug(e);
-            return "";  // zero words
         }
-
-        MostUsedWordsTableFmt table = new MostUsedWordsTableFmt();
-        try {
-            this.db.exec(query, table);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return "";
-        }
-
-        try {
-            this.db.close();
-        } catch (Exception ex) {
-            BotLogger.getDebugLogger().debug(ex.getMessage());
-            return "";
-        }
-        return table.getResults();
+        return result;
     }
+
+    private String buildResult(ResultSet rs) throws SQLException
+    {
+        if (rs == null) return null;
+
+        String result = new String();        
+        while (rs.next()) {           
+            rs.getString(1);
+            float fv = Float.valueOf(rs.getString(2));
+            int iv = Math.round(Float.valueOf( rs.getString(2) ));
+
+            String out;
+            float rv = fv - iv;
+            if (rv != 0) {
+                // Obtain a number with just two decimals
+                out = String.valueOf(Math.round(
+                        Float.valueOf(rs.getString(2)) * 100.0) / 100.0);
+            } else {
+                out = String.valueOf(
+                        Math.round(Float.valueOf(rs.getString(2))));
+            }
+            result += " " + rs.getString(1);
+            result += "(" + out + ")";
+        }
+        return result.trim();
+    }    
 
     public String mostUsedWords(int numberOfWords, String [] nicks, String date)
     {
@@ -100,13 +124,13 @@ public class WordCounterSqlite implements WordCounter
 
         String query;
         if (where == null) {
-            query = "SELECT word, SUM(repetitions) AS rep FROM datewordsnick" +
-                    " GROUP BY word ORDER BY rep COLLATE BINARY DESC LIMIT " +
+            query = "SELECT word, SUM(repetitions) AS rep FROM datewordsnick " +
+                    " GROUP BY word ORDER BY rep DESC LIMIT " +                 
                     Integer.toString(numberOfWords);
         } else {
             query = "SELECT word, SUM(repetitions) AS rep FROM datewordsnick " +
                     "WHERE " + where + " GROUP BY word ORDER BY rep " +
-                    "COLLATE BINARY DESC LIMIT " +
+                    "DESC LIMIT " +
                     Integer.toString(numberOfWords);
         }
         return this.runQuery(query);
@@ -128,12 +152,12 @@ public class WordCounterSqlite implements WordCounter
         String query;
         if (where == null) {
             query = "SELECT nick, SUM(repetitions) AS rep FROM datewordsnick " +
-                    "GROUP BY nick ORDER BY rep COLLATE BINARY DESC LIMIT " +
+                    "GROUP BY nick ORDER BY rep DESC LIMIT " +
                     Integer.toString(numberOfWords);
         } else {
             query = "SELECT nick, SUM(repetitions) AS rep FROM datewordsnick " +
                     "WHERE " + where + " GROUP BY nick ORDER BY rep " +
-                    "COLLATE BINARY DESC LIMIT " +
+                    "DESC LIMIT " +
                     Integer.toString(numberOfWords);
         }
         return this.runQuery(query);
@@ -149,12 +173,12 @@ public class WordCounterSqlite implements WordCounter
         String query;
         if (where == null) {
             query = "SELECT nick, SUM(repetitions) AS rep FROM lines " +
-                    "GROUP BY nick ORDER BY rep COLLATE BINARY DESC LIMIT " +
+                    "GROUP BY nick ORDER BY rep DESC LIMIT " +
                     Integer.toString(numberOfusers);
         } else {
             query = "SELECT nick, SUM(repetitions) AS rep FROM lines WHERE " +
                     where + " GROUP BY nick ORDER BY rep " +
-                    "COLLATE BINARY DESC LIMIT " +
+                    "DESC LIMIT " +
                     Integer.toString(numberOfusers);
         }
         return this.runQuery(query);
@@ -182,8 +206,8 @@ public class WordCounterSqlite implements WordCounter
                     " FROM datewordsnick GROUP BY n1)," +
                     "(SELECT nick AS n2, SUM(repetitions) AS rep2" +
                     " FROM lines GROUP BY n2) " +
-                    "WHERE n1 = n2 GROUP BY n1, n2 ORDER BY rep3 " +
-                    "COLLATE BINARY DESC LIMIT " +
+                    "WHERE n1 = n2 GROUP BY n1, n2, rep3 ORDER BY rep3 " +
+                    "DESC LIMIT " +
                     Integer.toString(numberOfusers);
         } else {
             query = "SELECT n1, (rep1/rep2) as rep3 FROM " +
@@ -191,53 +215,10 @@ public class WordCounterSqlite implements WordCounter
                     " FROM datewordsnick WHERE " + where + " GROUP BY n1)," +
                     "(SELECT nick AS n2, SUM(repetitions) AS rep2" +
                     " FROM lines WHERE " + where + " GROUP BY n2) " +
-                    "WHERE n1 = n2 GROUP BY n1, n2 ORDER BY rep3 " +
-                    "COLLATE BINARY DESC LIMIT " +
+                    "WHERE n1 = n2 GROUP BY n1, n2, rep3 ORDER BY rep3 " +
+                    "DESC LIMIT " +
                     Integer.toString(numberOfusers);
         }
         return this.runQuery(query);
-    }
-}
-
-class MostUsedWordsTableFmt implements SQLite.Callback
-{
-
-    String result;
-
-    public MostUsedWordsTableFmt()
-    {
-        this.result = new String();
-    }
-
-    public void columns(String[] arg0)
-    {
-    }
-
-    public boolean newrow(String[] arg0)
-    {
-        float fv = Float.valueOf(arg0[1]);
-        int iv = Math.round(Float.valueOf(arg0[1]));
-
-        String out;
-        float rv = fv - iv;        
-        if (rv != 0) {
-            // Obtain a number with just two decimals
-            out = String.valueOf(Math.round(Float.valueOf(arg0[1]) * 100.0)
-                    / 100.0);
-        } else {
-            out = String.valueOf(Math.round(Float.valueOf(arg0[1])));
-        }
-        this.result += " " + arg0[0];
-        this.result += "(" + out + ")";
-        return false;
-    }
-
-    public void types(String[] arg0)
-    {
-    }
-
-    public String getResults()
-    {
-        return this.result;
     }
 }

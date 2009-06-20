@@ -6,28 +6,25 @@ package org.knix.amnotbot.cmd;
 import org.knix.amnotbot.cmd.utils.CmdOptionImp;
 import org.knix.amnotbot.cmd.utils.CommandOptions;
 import org.knix.amnotbot.*;
-import java.util.Random;
 
-import org.apache.commons.lang.SystemUtils;
 
-import SQLite.Database;
-import SQLite.Exception;
-import SQLite.TableResult;
+import java.sql.SQLException;
+import org.knix.amnotbot.cmd.db.BotDBFactory;
+import org.knix.amnotbot.cmd.db.QuoteDAO;
+import org.knix.amnotbot.cmd.db.QuoteEntity;
 
 public class QuoteThread extends Thread
 {
-
-    private Database db;
+    private String db;
     private BotMessage msg;
-    private String db_filename;    
-    private CommandOptions opts;
+    private QuoteDAO quoteDAO;
+    private CommandOptions opts;    
 
-    public QuoteThread(BotMessage msg)
+    public QuoteThread(String db, BotMessage msg)
     {
+        this.db = db;
         this.msg = msg;
-        this.db_filename = SystemUtils.getUserHome() + "/" + ".amnotbot" +
-                "/" + "quotes.db";
-        this.db = new Database();
+        this.quoteDAO = null;
         this.opts = new CommandOptions(msg.getText());
 
         this.opts.addOption(new CmdOptionImp("text"));
@@ -39,16 +36,19 @@ public class QuoteThread extends Thread
 
     public void run()
     {
-        try {
-            this.db.open(this.db_filename, 0);
-        } catch (Exception e) {
+        this.quoteDAO = BotDBFactory.instance().createQuoteDAO(db);
+        try {                        
+            this.performAction();
+        } catch (SQLException e) {
             e.printStackTrace();
-            BotLogger.getDebugLogger().debug(e.getMessage());
-            return;
-        }
+            BotLogger.getDebugLogger().debug(e);
+        }       
+    }
 
+    private void performAction() throws SQLException
+    {
         this.opts.buildArgs();
-
+        
         if (this.opts.getOption("op").hasValue()) {
             String op = this.opts.getOption("op").tokens()[0];
 
@@ -64,122 +64,63 @@ public class QuoteThread extends Thread
         } else {
             this.getRandomQuote();
         }
-
-        try {
-            this.db.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-            BotLogger.getDebugLogger().debug(e.getMessage());
-        }
     }
-
-    private void createNewQuote(String text)
+   
+    private void createNewQuote(String text) throws SQLException
     {     
-        if (text == null) return;
+        QuoteEntity quote = new QuoteEntity();
+        
+        quote.setQuote(text);
+        quote.setUser( this.msg.getUser().getNick() );
 
-        String query;
-        query = "INSERT INTO quotes (nick, desc) VALUES (" + "'" +
-                this.msg.getUser().getNick() + "'" + ", " + "\"" + text +
-                "\"" + ");";
-
-        this.execQuery(query);
+        boolean success = false;
+        success = this.quoteDAO.save(quote);
 
         String m;
-        if (this.db.changes() > 0) {
-            m = "Quote (" + this.db.last_insert_rowid() +
-                    ") successfully created!";
-            this.msg.getConn().doPrivmsg(this.msg.getTarget(), m);
+        if (success) {
+            m = "Quote successfully created!";           
         } else {
-            m = "Quote creation failed!";
-            this.msg.getConn().doPrivmsg(this.msg.getTarget(), m);
+            m = "Quote creation failed!";       
+        }
+        this.msg.getConn().doPrivmsg(this.msg.getTarget(), m);
+    }
+
+    private void deleteQuote(String id) throws SQLException
+    {
+        boolean success = false;
+        success = this.quoteDAO.delete( Integer.parseInt(id) );
+        String m;
+        if (success) {
+            m = "Quote successfully deleted!";
+        } else {
+            m = "Quote deletion failed!";
+        }
+        this.msg.getConn().doPrivmsg(this.msg.getTarget(), m);
+    }
+
+    private void getRandomQuote() throws SQLException
+    {
+        QuoteEntity quote;
+
+        quote = this.quoteDAO.findRandom();
+        
+        if (quote.getId() >= 0) {
+            String m = "(" + Integer.toString( quote.getId() ) + ")" + ": " +
+                    "\"" + quote.getQuote() + "\"";
+            this.msg.getConn().doPrivmsg(this.msg.getTarget(), "Quote " + m);            
         }
     }
 
-    private void deleteQuote(String id)
+    private void getInfoAboutQuote(String id) throws SQLException
     {
-        String query;
+        QuoteEntity quote;
+        
+        quote = this.quoteDAO.findById( Integer.parseInt(id) );
 
-        if (id == null) return;
- 
-        query = "DELETE FROM quotes WHERE id=" + Integer.valueOf(id);
-
-        this.execQuery(query);
-    }
-
-    private void execQuery(String query)
-    {
-        BotLogger.getDebugLogger().debug(query);
-
-        try {
-            this.db.exec(query, new QuoteTableFmt());
-        } catch (Exception e) {
-            e.printStackTrace();
-            BotLogger.getDebugLogger().debug(e.getMessage());
-        }
-    }
-
-    private TableResult runQuery(String query)
-    {
-        TableResult results;
-
-        try {
-            results = this.db.get_table(query);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-
-        if (results.nrows <= 0) return null;
-        return results;
-    }
-
-    private void getRandomQuote()
-    {
-        Random rand;
-        String query;
-        TableResult results;
-
-        query = "SELECT * FROM quotes";
-
-        results = this.runQuery(query);
-
-        if (results != null) {
-            rand = new Random();
-            String[] r = 
-                    (String[]) results.rows.get(rand.nextInt(results.nrows));
-            String m = "(" + r[0] + ")" + ": " + "\"" + r[2] + "\"";
-            this.msg.getConn().doPrivmsg(this.msg.getTarget(), "Quote " + m);
-        }
-    }
-
-    private void getInfoAboutQuote(String id)
-    {
-        if (id == null) return;
-
-        String query;
-        TableResult results;
-
-        query = "SELECT * FROM quotes WHERE id=" + Integer.valueOf(id);
-        results = this.runQuery(query);
-        if (results != null) {
-            String[] r = (String[]) results.rows.get(0);
+        if (quote.getId() >= 0) {
             this.msg.getConn().doPrivmsg(this.msg.getTarget(),
-                    "Quote (" + id + ") submitted by " + r[1]);
+                    "Quote (" + quote.getId() + ") submitted by " +
+                    quote.getUser());
         }
     }
-}
-
-class QuoteTableFmt implements SQLite.Callback
-{
-
-    public QuoteTableFmt() { }
-   
-    public void columns(String[] arg0) { }
-
-    public boolean newrow(String[] arg0)
-    {
-        return false;
-    }
-
-    public void types(String[] arg0) { }
 }

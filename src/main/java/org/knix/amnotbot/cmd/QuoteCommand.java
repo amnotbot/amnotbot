@@ -1,17 +1,21 @@
 package org.knix.amnotbot.cmd;
 
+import org.apache.commons.lang.SystemUtils;
 import org.knix.amnotbot.*;
 
 public class QuoteCommand implements BotCommand
 {
+    String dbFilename;
 
     public QuoteCommand()
     {
+        this.dbFilename = SystemUtils.getUserHome() + "/" + ".amnotbot" + "/" +
+                "quotes.db";
     }
 
     public void execute(BotMessage message)
     {
-        new QuoteThread(message);
+        new QuoteThread(this.dbFilename, message);
     }
 
     public String help()

@@ -1,5 +1,6 @@
 package org.knix.amnotbot.cmd;
 
+import org.knix.amnotbot.cmd.db.WordCounterDAO;
 import org.knix.amnotbot.*;
 import java.io.BufferedReader;
 import java.io.File;
@@ -17,7 +18,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
-public class WordCounterTextFile implements WordCounter
+public class WordCounterTextFile implements WordCounterDAO
 {
 
     String log_filename;

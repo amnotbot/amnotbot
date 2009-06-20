@@ -1,6 +1,6 @@
-package org.knix.amnotbot.cmd;
+package org.knix.amnotbot.cmd.db;
 
-public interface WordCounter
+public interface WordCounterDAO
 {
 
     public abstract String mostUsedWords(int numberOfWords, String [] nicks,

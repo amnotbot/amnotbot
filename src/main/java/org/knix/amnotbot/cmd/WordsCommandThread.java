@@ -1,5 +1,6 @@
 package org.knix.amnotbot.cmd;
 
+import org.knix.amnotbot.cmd.db.WordCounterDAO;
 import org.knix.amnotbot.cmd.utils.CmdOptionImp;
 import org.knix.amnotbot.cmd.utils.CommandOptions;
 import org.knix.amnotbot.*;
@@ -8,7 +9,7 @@ import java.io.FileNotFoundException;
 import java.util.LinkedList;
 
 import javax.naming.directory.InvalidAttributeValueException;
-import org.knix.amnotbot.config.BotConfiguration;
+import org.knix.amnotbot.cmd.db.BotDBFactory;
 
 public class WordsCommandThread extends Thread
 {
@@ -50,8 +51,11 @@ public class WordsCommandThread extends Thread
             e.printStackTrace();
             return;
         }
-        
-        this.processRequest( this.selectBackend(db_file) );
+
+        WordCounterDAO wCounter = null;
+        wCounter = BotDBFactory.instance().createWordCounterDAO(db_file);
+
+        this.processRequest( wCounter );
     }
 
     private void init()
@@ -90,20 +94,7 @@ public class WordsCommandThread extends Thread
         return true;
     }
 
-    private WordCounter selectBackend(String db_file)
-    {
-        String wCounter;
-        wCounter = BotConfiguration.getConfig().getString("word_counter_imp");
-        if (wCounter.compareTo("sqlite") == 0) {
-            return ( new WordCounterSqlite(db_file) );
-        }
-
-        String i_file;
-        i_file = BotConfiguration.getConfig().getString("ignored_words_file");
-        return (new WordCounterTextFile(i_file, db_file) );
-    }
-
-    private void processRequest(WordCounter wordCounter)
+    private void processRequest(WordCounterDAO wordCounter)
     {
         String num;
         String [] nicks;
@@ -124,7 +115,7 @@ public class WordsCommandThread extends Thread
         this.showResults(results);
     }
 
-    private WordResults countWords(WordCounter wordCounter,
+    private WordResults countWords(WordCounterDAO wordCounter,
             int n,
             String [] nicks)
     {
@@ -143,7 +134,7 @@ public class WordsCommandThread extends Thread
         return results;
     }
 
-    private WordResults countLines(WordCounter wordCounter,
+    private WordResults countLines(WordCounterDAO wordCounter,
             int n,
             String [] nicks)
     {
