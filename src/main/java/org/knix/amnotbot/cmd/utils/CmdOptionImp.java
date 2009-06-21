@@ -87,6 +87,6 @@ public class CmdOptionImp implements CmdOption
             }
             return values;
         }
-        return new String [] { "" };
+        return new String [] { null };
     }
 }

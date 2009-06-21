@@ -5,13 +5,14 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import org.apache.commons.lang.StringUtils;
 
 public class JDBCWordCounterDAO implements WordCounterDAO
-{      
+{
     private Connection connection = null;
 
     public JDBCWordCounterDAO(String db) throws SQLException
-    {      
+    {
         this.connection = BotDBFactory.instance().getConnection(db);
     }
 
@@ -109,11 +110,11 @@ public class JDBCWordCounterDAO implements WordCounterDAO
     public String mostUsedWords(int numberOfWords, String [] nicks, String date)
     {
         String where = null;
-        if (nicks != null) {
+        if (nicks[0] != null) {
             where = this.getNickWhereClause(nicks);
         }
 
-        if (date != null) {
+        if (!StringUtils.isBlank(date)) {
             if (where != null) {
                 where += " AND ";
                 where += this.getDateWhereClause(date);
@@ -141,11 +142,11 @@ public class JDBCWordCounterDAO implements WordCounterDAO
             String date)
     {
         String where = null;
-        if (words != null) {
+        if (words[0] != null) {
             where = this.getWordsWhereClause(words);
         }
 
-        if (date != null) {
+        if (!StringUtils.isBlank(date)) {
             where += " AND " + this.getDateWhereClause(date);
         }
 
@@ -166,7 +167,7 @@ public class JDBCWordCounterDAO implements WordCounterDAO
     public String topLines(int numberOfusers, String date)
     {
         String where = null;
-        if (date != null) {
+        if (!StringUtils.isBlank(date)) {
             where = this.getDateWhereClause(date);
         }
 
@@ -187,11 +188,11 @@ public class JDBCWordCounterDAO implements WordCounterDAO
     public String avgWordsLine(int numberOfusers, String [] nicks, String date)
     {
         String where = null;
-        if (nicks != null) {
+        if (nicks[0] != null) {
             where = this.getNickWhereClause(nicks);
         }
 
-        if (date != null) {
+        if (!StringUtils.isBlank(date)) {
             if (where != null) {
                 where += " AND " + this.getDateWhereClause(date);
             } else {

@@ -138,8 +138,9 @@ public class WordCounterJDBCTest
     public void testMostUsedWords() throws SQLException
     {
         System.out.println("mostUsedWords");
+        String[] nicks = new String[] { null };
         JDBCWordCounterDAO wCounter = new JDBCWordCounterDAO(dbFilename);
-        String result = wCounter.mostUsedWords(1, null, null);       
+        String result = wCounter.mostUsedWords(1, nicks, null);
         assertTrue(result.startsWith(this.mostUsedWord));
     }
 

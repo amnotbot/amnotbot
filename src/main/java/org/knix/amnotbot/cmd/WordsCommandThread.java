@@ -9,6 +9,7 @@ import java.io.FileNotFoundException;
 import java.util.LinkedList;
 
 import javax.naming.directory.InvalidAttributeValueException;
+import org.apache.commons.lang.StringUtils;
 import org.knix.amnotbot.cmd.db.BotDBFactory;
 
 public class WordsCommandThread extends Thread
@@ -77,7 +78,7 @@ public class WordsCommandThread extends Thread
         }
 
         String db_file = this.msg.getConn().getBotLogger().getLoggingPath() +
-                "/" + target;
+                "/" + target + ".db";
         if (!this.dbExists(db_file)) {
             throw new FileNotFoundException("Statistics not available for: " +
                     target);
@@ -100,7 +101,7 @@ public class WordsCommandThread extends Thread
         String [] nicks;
 
         num = this.opts.getOption("number").tokens()[0];
-        int n = num == null ? 5 : Integer.parseInt(num);
+        int n = StringUtils.isBlank(num) ? 5 : Integer.parseInt(num);
         nicks = this.opts.getOption("nick").tokens();
 
         WordResults results = new WordResults();

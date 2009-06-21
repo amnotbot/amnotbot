@@ -32,7 +32,7 @@ public class CmdOptionImpTest
         assertEquals(cmd.tokens()[0], "This is a long sentence.");
 
         cmd.buildArgs("This is a message");     
-        assertEquals(cmd.tokens()[0], "");
+        assertEquals(cmd.tokens()[0], null);
 
         cmd.buildArgs("text:This is a short message.");        
         assertEquals(cmd.tokens()[0], "This is a short message.");
