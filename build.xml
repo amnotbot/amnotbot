@@ -3,12 +3,18 @@
 		Amnotbot - IRC Bot by Jimmy Mitchener
 	</description>
 
-	<property name="main.src"   location="src/main/java/" />
-	<property name="test.src"   location="src/test/java/" />
+	<property name="src.main"   location="src/main/java/" />
+	<property name="src.test"   location="src/test/java/" />
 	
-	<property name="main.resources" location="src/main/resources/" />
+	<property name="src.main.resources" location="src/main/resources/" />
+	<property name="src.test.resources" location="src/test/resources/" />
 	
 	<property name="build" location="build/" />
+	<property name="build.main.classes" location="${build}/classes" />
+	<property name="build.main.resources" location="${build}/resources" />
+	<property name="build.test.classes" location="${build}/test/classes" />
+	<property name="build.test.results" location="${build}/test/results" />
+
 	<property name="dist"  location="dist/" />
 	<property name="lib"   location="lib/" />
 	<property name="tmp"   location="tmp/" />
@@ -21,71 +27,89 @@
 		</classpath>
 	</taskdef>
 
-	<path id="classpath">
+	<path id="main.classpath">
 		<fileset dir="${lib}" includes="*.jar" />
 		<pathelement location="${lib}" />
+		<pathelement location="${src.main.resources}" />
 	</path>
 
-	<path id="classpath.test">
+	<path id="test.classpath">
 		<pathelement location="${lib}/junit-4.5.jar" />
-		<pathelement location="${build}" />
-		<pathelement location="${test.src}" />
-		<path refid="classpath" />
+		<pathelement location="${build.main.classes}" />
+		<pathelement location="${build.test.classes}" />
+		<pathelement location="${src.test.resources}" />
+		<path refid="main.classpath" />
 	</path>
 
 	<target name="clean">
 		<delete dir="${build}" />
 		<delete dir="${dist}" />
+		<delete dir="${tmp}" />
 	</target>
 
 	<target name="init" depends="clean">
 		<tstamp />
 		<mkdir dir="${build}" />
+
+		<mkdir dir="${build.main.classes}" />
+		<mkdir dir="${build.main.resources}" />
+		<mkdir dir="${build.test.classes}" />
+		<mkdir dir="${build.test.results}" />
+
 		<mkdir dir="${dist}" />
+		<mkdir dir="${tmp}" />
 	</target>
 
 	<target name="compile" depends="init">
-		<javac srcdir="${main.src}"
-			   destdir="${build}"
-			   debug="true"
-               target="1.5"
-			   classpathref="classpath"/>
+                <javac srcdir="${src.main}:${src.main.resources}"
+                        destdir="${build.main.classes}"
+                        debug="false"
+                        target="1.6"
+                        classpathref="main.classpath"/>
+                <copy todir="${build.main.resources}">
+                        <fileset dir="${src.main.resources}"/>
+                </copy>
 	</target>
 
 	<target name="compile-test" depends="compile">
-		<javac srcdir="${test.src}"
-			   destdir="${build}"
-			   debug="true" target="1.5"
-			   classpathref="classpath.test"/>
-		
+		<javac srcdir="${src.test}:${src.test.resources}"
+			   destdir="${build.test.classes}"
+			   debug="true" target="1.6"
+			   classpathref="test.classpath"/>
+                <copy todir="${build}">
+                        <fileset dir="${src.test.resources}"/>
+                </copy>
 	</target>
 
 	<target name="test" depends="compile-test">
-		<junit>
-			<classpath refid="classpath.test" />
-			<formatter type="brief" usefile="false" />
-			<batchtest todir="${tmp}">
-				<fileset dir="${build}">
+		<junit dir="${build}" tempdir="${tmp}" printsummary="yes" fork="yes">
+			<formatter type="plain" />
+			<batchtest todir="${build.test.results}">
+				<fileset dir="${build.test.classes}">
 					<include name="**/*Test.class"/>
 				</fileset>
 			</batchtest>
+                        <classpath>
+                                <path refid="test.classpath"/>
+                        </classpath>
 		</junit>
 	</target>
 
 	<target name="dist" depends="compile">
-        <jar jarfile="${dist}/amnotbot.jar" manifest="Manifest">
-            <fileset dir="${build}" />
-        </jar>
+                <jar jarfile="${dist}/amnotbot.jar" manifest="Manifest">
+                        <fileset dir="${build.main.classes}" />
+                      <!--  <fileset dir="${build.main.resources}" /> -->
+                </jar>
 		
-        <copy todir="${dist}/lib">
-            <fileset dir="${lib}">
-            	<exclude name="retroweaver-all-2.0.jar" />
-            </fileset>
-        </copy>
+                <copy todir="${dist}/lib">
+                        <fileset dir="${lib}">
+                                <exclude name="retroweaver-all-2.0.jar" />
+                        </fileset>
+                </copy>
 		
-        <copy todir="${dist}">
-            <fileset dir="${main.resources}" />
-        </copy>
+                <copy todir="${dist}">
+                        <fileset dir="${src.main.resources}" />
+                </copy>
 		
 		<retroweaver inputjar="${dist}/amnotbot.jar"
 					 outputjar="${dist}/amnotbot-1.4.jar"
