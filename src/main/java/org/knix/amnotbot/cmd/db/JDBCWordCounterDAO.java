@@ -55,24 +55,16 @@ public class JDBCWordCounterDAO implements WordCounterDAO
         return where;
     }
 
-    private ResultSet execQuery(String query) throws SQLException
-    {
-        ResultSet rs = null;
-        Statement statement = null;
-
-        statement = this.connection.createStatement();        
-        rs = statement.executeQuery(query);
-    
-        return rs;
-    }
-
     private String runQuery(String query)
     {
         ResultSet rs = null;
         String result = null;
-        try {
-            rs = this.execQuery(query);
+        Statement statement = null;
+        try {            
+            statement = this.connection.createStatement();
+            rs = statement.executeQuery(query);
             result = this.buildResult(rs);
+            statement.close();
             rs.close();
         } catch (SQLException e) {
             System.err.println(e);
