@@ -25,7 +25,7 @@ public class JDBCWordCounterDAO implements WordCounterDAO
             if (i > 0) {
                 where += " OR ";
             }
-            where += "nick = '" + nicks[i] + "'";
+            where += "nick = '" + nicks[i].toLowerCase() + "'";
         }
         return where;
     }
@@ -50,7 +50,7 @@ public class JDBCWordCounterDAO implements WordCounterDAO
             if (i > 0) {
                 where += " OR ";
             }
-            where += "word = '" + words[i] + "'";
+            where += "word = '" + words[i].toLowerCase() + "'";
         }
         return where;
     }
