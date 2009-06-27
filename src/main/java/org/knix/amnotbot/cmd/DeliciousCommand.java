@@ -20,8 +20,7 @@ public class DeliciousCommand implements BotCommand
 
     public void execute(BotMessage message)
     {
-        new DeliciousThread(this.delicious,
-                message, this.maxTagLength, true);
+        new DeliciousThread(this.delicious, message, this.maxTagLength);
     }
 
     public String help()

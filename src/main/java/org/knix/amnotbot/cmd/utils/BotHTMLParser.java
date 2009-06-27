@@ -18,55 +18,61 @@ import org.htmlparser.util.Translate;
 
 public class BotHTMLParser
 {
-
     private Parser parser;
     private String title = null;
-    private String keywords = null;
+    private String description = null;
+    private String [] keywords;
 
-    public BotHTMLParser(String url)
-    {
+    public BotHTMLParser()
+    {       
         this.parser = new Parser();
-        this.setUrl(url);
+        this.keywords = new String [] {};
+    }
+    
+    public WebPageInfo get(String url)
+    {
+        WebPageInfo webPageInfo = null;
+
+        try {
+            webPageInfo = this.getWebPageInfo(url);
+        } catch (Exception e) {
+            e.printStackTrace();
+            BotLogger.getDebugLogger().debug(e);
+            return null;
+        }
+        
+        return webPageInfo;
     }
 
-    private boolean isValidURL(String url)
+    private WebPageInfo getWebPageInfo(String url)
+            throws ParserException, MalformedURLException, IOException
     {
-        URL u = null;
-        try {
-            u = new URL(url);
-        } catch (MalformedURLException e) {
-            BotLogger.getDebugLogger().debug(e);
-            return false;
-        }
+        WebPageInfoEntity webPageInfo = new WebPageInfoEntity();
 
-        URLConnection uc = null;
-        try {
-            uc = u.openConnection();
-        } catch (IOException e) {
-            BotLogger.getDebugLogger().debug(e);
+        if (this.isTextContent(url)) {            
+            this.parse(url);
+            
+            webPageInfo.setUrl(url);
+            webPageInfo.setTitle(this.getTitle());
+            webPageInfo.setDescription(this.getDescription());
+            webPageInfo.setKeywords(this.getKeywords());
         }
+        return webPageInfo;
+    }
 
+    private boolean isTextContent(String url)
+            throws MalformedURLException, IOException
+    {
+        URL u = new URL(url);        
+        URLConnection uc = u.openConnection();
+        
         String type = uc.getContentType();
         if (type != null) {
             if (!type.startsWith("text")) {
                 return false;
             }
         }
-
         return true;
-    }
-
-    public void setUrl(String url)
-    {
-        if (this.isValidURL(url)) {
-            try {
-                this.parser.setURL(url);
-            } catch (ParserException pe) {
-                BotLogger.getDebugLogger().debug(pe);
-                return;
-            }
-            this.parse();
-        }
     }
 
     private void setTitle(String title)
@@ -79,56 +85,77 @@ public class BotHTMLParser
         this.title = title;
     }
 
-    public String getTitle()
+    private String getTitle()
     {
         return this.title;
     }
 
-    private void setKeywords(String keywords)
+    private void setDescription(String description)
     {
-        this.keywords = keywords;
+        this.description = description;
     }
 
-    public String getKeywords()
+    private String getDescription()
     {
+        return this.description;
+    }
+
+    private void setKeywords(String keywords)
+    {
+        String[] str;
+
+        str = keywords.split(",");
+        if (str.length == 1) {
+            str = keywords.split(" ");
+        }
+
+        for (int i = 0; i < str.length; ++i) {
+            str[i] = str[i].trim();
+        }
+        
+        this.keywords = str.clone();
+    }
+
+    private String [] getKeywords()
+    {       
         return this.keywords;
     }
 
-    public String getUrl()
+    private void parse(String url) throws ParserException
     {
-        return this.parser.getURL();
-    }
-
-    private void parse()
-    {
+        this.parser.setURL(url);
+        
         this.parseHeaders();
         this.parseBody();
     }
 
-    private void parseHeaders()
+    private void parseHeaders() throws ParserException
     {
         NodeList nl;
+       
+        nl = this.parser.parse(null);
 
-        try {
-            nl = this.parser.parse(null);
+        NodeClassFilter titleFilter = new NodeClassFilter(TitleTag.class);
+        NodeList titles = nl.extractAllNodesThatMatch(titleFilter, true);
+        if (titles.size() > 0) {
+            TitleTag titletag = (TitleTag) titles.elementAt(0);
+            this.setTitle(Translate.decode(titletag.getTitle().trim()));
+        }
 
-            NodeClassFilter titleFilter = new NodeClassFilter(TitleTag.class);
-            NodeList titles = nl.extractAllNodesThatMatch(titleFilter, true);
-            if (titles.size() > 0) {
-                TitleTag titletag = (TitleTag) titles.elementAt(0);
-                this.setTitle(Translate.decode(titletag.getTitle().trim()));
-            }
+        NodeList keywordsList = nl.extractAllNodesThatMatch(
+                new AndFilter(new NodeClassFilter(MetaTag.class),
+                new HasAttributeFilter("name", "keywords")), true);
+        if (keywordsList.size() > 0) {
+            MetaTag metatag = (MetaTag) keywordsList.elementAt(0);
+            this.setKeywords(metatag.getMetaContent());
+        }
 
-            NodeList meta = nl.extractAllNodesThatMatch(
-                    new AndFilter(new NodeClassFilter(MetaTag.class),
-                    new HasAttributeFilter("name", "keywords")), true);
-            if (meta.size() > 0) {
-                MetaTag metatag = (MetaTag) meta.elementAt(0);
-                this.setKeywords(metatag.getMetaContent());
-            }
-        } catch (ParserException pe) {
-            BotLogger.getDebugLogger().debug(pe);
-            return;
+        NodeList descriptions = nl.extractAllNodesThatMatch(
+                new AndFilter(new NodeClassFilter(MetaTag.class),
+                new HasAttributeFilter("name", "description")), true);
+        if (descriptions.size() > 0) {
+            MetaTag metatag = (MetaTag) descriptions.elementAt(0);
+            this.setDescription(metatag.getMetaContent());
         }
     }
 

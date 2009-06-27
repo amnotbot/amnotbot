@@ -6,22 +6,18 @@ import java.util.Date;
 
 public class DeliciousThread extends Thread
 {
-
     private String url;
     private BotMessage msg;
-    private int maxTagLength;    
-    private boolean showTitle;
+    private int maxTagLength;
     private CommandOptions opts;
-    private BotHTMLParser parser;
+    WebPageInfoProxy webPageInfo;
     private DeliciousBookmarks delicious;
 
     public DeliciousThread(DeliciousBookmarks delicious, BotMessage msg,
-            int maxTagLength,
-            boolean showTitle)
+            int maxTagLength)
     {
         this.msg = msg;
         this.delicious = delicious;
-        this.showTitle = showTitle;
         this.url = msg.getText().trim().split("\\s+")[0];
         this.maxTagLength = maxTagLength;
 
@@ -31,27 +27,9 @@ public class DeliciousThread extends Thread
         opts.addOption(new CmdOptionImp("tags", ","));
         opts.addOption(new CmdOptionImp("comment"));
 
-        this.parser = new BotHTMLParser(this.url);
+        this.webPageInfo = new WebPageInfoProxy(this.url);
 
         start();
-    }
-
-    private String getPageTags()
-    {
-        String tags = "";
-
-        String keywords;
-        keywords = this.parser.getKeywords();
-        if (keywords != null) {
-            String[] str = keywords.split(",");
-            if (str.length == 1) {
-                str = keywords.split(" ");
-            }
-            for (int i = 0; i < str.length; ++i) {
-                tags += " " + str[i].trim().replace(" ", ".");
-            }
-        }
-        return tags;
     }
 
     private String getTags()
@@ -67,7 +45,10 @@ public class DeliciousThread extends Thread
             }
         }
 
-        tmpTags += this.getPageTags();
+        String [] kWords = this.webPageInfo.getKeywords();
+        for (int i = 0; i < kWords.length; ++i) {
+            tmpTags += " " + kWords[i].replace(" ", ".");
+        }
 
         if (tmpTags.trim().length() > 0) {
             tmpTags += " " + this.msg.getUser().getNick();
@@ -93,16 +74,21 @@ public class DeliciousThread extends Thread
             return titleOption.tokens()[0];
         }
 
-        String title = this.parser.getTitle();
+        String title = this.webPageInfo.getTitle();
         if (title != null) return title;
         return this.url;
     }
 
-    private boolean isPageTitle()
+    private String getComment()
     {
-        if (!this.opts.getOption("title").hasValue()
-                && this.parser.getTitle() != null) return true;
-        return false;
+        String comment;
+
+        comment = this.opts.getOption("comment").tokens()[0];
+        if (comment != null) return comment;
+
+        comment = this.webPageInfo.getDescription();
+
+        return comment;
     }
 
     public void run()
@@ -112,15 +98,10 @@ public class DeliciousThread extends Thread
         String comment;
 
         this.opts.buildArgs();
-
+        
         tags = this.getTags();
         title = this.getTitle();
-        comment = this.opts.getOption("comment").tokens()[0];
-
-        if (this.showTitle && this.isPageTitle()) {
-            this.msg.getConn().doPrivmsg(this.msg.getTarget(), 
-                    "[ " + title + " ]");
-        }
+        comment = this.getComment();
 
         Boolean success;
         success = this.delicious.addPost(this.url,
