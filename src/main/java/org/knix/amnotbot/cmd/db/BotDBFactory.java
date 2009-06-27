@@ -13,7 +13,6 @@ import org.knix.amnotbot.config.BotConfiguration;
 public class BotDBFactory
 {
     String backend, driver;
-    private Class quoteDAO;
     static BotDBFactory _instance = null;
 
     public static BotDBFactory instance()
