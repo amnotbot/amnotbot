@@ -63,7 +63,7 @@
 	<target name="compile" depends="init">
                 <javac srcdir="${src.main}:${src.main.resources}"
                         destdir="${build.main.classes}"
-                        debug="false"
+                        debug="true"
                         target="1.6"
                         classpathref="main.classpath"/>
                 <copy todir="${build.main.resources}">
