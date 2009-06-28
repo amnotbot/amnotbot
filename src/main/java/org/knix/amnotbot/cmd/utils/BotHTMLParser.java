@@ -78,8 +78,17 @@ public class BotHTMLParser
     private void setTitle(String title)
     {
         if (title != null) {
-            if (title.trim().length() == 0) {
+            title = title.trim();
+            if (title.length() == 0) {
                 title = null;
+            } else {
+                String [] str;
+                String tmp = new String();
+                str = title.split("\n");
+                for (String t : str) {
+                    tmp += " " + t.trim();
+                }
+                title = tmp.trim();
             }
         }
         this.title = title;
