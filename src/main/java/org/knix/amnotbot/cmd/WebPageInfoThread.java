@@ -30,7 +30,11 @@ public class WebPageInfoThread extends Thread
 
     private void showTitle()
     {
-        this.msg.getConn().doPrivmsg(this.msg.getTarget(),
-                "[ " + this.webPageInfo.getTitle() + " ]");
+        String title;
+        title = this.webPageInfo.getTitle();
+        if (title != null) {
+            this.msg.getConn().doPrivmsg(this.msg.getTarget(),
+                    "[ " + title + " ]");
+        }
     }
 }
