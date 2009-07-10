@@ -117,11 +117,11 @@ public class JDBCWordCounterDAO implements WordCounterDAO
 
         String query;
         if (where == null) {
-            query = "SELECT word, SUM(repetitions) AS rep FROM datewordsnick " +
+            query = "SELECT word, SUM(repetitions) AS rep FROM words " +
                     " GROUP BY word ORDER BY rep DESC LIMIT " +                 
                     Integer.toString(numberOfWords);
         } else {
-            query = "SELECT word, SUM(repetitions) AS rep FROM datewordsnick " +
+            query = "SELECT word, SUM(repetitions) AS rep FROM words " +
                     "WHERE " + where + " GROUP BY word ORDER BY rep " +
                     "DESC LIMIT " +
                     Integer.toString(numberOfWords);
@@ -144,11 +144,11 @@ public class JDBCWordCounterDAO implements WordCounterDAO
 
         String query;
         if (where == null) {
-            query = "SELECT nick, SUM(repetitions) AS rep FROM datewordsnick " +
+            query = "SELECT nick, SUM(repetitions) AS rep FROM words " +
                     "GROUP BY nick ORDER BY rep DESC LIMIT " +
                     Integer.toString(numberOfWords);
         } else {
-            query = "SELECT nick, SUM(repetitions) AS rep FROM datewordsnick " +
+            query = "SELECT nick, SUM(repetitions) AS rep FROM words " +
                     "WHERE " + where + " GROUP BY nick ORDER BY rep " +
                     "DESC LIMIT " +
                     Integer.toString(numberOfWords);
@@ -196,7 +196,7 @@ public class JDBCWordCounterDAO implements WordCounterDAO
         if (where == null) {
             query = "SELECT n1, (rep1/rep2) as rep3 FROM " +
                     "(SELECT nick AS n1, SUM(repetitions) AS rep1" +
-                    " FROM datewordsnick GROUP BY n1)," +
+                    " FROM words GROUP BY n1)," +
                     "(SELECT nick AS n2, SUM(repetitions) AS rep2" +
                     " FROM lines GROUP BY n2) " +
                     "WHERE n1 = n2 GROUP BY n1, n2, rep3 ORDER BY rep3 " +
@@ -205,7 +205,7 @@ public class JDBCWordCounterDAO implements WordCounterDAO
         } else {
             query = "SELECT n1, (rep1/rep2) as rep3 FROM " +
                     "(SELECT nick AS n1, SUM(repetitions) AS rep1" +
-                    " FROM datewordsnick WHERE " + where + " GROUP BY n1)," +
+                    " FROM words WHERE " + where + " GROUP BY n1)," +
                     "(SELECT nick AS n2, SUM(repetitions) AS rep2" +
                     " FROM lines WHERE " + where + " GROUP BY n2) " +
                     "WHERE n1 = n2 GROUP BY n1, n2, rep3 ORDER BY rep3 " +
