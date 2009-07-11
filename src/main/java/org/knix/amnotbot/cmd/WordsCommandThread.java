@@ -4,7 +4,6 @@ import org.knix.amnotbot.cmd.db.WordCounterDAO;
 import org.knix.amnotbot.cmd.utils.CmdOptionImp;
 import org.knix.amnotbot.cmd.utils.CommandOptions;
 import org.knix.amnotbot.*;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.LinkedList;
 
@@ -79,20 +78,8 @@ public class WordsCommandThread extends Thread
 
         String db_file = this.msg.getConn().getBotLogger().getLoggingPath() +
                 "/" + target + ".db";
-        if (!this.dbExists(db_file)) {
-            throw new FileNotFoundException("Statistics not available for: " +
-                    target);
-        }
+
         return db_file;
-    }
-
-    boolean dbExists(String path)
-    {
-        File db_file = new File(path);
-
-        if (!db_file.exists()) return false;
-
-        return true;
     }
 
     private void processRequest(WordCounterDAO wordCounter)
