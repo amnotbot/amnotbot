@@ -67,16 +67,13 @@ public class WordCounterJDBCTest
             statement = connection.createStatement();
             
             statement.executeUpdate("CREATE TABLE words " +
-                    "(word VARCHAR, repetitions REAL)");    
-            statement.executeUpdate("CREATE TABLE datewordsnick " +
                     "(d DATE, nick VARCHAR, word VARCHAR, repetitions REAL)");           
             statement.executeUpdate("CREATE TABLE lines " +
                     "(d DATE, nick VARCHAR, repetitions REAL)");
             
-            statement.executeUpdate("CREATE UNIQUE INDEX dnw ON datewordsnick" +
+            statement.executeUpdate("CREATE UNIQUE INDEX dnw ON words" +
                     " (d, nick, word)");            
-            statement.executeUpdate("CREATE INDEX n ON datewordsnick (nick)");
-            statement.executeUpdate("CREATE UNIQUE INDEX w ON words (word)");
+            statement.executeUpdate("CREATE INDEX n ON words (nick)");
             statement.executeUpdate("CREATE UNIQUE INDEX l ON lines (d, nick)");
             statement.executeUpdate("CREATE INDEX ln ON lines (nick)");          
         } catch (SQLException e) {
@@ -84,14 +81,14 @@ public class WordCounterJDBCTest
             return;
         }
         try {
-            statement.executeUpdate("INSERT INTO datewordsnick " +
+            statement.executeUpdate("INSERT INTO words " +
                     "values('2009-06-14','gresco'," + "'" +
                     this.mostUsedWord + "'" + ", 15.0)");           
-            statement.executeUpdate("INSERT INTO datewordsnick " +
+            statement.executeUpdate("INSERT INTO words " +
                     "values('2009-06-14','gresco','medio',7)");
-            statement.executeUpdate("INSERT INTO datewordsnick " +
+            statement.executeUpdate("INSERT INTO words " +
                     "values('2009-06-14','knix','bajo', 5)");
-            statement.executeUpdate("INSERT INTO datewordsnick " +
+            statement.executeUpdate("INSERT INTO words " +
                     "values('2009-06-14','knix','medio', 4)");
             statement.executeUpdate("INSERT INTO lines " +
                     "values('2009-06-14','gresco',94)");
@@ -125,7 +122,6 @@ public class WordCounterJDBCTest
             statement = connection.createStatement();
             statement.executeUpdate("DROP TABLE IF EXISTS lines");
             statement.executeUpdate("DROP TABLE IF EXISTS words");
-            statement.executeUpdate("DROP TABLE IF EXISTS datewordsnick");
             
             statement.close();
             connection.close();
