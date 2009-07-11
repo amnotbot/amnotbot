@@ -9,11 +9,11 @@ import org.apache.commons.lang.StringUtils;
 
 public class JDBCWordCounterDAO implements WordCounterDAO
 {
-    private Connection connection = null;
+    String db;
 
     public JDBCWordCounterDAO(String db) throws SQLException
     {
-        this.connection = BotDBFactory.instance().getConnection(db);
+        this.db = db;
     }
 
     private String getNickWhereClause(String [] nicks)
@@ -59,13 +59,17 @@ public class JDBCWordCounterDAO implements WordCounterDAO
     {
         ResultSet rs = null;
         String result = null;
+        Connection conn = null;
         Statement statement = null;
-        try {            
-            statement = this.connection.createStatement();
+        try {
+            conn = BotDBFactory.instance().getConnection(this.db);
+            statement = conn.createStatement();
             rs = statement.executeQuery(query);
             result = this.buildResult(rs);
             statement.close();
             rs.close();
+            conn.close();
+            conn = null;
         } catch (SQLException e) {
             System.err.println(e);
             BotLogger.getDebugLogger().debug(e);
