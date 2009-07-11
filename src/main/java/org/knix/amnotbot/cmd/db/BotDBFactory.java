@@ -12,7 +12,7 @@ import org.knix.amnotbot.config.BotConfiguration;
  */
 public class BotDBFactory
 {
-    String backend, driver;
+    String backend, driver, properties;
     static BotDBFactory _instance = null;
 
     public static BotDBFactory instance()
@@ -33,8 +33,11 @@ public class BotDBFactory
         }
         
         this.backend = BotConfiguration.getConfig().getString("backend");
+
+        this.properties = new String("");
         if (this.backend.equals("hsqldb")) {
-            this.driver = this.backend + ":file";           
+            this.driver = this.backend + ":file";
+            this.properties = ";shutdown=true";
         } else {
             this.driver = this.backend;
         }
@@ -42,10 +45,10 @@ public class BotDBFactory
 
     public Connection getConnection(String db) throws SQLException
     {
-        Connection connection;
+        Connection connection = null;
 
         connection = DriverManager.getConnection(
-                    "jdbc:" + this.driver + ":" + db, "sa", "");
+                "jdbc:" + this.driver + ":" + db + this.properties);
 
         return connection;
     }
