@@ -14,10 +14,10 @@ public class GoogleVideoSearchCommand implements BotCommand
     {
         if (message.getText().isEmpty()) return;
         
-        new GoogleSearchThread(
+        new GoogleSearchImp(
                 GoogleSearch.searchType.VIDEOS_SEARCH,
                 new GoogleResultOutputVideosStrategy(),
-                message);
+                message).run();
     }
 
     public String help()

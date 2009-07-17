@@ -11,11 +11,11 @@ public class GoogleWebSearchCommand implements BotCommand
 
     public void execute(BotMessage message)
     {
-        new GoogleSearchThread(
+        new GoogleSearchImp(
                 GoogleSearch.searchType.WEB_SEARCH,
                 new GoogleResultOutputWebStrategy(),
                 message
-                );
+                ).run();
     }
 
     public String help()

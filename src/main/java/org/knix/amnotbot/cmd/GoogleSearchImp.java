@@ -8,13 +8,14 @@ import org.json.JSONObject;
  *
  * @author gpoppino
  */
-public class GoogleSearchThread extends Thread
+public class GoogleSearchImp
 {
+
     private BotMessage msg;
     private GoogleSearch.searchType sType;
     private GoogleResultOutputStrategy outputStrategy;
 
-    public GoogleSearchThread(
+    public GoogleSearchImp(
             GoogleSearch.searchType s,
             GoogleResultOutputStrategy outputStrategy,
             BotMessage msg)
@@ -22,21 +23,19 @@ public class GoogleSearchThread extends Thread
         this.msg = msg;
         this.sType = s;
         this.outputStrategy = outputStrategy;
-
-        start();
     }
 
     public void run()
     {
         try {
             GoogleSearch google = new GoogleSearch();
-            
-            JSONObject answer;           
-            answer = google.search(this.sType, this.msg.getText());            
+
+            JSONObject answer;
+            answer = google.search(this.sType, this.msg.getText());
             this.outputStrategy.showAnswer(this.msg, new GoogleResult(answer));
         } catch (Exception e) {
             e.printStackTrace();
             BotLogger.getDebugLogger().debug(e.getMessage());
-         }
-    }    
+        }
+    }
 }

@@ -16,14 +16,16 @@ public class QurlRequestCommand implements BotCommand
         this.qurl_length = config.getInt("qurl_length", 83);
     }
 
+    @Override
     public void execute(BotMessage message)
     {
         String url = message.getText().trim().split("\\s+")[0];
         if (url.length() > this.qurl_length) {
-            new QurlRequest(message);
+            new QurlRequest(message).run();
         }
     }
 
+    @Override
     public String help()
     {
         throw new UnsupportedOperationException("Not supported yet.");

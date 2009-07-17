@@ -39,17 +39,16 @@ import java.net.URLEncoder;
  * 
  * @author Jimmy Mitchener
  */
-public class QurlRequest extends Thread
+public class QurlRequest
 {
 
     private BotMessage msg;
-    public static final String QURL_REGEX = ".*a href=\"(http://qurl.org.*)\".*";
+    public static final String QURL_REGEX =
+            ".*a href=\"(http://qurl.org.*)\".*";
  
     public QurlRequest(BotMessage msg)
     {
         this.msg = msg;
-
-        start();
     }
 
     public void run()

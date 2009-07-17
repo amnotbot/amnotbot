@@ -18,11 +18,16 @@ public class DeliciousCommand implements BotCommand
                 config.getInteger("delicious_max_tag_length", 30).intValue();
     }
 
+    @Override
     public void execute(BotMessage message)
     {
-        new DeliciousThread(this.delicious, message, this.maxTagLength);
+        DeliciousImp del = new DeliciousImp(this.delicious, message,
+                this.maxTagLength);
+
+        del.run();
     }
 
+    @Override
     public String help()
     {
         String msg;

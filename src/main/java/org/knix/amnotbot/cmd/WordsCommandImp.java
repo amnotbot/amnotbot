@@ -11,7 +11,7 @@ import javax.naming.directory.InvalidAttributeValueException;
 import org.apache.commons.lang.StringUtils;
 import org.knix.amnotbot.cmd.db.BotDBFactory;
 
-public class WordsCommandThread extends Thread
+public class WordsCommandImp
 {
     
     BotMessage msg;
@@ -22,7 +22,7 @@ public class WordsCommandThread extends Thread
     }
     countOperation countOp;
 
-    public WordsCommandThread(BotMessage msg, countOperation op)
+    public WordsCommandImp(BotMessage msg, countOperation op)
     {
         this.msg = msg;
         this.countOp = op;
@@ -35,8 +35,6 @@ public class WordsCommandThread extends Thread
         opts.addOption(new CmdOptionImp("date"));
         opts.addOption(new CmdOptionImp("op"));
         opts.addOption(new CmdOptionImp("channel"));
-
-        start();
     }
 
     public void run()

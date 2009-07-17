@@ -9,12 +9,14 @@ public class WordsCommand implements BotCommand
     {
     }
 
+    @Override
     public void execute(BotMessage message)
     {
-        new WordsCommandThread(message,
-                WordsCommandThread.countOperation.WORDS);
+        new WordsCommandImp(message,
+                WordsCommandImp.countOperation.WORDS).run();
     }
 
+    @Override
     public String help()
     {
         String msg;

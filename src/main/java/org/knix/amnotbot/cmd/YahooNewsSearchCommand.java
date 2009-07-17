@@ -6,11 +6,13 @@ import org.knix.amnotbot.*;
 public class YahooNewsSearchCommand implements BotCommand
 {
 
+    @Override
     public void execute(BotMessage message)
     {
-        new YahooThread(message, YahooThread.searchType.NEWS_SEARCH);
+        new YahooImp(message, YahooImp.searchType.NEWS_SEARCH).run();
     }
 
+    @Override
     public String help()
     {
         throw new UnsupportedOperationException("Not supported yet.");

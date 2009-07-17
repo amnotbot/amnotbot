@@ -13,11 +13,13 @@ public class QuoteCommand implements BotCommand
                 "quotes.db";
     }
 
+    @Override
     public void execute(BotMessage message)
     {
-        new QuoteThread(this.dbFilename, message);
+        new QuoteImp(this.dbFilename, message).run();
     }
 
+    @Override
     public String help()
     {
         String msg;

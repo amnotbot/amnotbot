@@ -13,14 +13,14 @@ import org.knix.amnotbot.cmd.db.BotDBFactory;
 import org.knix.amnotbot.cmd.db.QuoteDAO;
 import org.knix.amnotbot.cmd.db.QuoteEntity;
 
-public class QuoteThread extends Thread
+public class QuoteImp
 {
     private String db;
     private BotMessage msg;
     private QuoteDAO quoteDAO;
     private CommandOptions opts;    
 
-    public QuoteThread(String db, BotMessage msg)
+    public QuoteImp(String db, BotMessage msg)
     {
         this.db = db;
         this.msg = msg;
@@ -30,8 +30,6 @@ public class QuoteThread extends Thread
         this.opts.addOption(new CmdOptionImp("text"));
         this.opts.addOption(new CmdOptionImp("id"));
         this.opts.addOption(new CmdOptionImp("op"));
-
-        start();
     }
 
     public void run()

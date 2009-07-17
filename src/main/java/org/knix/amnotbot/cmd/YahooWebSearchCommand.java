@@ -6,11 +6,13 @@ import org.knix.amnotbot.*;
 public class YahooWebSearchCommand implements BotCommand
 {
 
+    @Override
     public void execute(BotMessage message)
     {
-        new YahooThread(message, YahooThread.searchType.WEB_SEARCH);
+        new YahooImp(message, YahooImp.searchType.WEB_SEARCH).run();
     }
 
+    @Override
     public String help()
     {
         String msg;

@@ -17,7 +17,7 @@ import com.yahoo.search.WebSearchRequest;
 import com.yahoo.search.WebSearchResult;
 import com.yahoo.search.WebSearchResults;
 
-public class YahooThread extends Thread
+public class YahooImp
 {
 
     String query;
@@ -31,9 +31,10 @@ public class YahooThread extends Thread
     }
     searchType sType;
 
-    public YahooThread(BotMessage msg, searchType sType)
+    public YahooImp(BotMessage msg, searchType sType)
     {
-        this.yahooClient = new SearchClient("G7RklHzV34Gs_AYiBU0xA4wak1J3plPRonFhFfwJEeXMVP4PrpvwiflgxXa4uw--");
+        this.yahooClient =
+                new SearchClient("G7RklHzV34Gs_AYiBU0xA4wak1J3plPRonFhFfwJEeXMVP4PrpvwiflgxXa4uw--");
         this.msg = msg;
         this.sType = sType;
 
@@ -47,8 +48,6 @@ public class YahooThread extends Thread
         this.opts.addOption(new CmdOptionImp("adult_ok"));
         this.opts.addOption(new CmdOptionImp("license"));
         this.opts.addOption(new CmdOptionImp("type"));
-
-        start();
     }
 
     public void run()

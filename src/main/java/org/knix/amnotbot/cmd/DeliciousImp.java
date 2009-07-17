@@ -4,16 +4,16 @@ import org.knix.amnotbot.cmd.utils.*;
 import org.knix.amnotbot.*;
 import java.util.Date;
 
-public class DeliciousThread extends Thread
+public class DeliciousImp
 {
     private String url;
     private BotMessage msg;
     private int maxTagLength;
     private CommandOptions opts;
-    WebPageInfoProxy webPageInfo;
+    private WebPageInfoProxy webPageInfo;
     private DeliciousBookmarks delicious;
 
-    public DeliciousThread(DeliciousBookmarks delicious, BotMessage msg,
+    public DeliciousImp(DeliciousBookmarks delicious, BotMessage msg,
             int maxTagLength)
     {
         this.msg = msg;
@@ -28,8 +28,6 @@ public class DeliciousThread extends Thread
         opts.addOption(new CmdOptionImp("comment"));
 
         this.webPageInfo = new WebPageInfoProxy(this.url);
-
-        start();
     }
 
     private String getTags()

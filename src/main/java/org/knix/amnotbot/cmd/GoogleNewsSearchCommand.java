@@ -10,14 +10,16 @@ import org.knix.amnotbot.BotMessage;
 public class GoogleNewsSearchCommand implements BotCommand
 {
 
+    @Override
     public void execute(BotMessage message)
     {
-        new GoogleSearchThread(
+        new GoogleSearchImp(
                 GoogleSearch.searchType.NEWS_SEARCH,
                 new GoogleResultOutputWebStrategy(),
-                message);
+                message).run();
     }
 
+    @Override
     public String help()
     {
         throw new UnsupportedOperationException("Not supported yet.");

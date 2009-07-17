@@ -128,7 +128,7 @@ public class BotCommandInterpreter
         
         while (cmds.hasNext()) {
             BotCommand command = cmds.next();
-            command.execute(msg);
+            new Thread(new BotCommandRunnable(command, msg)).start();
         }
     }
 

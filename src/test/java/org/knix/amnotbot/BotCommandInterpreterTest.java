@@ -35,7 +35,7 @@ public class BotCommandInterpreterTest
     }
 
     @Test
-    public void testAddListener()
+    public void testAddListener() throws InterruptedException
     {
         System.out.println("addListener");
         IRCUser user = new IRCUser("gresco1", "geronimo1", "localhost");
@@ -51,24 +51,28 @@ public class BotCommandInterpreterTest
 
         this.s.setValue("D");
         instance.run(msg);
+        Thread.sleep(300);
         assertEquals("A", this.s.getValue());
 
         msg.setText(trigger + "b testB");
         instance.run(msg);
+        Thread.sleep(300);
         assertEquals("B", this.s.getValue());
 
         this.s.setValue("C");
         msg.setText(trigger + "g");
         instance.run(msg);
+        Thread.sleep(300);
         assertEquals("C", this.s.getValue());
 
         msg.setText(trigger + "a testA");
         instance.run(msg);
+        Thread.sleep(300);
         assertEquals("A", this.s.getValue());
     }
 
     @Test
-    public void testAddLinkListener()
+    public void testAddLinkListener() throws InterruptedException
     {
         System.out.println("addLinkListener");   
         BotCommandInterpreter instance = 
@@ -81,6 +85,7 @@ public class BotCommandInterpreterTest
 
         this.s.setValue("D");
         instance.run(msg);
+        Thread.sleep(300);
         assertEquals("Link", this.s.getValue());
     }
     
