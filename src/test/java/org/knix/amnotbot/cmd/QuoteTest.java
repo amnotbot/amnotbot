@@ -21,14 +21,14 @@ import static org.junit.Assert.*;
  *
  * @author gpoppino
  */
-public class QuoteThreadTest
+public class QuoteTest
 {
     private String trigger;
     private BotTestFactory factory;    
     private TableOperations tableOperations;
     private static final String dbFilename = "unitquotes.db";
 
-    public QuoteThreadTest()
+    public QuoteTest()
     {
         this.factory = new BotTestFactory();
         this.tableOperations = this.factory.createTableOperationsObject();
@@ -87,7 +87,7 @@ public class QuoteThreadTest
         IRCUser user = new IRCUser("gresco", "Geronimo", "localhost@mydomain");
         msg = new BotMessage(conn, "#chan", user, this.trigger + "quote");
 
-        new QuoteThread(dbFilename, msg).join();
+        new QuoteImp(dbFilename, msg).run();
 
         assertTrue(conn.getOutput() != null);        
     }
@@ -103,7 +103,7 @@ public class QuoteThreadTest
         msg = new BotMessage(conn, "#chan", user,
                 this.trigger + "quote op:set text:" + text);
 
-        new QuoteThread(dbFilename, msg).join();
+        new QuoteImp(dbFilename, msg).run();
 
         assertTrue(conn.getOutput().contains("success"));        
     }
@@ -118,7 +118,7 @@ public class QuoteThreadTest
         msg = new BotMessage(conn, "#chan", user,
                 this.trigger + "quote op:del id:1");
 
-        new QuoteThread(dbFilename, msg).join();
+        new QuoteImp(dbFilename, msg).run();
 
         assertTrue(conn.getOutput().contains("success"));
     }
@@ -133,7 +133,7 @@ public class QuoteThreadTest
         msg = new BotMessage(conn, "#chan", user,
                 this.trigger + "quote op:info id:1");
 
-        new QuoteThread(dbFilename, msg).join();
+        new QuoteImp(dbFilename, msg).run();
 
         assertTrue(conn.getOutput() != null);        
     }
