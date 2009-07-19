@@ -16,6 +16,7 @@ public class BotDBFactory
     String backend, driver;
     Properties properties;
     static BotDBFactory _instance = null;
+    QuoteDAO quoteDAO = null;
     WeatherDAO weatherDAO = null;
 
     public static BotDBFactory instance()
@@ -56,10 +57,12 @@ public class BotDBFactory
         return connection;
     }
 
-    public QuoteDAO createQuoteDAO(String db)           
+    public QuoteDAO createQuoteDAO()
     {
-        QuoteDAO result = null;
+        if (this.quoteDAO != null) return this.quoteDAO;
+
         Class quoteClass = null;
+        String db = BotLogger.BOT_HOME + "/" + "quotes.db";
         
         try {            
             String className = this.backend.substring(0, 1).toUpperCase() +
@@ -67,18 +70,21 @@ public class BotDBFactory
             quoteClass = Class.forName("org.knix.amnotbot.cmd.db.backend." +
                     className + "QuoteDAO");
 
-            Class[] types = { java.sql.Connection.class };      
+            Class[] types = { java.lang.String.class };
             java.lang.reflect.Constructor constructor =
                     quoteClass.getConstructor(types);
 
-            Object[] params = { this.getConnection(db) };          
-            result = (QuoteDAO) constructor.newInstance( params );
+            Object[] params = { db };          
+            this.quoteDAO = (QuoteDAO) constructor.newInstance( params );
+            if (!this.quoteDAO.quotesDBExists()) {
+                this.quoteDAO.createQuotesDB();
+            }
             
         } catch (Exception e) {
             BotLogger.getDebugLogger().debug(e);
         }
 
-        return result;
+        return this.quoteDAO;
     }
 
     public WordCounterDAO createWordCounterDAO(String db)           

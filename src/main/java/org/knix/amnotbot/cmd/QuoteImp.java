@@ -15,14 +15,12 @@ import org.knix.amnotbot.cmd.db.QuoteEntity;
 
 public class QuoteImp
 {
-    private String db;
     private BotMessage msg;
     private QuoteDAO quoteDAO;
     private CommandOptions opts;    
 
-    public QuoteImp(String db, BotMessage msg)
+    public QuoteImp(BotMessage msg)
     {
-        this.db = db;
         this.msg = msg;
         this.quoteDAO = null;
         this.opts = new CommandOptions(msg.getText());
@@ -34,7 +32,7 @@ public class QuoteImp
 
     public void run()
     {
-        this.quoteDAO = BotDBFactory.instance().createQuoteDAO(db);
+        this.quoteDAO = BotDBFactory.instance().createQuoteDAO();
         try {                        
             this.performAction();
         } catch (SQLException e) {

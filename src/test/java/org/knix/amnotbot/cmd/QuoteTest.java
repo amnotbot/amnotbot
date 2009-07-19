@@ -3,11 +3,13 @@ package org.knix.amnotbot.cmd;
 import java.io.File;
 import java.sql.Connection;
 import java.sql.SQLException;
+import org.apache.commons.lang.SystemUtils;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.knix.amnotbot.BotLogger;
 import org.knix.amnotbot.BotMessage;
 import org.knix.amnotbot.BotTestFactory;
 import org.knix.amnotbot.DummyConnection;
@@ -26,7 +28,7 @@ public class QuoteTest
     private String trigger;
     private BotTestFactory factory;    
     private TableOperations tableOperations;
-    private static final String dbFilename = "unitquotes.db";
+    private static final String dbFilename = "quotes.db";
 
     public QuoteTest()
     {
@@ -34,6 +36,14 @@ public class QuoteTest
         this.tableOperations = this.factory.createTableOperationsObject();
         this.trigger =
                 BotConfiguration.getConfig().getString("command_trigger", ".");
+        
+        File f = new File(
+                SystemUtils.getUserDir().getAbsolutePath() + "/build");
+        if (f.exists()) {
+            System.setProperty("user.home", "build/test/");
+        } else {
+            System.setProperty("user.home", "test/");
+        }
     }
 
     @BeforeClass
@@ -44,11 +54,10 @@ public class QuoteTest
     @AfterClass
     public static void tearDownClass() throws Exception
     {
-        File dir = new File(".");
-        String[] list = dir.list();
+        String[] list = BotLogger.BOT_HOME.list();
         for (String f : list) {
             if (f.startsWith(dbFilename)) {
-                File tmpFile = new File(f);
+                File tmpFile = new File(BotLogger.BOT_HOME + "/" + f);
                 tmpFile.delete();
             }
         }
@@ -58,7 +67,8 @@ public class QuoteTest
     public void setUp() throws SQLException
     {        
         Connection connection =
-                    BotDBFactory.instance().getConnection(dbFilename);
+                    BotDBFactory.instance().getConnection(BotLogger.BOT_HOME +
+                    "/" + dbFilename);
                         
         this.tableOperations.createTable(connection);
 
@@ -70,7 +80,8 @@ public class QuoteTest
     public void tearDown() throws SQLException
     {
         Connection connection =
-                    BotDBFactory.instance().getConnection(dbFilename);
+                    BotDBFactory.instance().getConnection(BotLogger.BOT_HOME +
+                    "/" + dbFilename);
 
         this.tableOperations.dropTable(connection);
         
@@ -87,7 +98,7 @@ public class QuoteTest
         IRCUser user = new IRCUser("gresco", "Geronimo", "localhost@mydomain");
         msg = new BotMessage(conn, "#chan", user, this.trigger + "quote");
 
-        new QuoteImp(dbFilename, msg).run();
+        new QuoteImp(msg).run();
 
         assertTrue(conn.getOutput() != null);        
     }
@@ -103,7 +114,7 @@ public class QuoteTest
         msg = new BotMessage(conn, "#chan", user,
                 this.trigger + "quote op:set text:" + text);
 
-        new QuoteImp(dbFilename, msg).run();
+        new QuoteImp(msg).run();
 
         assertTrue(conn.getOutput().contains("success"));        
     }
@@ -118,7 +129,7 @@ public class QuoteTest
         msg = new BotMessage(conn, "#chan", user,
                 this.trigger + "quote op:del id:1");
 
-        new QuoteImp(dbFilename, msg).run();
+        new QuoteImp(msg).run();
 
         assertTrue(conn.getOutput().contains("success"));
     }
@@ -133,7 +144,7 @@ public class QuoteTest
         msg = new BotMessage(conn, "#chan", user,
                 this.trigger + "quote op:info id:1");
 
-        new QuoteImp(dbFilename, msg).run();
+        new QuoteImp(msg).run();
 
         assertTrue(conn.getOutput() != null);        
     }
