@@ -63,7 +63,7 @@ public class BotDBFactory
         try {            
             String className = this.backend.substring(0, 1).toUpperCase() +
                     this.backend.substring(1);
-            quoteClass = Class.forName("org.knix.amnotbot.cmd.db." +
+            quoteClass = Class.forName("org.knix.amnotbot.cmd.db.backend." +
                     className + "QuoteDAO");
 
             Class[] types = { java.sql.Connection.class };      
