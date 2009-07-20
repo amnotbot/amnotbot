@@ -47,7 +47,7 @@ class WeatherImp
         WeatherDAO wDAO;
         wDAO = BotDBFactory.instance().createWeatherDAO();
 
-        String _station = wDAO.getStation(this.msg.getConn(),
+        String _station = wDAO.getStation(this.msg.getConn().getHost(),
                 this.msg.getUser().getNick());
 
         this.showStation(_station);
@@ -64,8 +64,8 @@ class WeatherImp
             this.showHelp();
             return;
         }        
-        wDAO.setStation(this.msg.getConn(), this.msg.getUser().getNick(),
-                _station);
+        wDAO.setStation(this.msg.getConn().getHost(),
+                this.msg.getUser().getNick(), _station);
 
         this.showStation(metar);
     }
@@ -87,7 +87,7 @@ class WeatherImp
 
     private void showStation(Metar metar)
     {
-        this.msg.getConn().doPrivmsg(this.msg.getTarget(), 
+        this.msg.getConn().doPrivmsg(this.msg.getTarget(),
                 this.getReport(metar));
     }
 

@@ -1,7 +1,6 @@
 package org.knix.amnotbot.cmd.db;
 
 import java.sql.SQLException;
-import org.knix.amnotbot.BotConnection;
 
 /**
  *
@@ -10,10 +9,10 @@ import org.knix.amnotbot.BotConnection;
 public interface WeatherDAO
 {
 
-    public String getStation(BotConnection conn, String user)
+    public String getStation(String network, String user)
             throws SQLException;
 
-    public void setStation(BotConnection conn, String user, String station)
+    public void setStation(String network, String user, String station)
             throws SQLException;
 
     public void createStationDB() throws SQLException;

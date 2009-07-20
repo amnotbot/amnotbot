@@ -5,7 +5,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import org.knix.amnotbot.BotConnection;
 import org.knix.amnotbot.cmd.db.BotDBFactory;
 import org.knix.amnotbot.cmd.db.WeatherDAO;
 
@@ -24,14 +23,14 @@ public class SqliteWeatherDAO implements WeatherDAO
     }
 
     @Override
-    public String getStation(BotConnection conn, String user)
+    public String getStation(String network, String user)
             throws SQLException
     {
         Connection c = BotDBFactory.instance().getConnection(this.db);
 
         PreparedStatement smt = c.prepareStatement(
                 "SELECT station FROM weather WHERE network = ? AND user = ?");
-        smt.setString(1, conn.getHost());
+        smt.setString(1, network);
         smt.setString(2, user);
 
         String station = null;
@@ -47,7 +46,7 @@ public class SqliteWeatherDAO implements WeatherDAO
     }
 
     @Override
-    public void setStation(BotConnection conn, String user, String station)
+    public void setStation(String network, String user, String station)
             throws SQLException
     {
         Connection c = BotDBFactory.instance().getConnection(this.db);
@@ -56,7 +55,7 @@ public class SqliteWeatherDAO implements WeatherDAO
                 "UPDATE weather SET station = ?" +
                 " WHERE network = ? AND user = ?");
         updateSmt.setString(1, station);
-        updateSmt.setString(2, conn.getHost());
+        updateSmt.setString(2, network);
         updateSmt.setString(3, user);
 
         int ret = updateSmt.executeUpdate();
@@ -65,7 +64,7 @@ public class SqliteWeatherDAO implements WeatherDAO
             PreparedStatement insertSmt = c.prepareStatement(
                     "INSERT INTO weather values(?,?,?)");
             insertSmt.setString(1, user);
-            insertSmt.setString(2, conn.getHost());
+            insertSmt.setString(2, network);
             insertSmt.setString(3, station);
 
             insertSmt.executeUpdate();
