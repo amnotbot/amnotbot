@@ -95,7 +95,6 @@ class WeatherImp
     {
         this.msg.getConn().doPrivmsg(this.msg.getTarget(), "Station IDs: " +
                     "http://www.weather.gov/tg/siteloc.shtml");
-        return;
     }
 
     private String getReport(Metar metar)
@@ -105,11 +104,21 @@ class WeatherImp
         report += metar.getStationID();
         report += " Temperature: " + metar.getTemperatureInCelsius() + "°C ";
         report += metar.getTemperatureInFahrenheit() + "°F";
+        
         if (metar.getPressure() != null) {
             report += ", Pressure: " + metar.getPressure() + " hPa";
         }
-        report += ", Wind: " + metar.getWindDirection() + "°";
-        report += " at " + metar.getWindSpeedInMPH() + " MPH";
+
+        String wind = new String();
+        if (metar.getWindDirection() != null) {
+            wind += " " + metar.getWindDirection() + "°";
+        }
+        if (metar.getWindSpeedInMPH() != null) {
+            wind += " at " + metar.getWindSpeedInMPH() + " MPH";
+        }
+        if (!wind.isEmpty()) {
+            report += ", Wind:" + wind;
+        }
 
         Iterator it = metar.getSkyConditions().iterator();
         if (it.hasNext()) {
