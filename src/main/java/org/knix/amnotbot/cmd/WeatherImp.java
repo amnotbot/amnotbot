@@ -55,15 +55,13 @@ class WeatherImp
 
     private void setAndShowDefaultStation() throws SQLException
     {
-        WeatherDAO wDAO;
-        wDAO = BotDBFactory.instance().createWeatherDAO();
-
         String _station = this.station.substring(1);
         final Metar metar = Weather.getMetar(_station);
         if (metar == null) {
             this.showHelp();
             return;
-        }        
+        }
+        WeatherDAO wDAO = BotDBFactory.instance().createWeatherDAO();
         wDAO.setStation(this.msg.getConn().getHost(),
                 this.msg.getUser().getNick(), _station);
 
