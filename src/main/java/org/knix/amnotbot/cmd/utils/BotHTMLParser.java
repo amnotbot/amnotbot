@@ -164,7 +164,7 @@ public class BotHTMLParser
                 new HasAttributeFilter("name", "description")), true);
         if (descriptions.size() > 0) {
             MetaTag metatag = (MetaTag) descriptions.elementAt(0);
-            this.setDescription(metatag.getMetaContent());
+            this.setDescription(Translate.decode(metatag.getMetaContent()));
         }
     }
 
