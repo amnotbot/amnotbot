@@ -16,56 +16,82 @@ import org.htmlparser.util.NodeList;
 import org.htmlparser.util.ParserException;
 import org.htmlparser.util.Translate;
 
-public class BotHTMLParser
+public class BotHTMLParser implements WebPageInfo
 {
     private Parser parser;
     private String title = null;
     private String description = null;
-    private String [] keywords;
+    private String[] keywords;
+    private String url = null;
+    private boolean parsed;
 
-    public BotHTMLParser()
-    {       
+    public BotHTMLParser(String url)
+    {
+        this.url = url;
         this.parser = new Parser();
-        this.keywords = new String [] {};
+        this.keywords = new String[]{};
+        this.parsed = false;
     }
-    
-    public WebPageInfo get(String url)
-    {
-        WebPageInfo webPageInfo = null;
 
+    @Override
+    public String getUrl()
+    {
+        return this.url;
+    }
+
+    @Override
+    public String getTitle()
+    {
+        if (!this.initialized()) {
+            this.lazyParse();
+        }
+        return this.title;
+    }
+
+    @Override
+    public String getDescription()
+    {
+        if (!this.initialized()) {
+            this.lazyParse();
+        }
+        return this.description;
+    }
+
+    @Override
+    public String[] getKeywords()
+    {
+        if (!this.initialized()) {
+            this.lazyParse();
+        }
+        return this.keywords;
+    }
+
+    private boolean initialized()
+    {
+        boolean prev = this.parsed;
+        this.parsed = true;
+        return prev;
+    }
+
+    private void lazyParse()
+    {
         try {
-            webPageInfo = this.getWebPageInfo(url);
-        } catch (Exception e) {
-            e.printStackTrace();
+            this.parse(this.url);
+        } catch (MalformedURLException e) {
             BotLogger.getDebugLogger().debug(e);
-            return null;
+        } catch (ParserException e) {
+            BotLogger.getDebugLogger().debug(e);
+        } catch (IOException e) {
+            BotLogger.getDebugLogger().debug(e);
         }
-        
-        return webPageInfo;
-    }
-
-    private WebPageInfo getWebPageInfo(String url)
-            throws ParserException, MalformedURLException, IOException
-    {
-        WebPageInfoEntity webPageInfo = new WebPageInfoEntity();
-
-        if (this.isTextContent(url)) {            
-            this.parse(url);
-            
-            webPageInfo.setUrl(url);
-            webPageInfo.setTitle(this.getTitle());
-            webPageInfo.setDescription(this.getDescription());
-            webPageInfo.setKeywords(this.getKeywords());
-        }
-        return webPageInfo;
     }
 
     private boolean isTextContent(String url)
             throws MalformedURLException, IOException
     {
-        URL u = new URL(url);        
+        URL u = new URL(url);
         URLConnection uc = u.openConnection();
-        
+
         String type = uc.getContentType();
         if (type != null) {
             if (!type.startsWith("text")) {
@@ -82,7 +108,7 @@ public class BotHTMLParser
             if (title.length() == 0) {
                 title = null;
             } else {
-                String [] str;
+                String[] str;
                 String tmp = new String();
                 str = title.split("\n");
                 for (String t : str) {
@@ -94,19 +120,9 @@ public class BotHTMLParser
         this.title = title;
     }
 
-    private String getTitle()
-    {
-        return this.title;
-    }
-
     private void setDescription(String description)
     {
         this.description = description;
-    }
-
-    private String getDescription()
-    {
-        return this.description;
     }
 
     private void setKeywords(String keywords)
@@ -121,27 +137,25 @@ public class BotHTMLParser
         for (int i = 0; i < str.length; ++i) {
             str[i] = str[i].trim();
         }
-        
+
         this.keywords = str.clone();
     }
 
-    private String [] getKeywords()
-    {       
-        return this.keywords;
-    }
-
-    private void parse(String url) throws ParserException
+    private void parse(String url)
+            throws MalformedURLException, ParserException, ParserException,
+            IOException
     {
-        this.parser.setURL(url);
-        
-        this.parseHeaders();
-        this.parseBody();
+        if (this.isTextContent(url)) {
+            this.parser.setURL(url);
+            this.parseHeaders();
+            this.parseBody();
+        }
     }
 
     private void parseHeaders() throws ParserException
     {
         NodeList nl;
-       
+
         nl = this.parser.parse(null);
 
         NodeClassFilter titleFilter = new NodeClassFilter(TitleTag.class);

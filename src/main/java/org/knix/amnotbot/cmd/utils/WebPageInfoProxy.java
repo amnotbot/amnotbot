@@ -7,14 +7,13 @@ package org.knix.amnotbot.cmd.utils;
 public class WebPageInfoProxy implements WebPageInfo
 {
     String url;
-    WebPageInfo info;
-    BotHTMLParser parser;
+    WebPageInfo info, parser;
 
     public WebPageInfoProxy(String url)
     {
         this.url = url;
         this.info = null;
-        this.parser = new BotHTMLParser();
+        this.parser = new BotHTMLParser(url);
     }
 
     private WebPageInfo getWebPageInfo()
@@ -24,10 +23,16 @@ public class WebPageInfoProxy implements WebPageInfo
         _info = WebPageCache.instance().get(this.url);
         if (_info != null) return _info;
 
-        _info = this.parser.get(this.url);
-        if (_info != null) {
-            WebPageCache.instance().put(_info);
-            return _info;
+        WebPageInfoEntity entity = new WebPageInfoEntity();
+        entity.setUrl(this.parser.getUrl());
+        entity.setTitle(this.parser.getTitle());
+        entity.setDescription(this.parser.getDescription());
+        entity.setKeywords(this.parser.getKeywords());
+        
+        if (entity.getTitle() != null || entity.getDescription() != null
+                || entity.getKeywords().length != 0) {
+            WebPageCache.instance().put(entity);
+            return entity;
         }
         return new WebPageInfoEntity();
     }
