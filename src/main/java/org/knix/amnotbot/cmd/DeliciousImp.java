@@ -10,7 +10,7 @@ public class DeliciousImp
     private BotMessage msg;
     private int maxTagLength;
     private CommandOptions opts;
-    private WebPageInfoProxy webPageInfo;
+    private WebPageInfo webPageInfo;
     private DeliciousBookmarks delicious;
 
     public DeliciousImp(DeliciousBookmarks delicious, BotMessage msg,

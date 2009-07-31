@@ -2,6 +2,7 @@ package org.knix.amnotbot.cmd;
 
 import org.knix.amnotbot.BotCommand;
 import org.knix.amnotbot.BotMessage;
+import org.knix.amnotbot.cmd.utils.WebPageInfo;
 import org.knix.amnotbot.cmd.utils.WebPageInfoProxy;
 
 /**
@@ -14,7 +15,7 @@ public class WebPageInfoCommand implements BotCommand
     @Override
     public void execute(BotMessage message)
     {
-        WebPageInfoProxy webPageInfo;
+        WebPageInfo webPageInfo;
         webPageInfo = new WebPageInfoProxy(
                 message.getText().trim().split("\\s+")[0]);
         String title = webPageInfo.getTitle();
