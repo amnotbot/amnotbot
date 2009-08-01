@@ -108,7 +108,9 @@
                 </copy>
 		
                 <copy todir="${dist}">
-                        <fileset dir="${src.main.resources}" />
+                        <fileset dir="${src.main.resources}">
+                                <exclude name="*Bundle_*.properties" />
+                        </fileset>
                 </copy>
 		
 		<retroweaver inputjar="${dist}/amnotbot.jar"
