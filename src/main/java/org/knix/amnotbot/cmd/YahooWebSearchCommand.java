@@ -37,15 +37,16 @@ public class YahooWebSearchCommand implements BotCommand
         Object[] messageArguments = {
             BotConfiguration.getConfig().getString("command_trigger"),
             cmd,
-            helpMessage.getString("short_description"),
-            helpMessage.getString("options"),
-            helpMessage.getString("average"),
-            helpMessage.getString("nick"),
-            helpMessage.getString("nick_example"),
-            helpMessage.getString("date"),
-            helpMessage.getString("number"),
-            helpMessage.getString("date_description"),
-            helpMessage.getString("example")
+            helpMessage.getString("web_short_description"),
+            helpMessage.getString("search_term"),
+            helpMessage.getString("region"),
+            helpMessage.getString("format"),
+            helpMessage.getString("language"),
+            helpMessage.getString("country"),
+            helpMessage.getString("site"),
+            helpMessage.getString("adult_ok"),
+            helpMessage.getString("license"),
+            helpMessage.getString("type"),
         };
 
         MessageFormat formatter = new MessageFormat("");
