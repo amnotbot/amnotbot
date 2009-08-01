@@ -48,6 +48,16 @@ public class BotCommandInterpreter
         this.linkListeners.add(command);
     }
 
+    private boolean isHelp(BotMessage msg)
+    {
+        String text = msg.getText();
+
+        if (text.startsWith(this.cmdTrigger + this.cmdTrigger))
+            return true;
+        else
+            return false;
+    }
+
     private boolean isCommand(BotMessage msg)
     {
         String text = msg.getText();
@@ -66,22 +76,7 @@ public class BotCommandInterpreter
 
         return m.find() ? true : false;
     }
-
-    private String getTrigger(BotMessage msg)
-    {
-        String text = msg.getText();
-        String trigger = new String();
-        
-        for (int i = 1; i < text.length(); ++i) {
-            char c = text.charAt(i);
-            
-            if (!Character.isLetterOrDigit(c)) break;
-            trigger += c;
-        }
-        
-        return trigger;
-    }
-
+    
     private boolean isEmpty()
     {
         return (this.cmdListeners.isEmpty() && this.linkListeners.isEmpty());
@@ -90,17 +85,46 @@ public class BotCommandInterpreter
     public void run(BotMessage msg)
     {
         if (this.isEmpty()) return;
-        
-        if (this.isCommand(msg)) {
-            this.processMessage(msg);
+
+        if (this.isHelp(msg)) {
+            this.processHelpRequest(msg);
+        } else if (this.isCommand(msg)) {
+            this.processMessage(msg, false);
         } else if (this.isLink(msg)) {
             this.execute(this.linkListeners, msg);
         }
     }
 
-    private void processMessage(BotMessage msg)
+    private String getTrigger(String text)
     {
-        String trigger = this.getTrigger(msg);
+        String trigger = new String();
+
+        for (int i = 1; i < text.length(); ++i) {
+            char c = text.charAt(i);
+
+            if (!Character.isLetterOrDigit(c)) break;
+            trigger += c;
+        }
+
+        return trigger;
+    }
+
+    private void processHelpRequest(BotMessage msg)
+    {
+        String trigger = this.getTrigger(msg.getText().substring(1));
+        if (trigger.isEmpty()) {
+            this.showEventTriggers(msg);
+        } else if (trigger.equals("url")) {
+            this.showHelp(this.linkListeners, msg);
+        } else {
+            msg.setText( msg.getText().substring(1) );
+            this.processMessage(msg, true);
+        }
+    }
+
+    private void processMessage(BotMessage msg, boolean help)
+    {
+        String trigger = this.getTrigger(msg.getText());
         Iterator<BotCommandEvent> it = this.cmdListeners.keySet().iterator();
         
         while (it.hasNext()) {
@@ -114,13 +138,17 @@ public class BotCommandInterpreter
                     BotLogger.getDebugLogger().debug("Spam Detected!");
                     return;
                 }
-                
-                this.removeTriggerString(msg);
-                this.execute(this.cmdListeners.get(event), msg);
+
+                msg.setText( this.removeTriggerString(msg.getText()) );
+                if (help) {
+                    this.showHelp(this.cmdListeners.get(event), msg);
+                } else {
+                    this.execute(this.cmdListeners.get(event), msg);
+                }
             }
         }
     }
-
+    
     private void execute(LinkedList<BotCommand> l, BotMessage msg)
     {
         Iterator<BotCommand> cmds;
@@ -132,10 +160,33 @@ public class BotCommandInterpreter
         }
     }
 
-    private void removeTriggerString(BotMessage msg)
+    private void showHelp(LinkedList<BotCommand> l, BotMessage msg)
     {
-        String text = msg.getText();
-        text = text.substring(this.getTrigger(msg).length() + 1, text.length());
-        msg.setText(text);
+        Iterator<BotCommand> cmds;
+        cmds = l.iterator();
+
+        while (cmds.hasNext()) {
+            BotCommand command = cmds.next();
+            msg.getConn().doPrivmsg(msg.getTarget(), command.help());
+        }
+    }
+
+    private String removeTriggerString(String text)
+    {
+        return text.substring(this.getTrigger(text).length() + 1,
+                text.length());
+    }
+
+    private void showEventTriggers(BotMessage msg)
+    {
+        Iterator<BotCommandEvent> it = this.cmdListeners.keySet().iterator();
+
+        String triggersList = new String();
+        while (it.hasNext()) {
+            BotCommandEvent event = it.next();
+            triggersList += event.getTrigger() + " ";
+        }
+        triggersList += "url";
+        msg.getConn().doPrivmsg(msg.getTarget(), triggersList);
     }
 }

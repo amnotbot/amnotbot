@@ -16,7 +16,7 @@ public class BotCommandInterpreterTest
 {
 
     private SharedObject s;
-    private BotConnection conn;
+    private DummyConnection conn;
 
     public BotCommandInterpreterTest()
     {
@@ -26,7 +26,7 @@ public class BotCommandInterpreterTest
     public void setUp()
     {
         this.s = new SharedObject();
-        this.conn = new BotConnection("localhost");
+        this.conn = new DummyConnection();
     }
 
     @After
@@ -88,6 +88,49 @@ public class BotCommandInterpreterTest
         Thread.sleep(300);
         assertEquals("Link", this.s.getValue());
     }
+
+    @Test
+    public void testHelp() throws InterruptedException
+    {
+        System.out.println("testHelp");
+        IRCUser user = new IRCUser("gresco1", "geronimo1", "localhost");
+        String trigger =
+                BotConfiguration.getConfig().getString("command_trigger", ".");
+        BotMessage msg = new BotMessage(this.conn, "#chan", user,
+                trigger + trigger + "a");
+        BotCommandInterpreter instance =
+                new BotCommandInterpreter(new BotSpamDetector());
+
+        instance.addListener(new BotCommandEvent("a"), new CommandA(this.s));
+        instance.addListener(new BotCommandEvent("b"), new CommandB(this.s));
+        instance.addLinkListener(new CommandLink(this.s));
+
+        instance.run(msg);
+        Thread.sleep(300);
+        assertEquals("HelpA", this.s.getValue());
+
+        msg.setText(trigger + trigger + "b");
+        instance.run(msg);
+        Thread.sleep(300);
+        assertEquals("HelpB", this.s.getValue());
+
+        this.s.setValue("C");
+        msg.setText(trigger + trigger + "g");
+        instance.run(msg);
+        Thread.sleep(300);
+        assertEquals("C", this.s.getValue());
+
+        msg.setText(trigger + trigger + "a testA");
+        instance.run(msg);
+        Thread.sleep(300);
+        assertEquals("HelpA", this.s.getValue());
+
+        this.s.setValue("D");
+        msg.setText(trigger + trigger + "url");
+        instance.run(msg);
+        Thread.sleep(300);
+        assertEquals("HelpLink", this.s.getValue());
+    }
     
     class SharedObject 
     {
@@ -124,7 +167,13 @@ public class BotCommandInterpreterTest
             System.out.println("A:" + msg.getText());
         }
 
-        public String help() { return null; }
+        public String help()
+        {
+            String h = "HelpA";
+            this.a.setValue(h);
+            System.out.println("Help: " + h);
+            return h;
+        }
     }
 
     class CommandB implements BotCommand
@@ -142,7 +191,13 @@ public class BotCommandInterpreterTest
             System.out.println("B:" + msg.getText());
         }
 
-        public String help() { return null; }
+        public String help() 
+        {
+            String h = "HelpB";
+            this.b.setValue(h);
+            System.out.println("Help: " + h);
+            return h;
+        }
     }
 
     class CommandLink implements BotCommand
@@ -160,6 +215,12 @@ public class BotCommandInterpreterTest
             System.out.println("Link: " + msg.getText());
         }
 
-        public String help() { return null; }
+        public String help() 
+        {
+            String h = "HelpLink";
+            this.l.setValue(h);
+            System.out.println("Help: " + h);
+            return h;
+        }
     }
 }

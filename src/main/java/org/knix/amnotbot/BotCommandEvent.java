@@ -24,4 +24,9 @@ public class BotCommandEvent
         if (m.matches()) return true;
         return false;
     }
+
+    public String getTrigger()
+    {
+        return trigger.pattern();
+    }
 }
