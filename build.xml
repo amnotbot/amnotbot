@@ -98,7 +98,7 @@
 	<target name="dist" depends="compile">
                 <jar jarfile="${dist}/amnotbot.jar" manifest="Manifest">
                         <fileset dir="${build.main.classes}" />
-                      <!--  <fileset dir="${build.main.resources}" /> -->
+                        <fileset dir="${build.main.resources}" />
                 </jar>
 		
                 <copy todir="${dist}/lib">
