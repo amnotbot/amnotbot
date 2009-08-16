@@ -152,22 +152,6 @@ public class IRCBotListener implements IRCEventListener
     {
         this.conn.print(BotConstants.getBotConstants().getServerPFX() +
                 " NOTICE " + user.getNick() + ": " + msg);
-
-        if (user.getNick() == null) return;
-
-        Configuration config = BotConfiguration.getConfig();
-        String nickserv = config.getString("nickserv");
-        boolean nickservTalking = user.getNick().equalsIgnoreCase(nickserv);
-
-        if (nickservTalking) {
-            if (config.getBoolean("nickserv_enabled")) {
-                String identifyMsg = new String("IDENTIFY");
-                if (msg.toLowerCase().contains(identifyMsg.toLowerCase())) {
-                    String passwd = config.getString("nickserv_password");
-                    this.conn.doPrivmsg(user.getNick(), "IDENTIFY " + passwd);
-                }
-            }
-        }
     }
 
     @Override
@@ -201,6 +185,13 @@ public class IRCBotListener implements IRCEventListener
         this.conn.print(BotConstants.getBotConstants().getServerPFX() +
                 " SUCCESS: " + this.conn.getHost() + " connection registered");
 
+        Configuration config = BotConfiguration.getConfig();
+        if (config.getBoolean("nickserv_enabled")) {
+            String nickserv = config.getString("nickserv");
+            String passwd = config.getString("nickserv_password");
+            this.conn.doPrivmsg(nickserv, "IDENTIFY " + passwd);
+        }
+        
         for (String channel : channels) {
             this.conn.doJoin(channel);
         }
