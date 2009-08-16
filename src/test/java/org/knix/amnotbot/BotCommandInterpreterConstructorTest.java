@@ -36,7 +36,7 @@ public class BotCommandInterpreterConstructorTest
     public void testConstruct()
     {
         System.out.println("construct");
-        BotConnection conn = new BotConnection("localhost");
+        BotConnection conn = new DummyConnection();
         BotCommandInterpreterConstructor c =
                 new BotCommandInterpreterConstructor(
                     new BotCommandInterpreterBuilderFile()

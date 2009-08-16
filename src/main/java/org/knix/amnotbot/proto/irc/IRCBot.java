@@ -26,9 +26,11 @@
  */
 package org.knix.amnotbot.proto.irc;
 
-import org.knix.amnotbot.*;
 import java.io.IOException;
 import java.util.List;
+import org.knix.amnotbot.Bot;
+import org.knix.amnotbot.BotConnection;
+import org.knix.amnotbot.BotLogger;
 
 /*
  * TODO - allow for multiple servers at startup
@@ -68,6 +70,7 @@ public class IRCBot extends Thread implements Bot
         start();
     }
 
+    @Override
     public void shutdown()
     {
         this.running = false;
@@ -76,6 +79,7 @@ public class IRCBot extends Thread implements Bot
         }
     }
 
+    @Override
     public void run()
     {         
         while (this.running) {
@@ -113,18 +117,16 @@ public class IRCBot extends Thread implements Bot
             List<String> channels,
             BotLogger logger)
     {
-        BotConnection bconn = null;
+        IRCBotConnection bconn = null;
 
         if (port > 0) {
-            bconn = new BotConnection(server, port);
+            bconn = new IRCBotConnection(server, port);
         } else {
-            bconn = new BotConnection(server);
+            bconn = new IRCBotConnection(server);
         }
         
         bconn.setBotLogger(logger);
         bconn.addIRCEventListener(new IRCBotListener(bconn, channels));
-        bconn.setPong(true);
-        bconn.setDaemon(false);
         bconn.setTimeout(SO_TIMEOUT);
         bconn.setEncoding("UTF-8");
 

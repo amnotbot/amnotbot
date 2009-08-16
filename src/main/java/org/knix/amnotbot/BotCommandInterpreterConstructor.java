@@ -1,8 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package org.knix.amnotbot;
 
 import org.knix.amnotbot.spam.BotSpamDetector;

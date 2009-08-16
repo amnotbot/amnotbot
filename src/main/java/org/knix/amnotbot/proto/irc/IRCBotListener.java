@@ -59,27 +59,28 @@ public class IRCBotListener implements IRCEventListener
 
         BotCommandInterpreterConstructor c =
                 new BotCommandInterpreterConstructor(
-                                new BotCommandInterpreterBuilderFile()
+                                new IRCBotCommandInterpreterBuilderFile()
                 );
 
         this.cmdInterpreter = c.construct(conn);
     }
 
+    @Override
     public void onPrivmsg(String target, IRCUser user, String msg)
     {
         conn.print(target, user.getNick() + "> " + msg);
 
-        if (conn.isSilent()) return;
-
         this.cmdInterpreter.run( new BotMessage(this.conn, target, user, msg) );
     }
 
+    @Override
     public void onDisconnected()
     {
         conn.print(BotConstants.getBotConstants().getAppPFX() +
                 " DISCONNECTED!");
     }
 
+    @Override
     public void onError(int num, String msg)
     {
         conn.print(BotConstants.getBotConstants().getServerPFX() +
@@ -89,17 +90,25 @@ public class IRCBotListener implements IRCEventListener
         switch (num) {
             case 432:
             case 433:
-                conn.alternateNick();
+                String nick = this.conn.getNick();
+
+                if (nick.endsWith("_")) {
+                    this.conn.doNick(nick.substring(0, nick.length()-1) + "-");
+                } else {
+                    this.conn.doNick(nick + "_");
+                }
                 break;
         }
     }
 
+    @Override
     public void onError(String msg)
     {
         conn.print(BotConstants.getBotConstants().getServerPFX() + " ERROR!!!!");
         conn.print("\t" + msg);
     }
 
+    @Override
     public void onInvite(String chan, IRCUser user, String pNick)
     {
         conn.print(chan, BotConstants.getBotConstants().getServerPFX() +
@@ -108,6 +117,7 @@ public class IRCBotListener implements IRCEventListener
                 " to join " + chan);
     }
 
+    @Override
     public void onJoin(String chan, IRCUser user)
     {
         conn.print(chan, BotConstants.getBotConstants().getServerPFX() +
@@ -115,6 +125,7 @@ public class IRCBotListener implements IRCEventListener
                 " [" + user.getHost() + "] has joined " + chan);
     }
 
+    @Override
     public void onKick(String chan, IRCUser user, String pNick, String msg)
     {
         this.conn.print(chan, BotConstants.getBotConstants().getServerPFX() +
@@ -128,12 +139,14 @@ public class IRCBotListener implements IRCEventListener
         }
     }
 
+    @Override
     public void onNick(IRCUser nick, String newNick)
     {
         this.conn.print(BotConstants.getBotConstants().getServerPFX() +
                 " " + nick.getNick() + " is now known as " + newNick);
     }
 
+    @Override
     public void onNotice(String target, IRCUser user, String msg)
     {
         this.conn.print(BotConstants.getBotConstants().getServerPFX() +
@@ -156,6 +169,7 @@ public class IRCBotListener implements IRCEventListener
         }
     }
 
+    @Override
     public void onPart(String chan, IRCUser user, String msg)
     {
         this.conn.print(chan, BotConstants.getBotConstants().getServerPFX() +
@@ -163,12 +177,14 @@ public class IRCBotListener implements IRCEventListener
                 chan + " [" + msg + "]");
     }
 
+    @Override
     public void onPing(String ping)
     {
         this.conn.print(BotConstants.getBotConstants().getServerPFX() +
                 " PING: " + ping);
     }
 
+    @Override
     public void onQuit(IRCUser user, String msg)
     {
         this.conn.print(BotConstants.getBotConstants().getServerPFX() +
@@ -178,6 +194,7 @@ public class IRCBotListener implements IRCEventListener
     /**
      * Join channels supplied on init once registered.
      */
+    @Override
     public void onRegistered()
     {
         this.conn.print(BotConstants.getBotConstants().getServerPFX() +
@@ -188,8 +205,10 @@ public class IRCBotListener implements IRCEventListener
         }
     }
 
+    @Override
     public void onReply(int num, String value, String msg) { }
 
+    @Override
     public void onMode(String chan, IRCUser user, IRCModeParser mParser)
     {
         /* 
@@ -201,6 +220,7 @@ public class IRCBotListener implements IRCEventListener
                 "by " + user.getNick());
     }
 
+    @Override
     public void onMode(IRCUser user, String pNick, String mode)
     {
         this.conn.print(user.getNick() + " has changed user mode for " +
@@ -208,12 +228,14 @@ public class IRCBotListener implements IRCEventListener
                 " to " + mode);
     }
 
+    @Override
     public void onTopic(String chan, IRCUser user, String topic)
     {
         this.conn.print(chan, user.getNick() +
                 " has changed the topic to: " + topic);
     }
 
+    @Override
     public void unknown(String pfx, String cmd, String middle, String end)
     {
         this.conn.print(BotConstants.getBotConstants().getAppPFX() +

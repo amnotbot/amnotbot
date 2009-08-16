@@ -1,7 +1,6 @@
 package org.knix.amnotbot;
 
 import org.knix.amnotbot.spam.BotSpamDetector;
-import org.knix.amnotbot.spam.IRCListenerSpamDetectorAdapter;
 
 /**
  *
@@ -16,12 +15,6 @@ public abstract class BotCommandInterpreterBuilder
 
     public abstract void loadCommands();
 
-    public BotSpamDetector buildSpamFilter(BotConnection conn)
-    {
-        BotSpamDetector spamDetector = new BotSpamDetector();
-        conn.addIRCEventListener(
-                new IRCListenerSpamDetectorAdapter(spamDetector, conn));
-        return spamDetector;
-    }
+    public abstract BotSpamDetector buildSpamFilter(BotConnection conn);
     
 }

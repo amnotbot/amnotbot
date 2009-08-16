@@ -3,12 +3,14 @@ package org.knix.amnotbot.cmd;
 import org.knix.amnotbot.cmd.db.WordCounterDAO;
 import org.knix.amnotbot.cmd.utils.CmdOptionImp;
 import org.knix.amnotbot.cmd.utils.CommandOptions;
-import org.knix.amnotbot.*;
 import java.io.FileNotFoundException;
 import java.util.LinkedList;
 
 import javax.naming.directory.InvalidAttributeValueException;
 import org.apache.commons.lang.StringUtils;
+import org.knix.amnotbot.BotConnection;
+import org.knix.amnotbot.BotLogger;
+import org.knix.amnotbot.BotMessage;
 import org.knix.amnotbot.cmd.db.BotDBFactory;
 
 public class WordsCommandImp

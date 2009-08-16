@@ -44,6 +44,7 @@ public class IRCListenerSpamDetectorAdapter extends IRCEventAdapter
         this.spamDetector = spamDetector;
     }
 
+    @Override
     public void onJoin(String chan, IRCUser user)
     {
         if (this.conn.getNick().equals( user.getNick() )) {
@@ -51,6 +52,7 @@ public class IRCListenerSpamDetectorAdapter extends IRCEventAdapter
         }
     }
 
+    @Override
     public void onPart(String chan, IRCUser user, String msg)
     {
         if (this.conn.getNick().equals( user.getNick() )) {

@@ -16,7 +16,7 @@ public class BotCommandInterpreterTest
 {
 
     private SharedObject s;
-    private DummyConnection conn;
+    private BotConnection conn;
 
     public BotCommandInterpreterTest()
     {
