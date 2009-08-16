@@ -24,8 +24,9 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.knix.amnotbot;
+package org.knix.amnotbot.proto.irc;
 
+import org.knix.amnotbot.*;
 import java.util.List;
 
 import org.knix.amnotbot.config.BotConfiguration;
@@ -40,7 +41,7 @@ import org.apache.commons.configuration.Configuration;
  *
  * 22-10-2007 gresco Implemented the "Command Pattern" for commands. 
  */
-public class BotListener implements IRCEventListener
+public class IRCBotListener implements IRCEventListener
 {
     private BotConnection conn;
     private List<String> channels;
@@ -51,7 +52,7 @@ public class BotListener implements IRCEventListener
      * @param con IRC Connection we're handling
      * @param channels Channels to join on connect
      */
-    public BotListener(BotConnection conn, List<String> channels)
+    public IRCBotListener(BotConnection conn, List<String> channels)
     {
         this.conn = conn;
         this.channels = channels;

@@ -24,8 +24,9 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.knix.amnotbot;
+package org.knix.amnotbot.proto.irc;
 
+import org.knix.amnotbot.*;
 import java.io.IOException;
 import java.util.List;
 
@@ -121,7 +122,7 @@ public class IRCBot extends Thread implements Bot
         }
         
         bconn.setBotLogger(logger);
-        bconn.addIRCEventListener(new BotListener(bconn, channels));
+        bconn.addIRCEventListener(new IRCBotListener(bconn, channels));
         bconn.setPong(true);
         bconn.setDaemon(false);
         bconn.setTimeout(SO_TIMEOUT);

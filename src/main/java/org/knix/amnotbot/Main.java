@@ -26,6 +26,7 @@
  */
 package org.knix.amnotbot;
 
+import org.knix.amnotbot.proto.irc.IRCBot;
 import java.util.Iterator;
 import java.util.List;
 
