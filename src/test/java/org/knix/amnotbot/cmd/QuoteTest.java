@@ -12,11 +12,12 @@ import org.junit.Test;
 import org.knix.amnotbot.BotLogger;
 import org.knix.amnotbot.BotMessage;
 import org.knix.amnotbot.BotTestFactory;
+import org.knix.amnotbot.BotUser;
 import org.knix.amnotbot.DummyConnection;
 import org.knix.amnotbot.cmd.db.BotDBFactory;
 import org.knix.amnotbot.cmd.db.TableOperations;
 import org.knix.amnotbot.config.BotConfiguration;
-import org.schwering.irc.lib.IRCUser;
+import org.knix.amnotbot.proto.irc.IRCBotUser;
 import static org.junit.Assert.*;
 
 /**
@@ -95,7 +96,8 @@ public class QuoteTest
         System.out.println("QuoteThreadTest : testRandomQuote");
         BotMessage msg;
         DummyConnection conn = new DummyConnection();
-        IRCUser user = new IRCUser("gresco", "Geronimo", "localhost@mydomain");
+        BotUser user = new IRCBotUser("gresco", "Geronimo",
+                "localhost@mydomain");
         msg = new BotMessage(conn, "#chan", user, this.trigger + "quote");
 
         new QuoteImp(msg).run();
@@ -110,7 +112,8 @@ public class QuoteTest
         BotMessage msg;
         String text = "Everybody is free";
         DummyConnection conn = new DummyConnection();
-        IRCUser user = new IRCUser("gresco", "Geronimo", "localhost@mydomain");
+        BotUser user = new IRCBotUser("gresco", "Geronimo",
+                "localhost@mydomain");
         msg = new BotMessage(conn, "#chan", user,
                 this.trigger + "quote op:set text:" + text);
 
@@ -125,7 +128,8 @@ public class QuoteTest
         System.out.println("QuoteThreadTest : testDeleteQuote");
         BotMessage msg;
         DummyConnection conn = new DummyConnection();
-        IRCUser user = new IRCUser("gresco", "Geronimo", "localhost@mydomain");
+        BotUser user = new IRCBotUser("gresco", "Geronimo",
+                "localhost@mydomain");
         msg = new BotMessage(conn, "#chan", user,
                 this.trigger + "quote op:del id:1");
 
@@ -140,7 +144,8 @@ public class QuoteTest
         System.out.println("QuoteThreadTest : testGetInfoQuote");
         BotMessage msg;
         DummyConnection conn = new DummyConnection();
-        IRCUser user = new IRCUser("gresco", "Geronimo", "localhost@mydomain");
+        BotUser user = new IRCBotUser("gresco", "Geronimo",
+                "localhost@mydomain");
         msg = new BotMessage(conn, "#chan", user,
                 this.trigger + "quote op:info id:1");
 

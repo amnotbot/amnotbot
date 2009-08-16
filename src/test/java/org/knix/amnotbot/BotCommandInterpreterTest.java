@@ -4,8 +4,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.knix.amnotbot.config.BotConfiguration;
+import org.knix.amnotbot.proto.irc.IRCBotUser;
 import org.knix.amnotbot.spam.BotSpamDetector;
-import org.schwering.irc.lib.IRCUser;
 import static org.junit.Assert.*;
 
 /**
@@ -38,7 +38,7 @@ public class BotCommandInterpreterTest
     public void testAddListener() throws InterruptedException
     {
         System.out.println("addListener");
-        IRCUser user = new IRCUser("gresco1", "geronimo1", "localhost");
+        BotUser user = new IRCBotUser("gresco1", "geronimo1", "localhost");
         String trigger =
                 BotConfiguration.getConfig().getString("command_trigger", ".");
         BotMessage msg = new BotMessage(this.conn, "#chan", user, 
@@ -77,7 +77,7 @@ public class BotCommandInterpreterTest
         System.out.println("addLinkListener");   
         BotCommandInterpreter instance = 
                 new BotCommandInterpreter(new BotSpamDetector());
-        IRCUser user = new IRCUser("gresco", "geronimo", "localhost");
+        BotUser user = new IRCBotUser("gresco", "geronimo", "localhost");
         BotMessage msg = new BotMessage(this.conn, "#chan", user,
                 "http://www.abc.com");
         
@@ -93,7 +93,7 @@ public class BotCommandInterpreterTest
     public void testHelp() throws InterruptedException
     {
         System.out.println("testHelp");
-        IRCUser user = new IRCUser("gresco1", "geronimo1", "localhost");
+        BotUser user = new IRCBotUser("gresco1", "geronimo1", "localhost");
         String trigger =
                 BotConfiguration.getConfig().getString("command_trigger", ".");
         BotMessage msg = new BotMessage(this.conn, "#chan", user,

@@ -70,7 +70,8 @@ public class IRCBotListener implements IRCEventListener
     {
         conn.print(target, user.getNick() + "> " + msg);
 
-        this.cmdInterpreter.run( new BotMessage(this.conn, target, user, msg) );
+        this.cmdInterpreter.run( 
+                new BotMessage(this.conn, target, new IRCBotUser(user), msg) );
     }
 
     @Override

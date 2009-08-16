@@ -31,7 +31,7 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 
-import org.schwering.irc.lib.IRCUser;
+import org.knix.amnotbot.BotUser;
 
 public class BotSpamDetector
 {
@@ -66,7 +66,7 @@ public class BotSpamDetector
         this.chanSpamDetector.remove(chan);
     }
 
-    public boolean checkForSpam(String channel, IRCUser user)
+    public boolean checkForSpam(String channel, BotUser user)
     {
         ChannelSpamDetector spamDetector;
 

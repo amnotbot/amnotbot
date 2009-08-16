@@ -9,7 +9,6 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang.StringUtils;
 import org.knix.amnotbot.config.BotConfiguration;
 import org.knix.amnotbot.spam.BotSpamDetector;
-import org.schwering.irc.lib.IRCUser;
 
 public class BotCommandInterpreter
 {
@@ -131,7 +130,7 @@ public class BotCommandInterpreter
             BotCommandEvent event = it.next();
             
             if (event.test(trigger)) {
-                IRCUser user = msg.getUser();
+                BotUser user = msg.getUser();
                 String target = msg.getTarget();
                 
                 if (this.spamDetector.checkForSpam(target, user)) {

@@ -30,7 +30,7 @@ package org.knix.amnotbot.spam;
 import java.util.Hashtable;
 import java.util.LinkedList;
 
-import org.schwering.irc.lib.IRCUser;
+import org.knix.amnotbot.BotUser;
 
 public class ChannelSpamDetector
 {
@@ -54,7 +54,7 @@ public class ChannelSpamDetector
         return this.queryTime;
     }
 
-    public boolean checkForSpam(IRCUser user)
+    public boolean checkForSpam(BotUser user)
     {
         this.setQueryTime(System.currentTimeMillis());
 
@@ -110,7 +110,7 @@ public class ChannelSpamDetector
         return false;
     }
 
-    private boolean checkQueriesPerUser(IRCUser user)
+    private boolean checkQueriesPerUser(BotUser user)
     {
         AmnotbotUser amnotbotUser;
         amnotbotUser = (AmnotbotUser) this.queriesPerUser.get(user.getNick());

@@ -1,7 +1,5 @@
 package org.knix.amnotbot;
 
-import org.schwering.irc.lib.IRCUser;
-
 /**
  *
  * @author gpoppino
@@ -10,12 +8,12 @@ public class BotMessage
 {
 
     private String text;
-    private IRCUser user;
+    private BotUser user;
     private String target;    
     private BotConnection conn;
 
     public BotMessage(BotConnection conn,
-            String target, IRCUser user, String text)
+            String target, BotUser user, String text)
     {
         this.conn = conn;
         this.user = user;
@@ -23,7 +21,7 @@ public class BotMessage
         this.text = text;
     }
 
-    public IRCUser getUser()
+    public BotUser getUser()
     {
         return this.user;
     }
