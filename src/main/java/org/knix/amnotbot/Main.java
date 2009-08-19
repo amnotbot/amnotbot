@@ -26,36 +26,28 @@
  */
 package org.knix.amnotbot;
 
-import org.knix.amnotbot.proto.irc.IRCBot;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.configuration.Configuration;
 import org.knix.amnotbot.config.BotConfiguration;
+import org.knix.amnotbot.config.BotConfigurationUtils;
 
 public class Main
 {
     public static void main(String[] args)
     {
         Configuration config;
-        config = BotConfiguration.getConfig();
-        
-        String server = null;
-        List<String> channels = null;
-        Configuration serverCfg = null;
+        config = BotConfiguration.getConfig();                
 
-        Iterator<String> it = config.subset("irc.server").getKeys();
+        ArrayList<String> protocols = BotConfigurationUtils.getRoots(config);
+        Iterator<String> it = protocols.iterator();
         while (it.hasNext()) {
-            String serverTag = it.next();
-            
-            server = config.getString("irc.server." + serverTag);
-            serverCfg = config.subset("irc." + serverTag);
-            channels = serverCfg.getList("channels");
-            int port = serverCfg.getInt("port", 6667);
-
+            String proto = it.next();
             Runtime.getRuntime().addShutdownHook(
                     new BotShutdownHandler(
-                    new IRCBot(server, port, channels)));
+                        new BotImp(proto, config.subset(proto))));
         }
     }
 }
