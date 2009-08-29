@@ -114,7 +114,7 @@ public class BotImp extends Thread implements Bot
             BotConnection conn = null;
             try {
                 conn = this.createConnection(server);
-                conn.connect();
+                this.connections.put(conn, server);
             } catch (IOException e) {
                 BotLogger.getDebugLogger().debug(e);
             }
@@ -126,8 +126,9 @@ public class BotImp extends Thread implements Bot
         for (BotConnection conn : this.connections.keySet()) {
             if (!conn.isConnected()) {
                 String server = this.connections.get(conn);
-                conn = this.createConnection(server);
-                conn.connect();
+                BotConnection nconn = this.createConnection(server);
+                this.connections.put(nconn, server);
+                this.connections.remove(conn);
             }
         }
     }
@@ -138,7 +139,7 @@ public class BotImp extends Thread implements Bot
 
         conn = this.factory.createConnection(this.protocol,
                 this.config.subset(server));
-        this.connections.put(conn, server);
+        conn.connect();
 
         return conn;
     }
