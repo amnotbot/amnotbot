@@ -26,6 +26,9 @@
  */
 package org.knix.amnotbot.proto.irc;
 
+import java.org.knix.amnotbot.BotTaskBuilderFile;
+import java.org.knix.amnotbot.BotTaskConstructor;
+import java.org.knix.amnotbot.BotTaskManager;
 import org.knix.amnotbot.*;
 import java.util.List;
 
@@ -46,6 +49,7 @@ public class IRCBotListener implements IRCEventListener
     private BotConnection conn;
     private List<String> channels;
     private BotCommandInterpreter cmdInterpreter;
+    private BotTaskManager taskManager;
 
     /**
      * Create a new BotListener object
@@ -63,6 +67,12 @@ public class IRCBotListener implements IRCEventListener
                 );
 
         this.cmdInterpreter = c.construct(conn);
+
+        BotTaskConstructor tc =
+                new BotTaskConstructor(
+                    new BotTaskBuilderFile()
+                    );
+        this.taskManager = tc.construct(conn, channels);
     }
 
     @Override

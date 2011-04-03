@@ -12,6 +12,7 @@ public class BotConfiguration
 
     private static Configuration config = null;
     private static Configuration commands = null;
+    private static Configuration tasks = null;
     private static BotConfiguration botConfig = null;
 
     protected BotConfiguration()
@@ -51,4 +52,17 @@ public class BotConfiguration
         }
         return commands;
     }
+    
+    public static Configuration getTasksConfig() 
+    {
+        if (tasks == null) {
+            try {
+                tasks = new PropertiesConfiguration("tasks.config");
+            } catch (ConfigurationException e) {
+                BotLogger.getDebugLogger().debug(e);
+            }
+        }
+        return tasks;
+    }
+    
 }
