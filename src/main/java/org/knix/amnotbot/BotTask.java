@@ -1,27 +1,21 @@
-package java.org.knix.amnotbot;
+package org.knix.amnotbot;
 
 import java.util.List;
 import java.util.TimerTask;
-import org.knix.amnotbot.BotConnection;
 
 /**
  *
  * @author gpoppino
  */
-public class BotTask extends TimerTask
+public abstract class BotTask extends TimerTask
 {
     int period;
     BotConnection conn;
     List<String> channels;
 
-    BotTask()
+    public BotTask()
     {
         this.period = 10;
-    }
-
-    @Override
-    public void run() {
-        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     public long getPeriod()
@@ -39,8 +33,19 @@ public class BotTask extends TimerTask
         this.conn = conn;
     }
 
+    public BotConnection getConnection()
+    {
+        return this.conn;
+    }
+
     public void setChannels(List<String> channels)
     {
         this.channels = channels;
     }
+
+    public List<String> getChannels()
+    {
+        return this.channels;
+    }
+
 }

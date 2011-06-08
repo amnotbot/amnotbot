@@ -32,9 +32,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import org.apache.commons.configuration.Configuration;
-import org.knix.amnotbot.Bot;
-import org.knix.amnotbot.BotConnection;
-import org.knix.amnotbot.BotLogger;
 import org.knix.amnotbot.config.BotConfigurationUtils;
 import org.knix.amnotbot.proto.BotConnectionFactory;
 

@@ -1,7 +1,6 @@
-package java.org.knix.amnotbot;
+package org.knix.amnotbot;
 
 import java.util.List;
-import org.knix.amnotbot.BotConnection;
 
 /**
  *

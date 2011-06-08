@@ -26,9 +26,6 @@
  */
 package org.knix.amnotbot.proto.irc;
 
-import java.org.knix.amnotbot.BotTaskBuilderFile;
-import java.org.knix.amnotbot.BotTaskConstructor;
-import java.org.knix.amnotbot.BotTaskManager;
 import org.knix.amnotbot.*;
 import java.util.List;
 
@@ -67,12 +64,6 @@ public class IRCBotListener implements IRCEventListener
                 );
 
         this.cmdInterpreter = c.construct(conn);
-
-        BotTaskConstructor tc =
-                new BotTaskConstructor(
-                    new BotTaskBuilderFile()
-                    );
-        this.taskManager = tc.construct(conn, channels);
     }
 
     @Override
@@ -89,6 +80,7 @@ public class IRCBotListener implements IRCEventListener
     {
         conn.print(BotConstants.getBotConstants().getAppPFX() +
                 " DISCONNECTED!");
+        this.taskManager.cancelTasks();
     }
 
     @Override
@@ -205,6 +197,9 @@ public class IRCBotListener implements IRCEventListener
         for (String channel : channels) {
             this.conn.doJoin(channel);
         }
+
+        BotTaskConstructor tc = new BotTaskConstructor(new BotTaskBuilderFile());
+        this.taskManager = tc.construct(this.conn, this.channels);
     }
 
     @Override

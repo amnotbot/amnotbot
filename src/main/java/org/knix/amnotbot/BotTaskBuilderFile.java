@@ -1,15 +1,8 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
-package java.org.knix.amnotbot;
+package org.knix.amnotbot;
 
 import java.util.Iterator;
 import java.util.List;
 import org.apache.commons.configuration.Configuration;
-import org.knix.amnotbot.BotConnection;
-import org.knix.amnotbot.BotLogger;
 import org.knix.amnotbot.config.BotConfiguration;
 
 /**
@@ -28,8 +21,9 @@ public class BotTaskBuilderFile extends BotTaskBuilder
     }
 
     @Override
-    public BotTaskManager getTaskManager() {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public BotTaskManager getTaskManager() 
+    {
+        return this.taskManager;
     }
 
     @Override

@@ -1,4 +1,4 @@
-package java.org.knix.amnotbot;
+package org.knix.amnotbot;
 
 import java.util.LinkedList;
 import java.util.Timer;
