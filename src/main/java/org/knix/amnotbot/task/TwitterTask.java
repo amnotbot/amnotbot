@@ -94,6 +94,7 @@ public class TwitterTask extends BotTask
         BigInteger bigInt = new BigInteger(1, digest);
         String hashText = bigInt.toString(16);
         if (firstTweet) this.firstTweet = hashText;
+        if (this.newestTweet == null) return true;
         if (StringUtils.equals(this.newestTweet, hashText)) return true;
         return false;
     }
