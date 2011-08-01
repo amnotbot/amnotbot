@@ -72,7 +72,6 @@ public class BotImp extends Thread implements Bot
         return this.config.subset(this.protocol + "." + server);
     }
 
-    @Override
     public void shutdown()
     {
         this.running = false;

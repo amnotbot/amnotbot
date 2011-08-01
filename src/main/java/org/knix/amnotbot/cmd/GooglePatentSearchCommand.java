@@ -16,7 +16,6 @@ import org.knix.amnotbot.config.BotConfiguration;
 public class GooglePatentSearchCommand implements BotCommand
 {
 
-    @Override
     public void execute(BotMessage message)
     {
         new GoogleSearchImp(
@@ -26,7 +25,6 @@ public class GooglePatentSearchCommand implements BotCommand
                 ).run();
     }
 
-    @Override
     public String help()
     {
         String msg = new String();

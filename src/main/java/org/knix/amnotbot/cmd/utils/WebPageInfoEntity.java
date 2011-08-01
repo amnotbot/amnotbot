@@ -20,25 +20,21 @@ public class WebPageInfoEntity implements WebPageInfo
         this.keywords = new String [] {};
     }
 
-    @Override
     public String getUrl()
     {
         return this.url;
     }
 
-    @Override
     public String getTitle()
     {
         return this.title;
     }
 
-    @Override
     public String getDescription()
     {
         return this.description;
     }
 
-    @Override
     public String[] getKeywords()
     {
         return this.keywords;

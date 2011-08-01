@@ -16,7 +16,6 @@ import org.knix.amnotbot.config.BotConfiguration;
 public class GoogleVideoSearchCommand implements BotCommand
 {
 
-    @Override
     public void execute(BotMessage message)
     {
         if (message.getText().isEmpty()) return;
@@ -27,7 +26,6 @@ public class GoogleVideoSearchCommand implements BotCommand
                 message).run();
     }
 
-    @Override
     public String help()
     {
         String msg = new String();

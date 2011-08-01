@@ -28,7 +28,6 @@ package org.knix.amnotbot;
 
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 
 import org.apache.commons.configuration.Configuration;
 import org.knix.amnotbot.config.BotConfiguration;

@@ -13,13 +13,11 @@ import org.knix.amnotbot.config.BotConfiguration;
 public class YahooWebSearchCommand implements BotCommand
 {
 
-    @Override
     public void execute(BotMessage message)
     {
         new YahooImp(message, YahooImp.searchType.WEB_SEARCH).run();
     }
 
-    @Override
     public String help()
     {
         Locale currentLocale;

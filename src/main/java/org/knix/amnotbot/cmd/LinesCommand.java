@@ -15,14 +15,12 @@ public class LinesCommand implements BotCommand
     {
     }
 
-    @Override
     public void execute(BotMessage message)
     {
         new WordsCommandImp(message,
                 WordsCommandImp.countOperation.LINES).run();
     }
 
-    @Override
     public String help()
     {
         Locale currentLocale;

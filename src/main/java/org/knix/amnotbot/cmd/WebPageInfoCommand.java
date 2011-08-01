@@ -16,7 +16,6 @@ import org.knix.amnotbot.config.BotConfiguration;
 public class WebPageInfoCommand implements BotCommand
 {
 
-    @Override
     public void execute(BotMessage message)
     {
         WebPageInfoProxy webPageInfo;
@@ -29,7 +28,6 @@ public class WebPageInfoCommand implements BotCommand
         }
     }
 
-    @Override
     public String help()
     {
         Locale currentLocale;

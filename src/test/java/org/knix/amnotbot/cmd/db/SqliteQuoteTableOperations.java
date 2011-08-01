@@ -11,7 +11,6 @@ import java.sql.Statement;
 public class SqliteQuoteTableOperations implements TableOperations
 {
 
-    @Override
     public void createTable(Connection conn) throws SQLException
     {
         Statement statement;
@@ -32,7 +31,6 @@ public class SqliteQuoteTableOperations implements TableOperations
         statement.close();
     }
 
-    @Override
     public void dropTable(Connection conn) throws SQLException
     {
          Statement statement;

@@ -20,7 +20,6 @@ public class SqliteQuoteDAO implements QuoteDAO
         this.db = db;
     }
 
-    @Override
     public boolean save(QuoteEntity quote) throws SQLException
     {
         Connection c = BotDBFactory.instance().getConnection(this.db);
@@ -38,7 +37,6 @@ public class SqliteQuoteDAO implements QuoteDAO
         return (rowCount > 0);
     }
 
-    @Override
     public boolean delete(int quoteId) throws SQLException
     {
         Connection c = BotDBFactory.instance().getConnection(this.db);
@@ -54,7 +52,6 @@ public class SqliteQuoteDAO implements QuoteDAO
         return (rowCount > 0);
     }
 
-    @Override
     public QuoteEntity findById(int quoteId) throws SQLException
     {
         Connection c = BotDBFactory.instance().getConnection(this.db);
@@ -77,7 +74,6 @@ public class SqliteQuoteDAO implements QuoteDAO
         return quote;
     }
 
-    @Override
     public QuoteEntity findRandom() throws SQLException
     {
         Connection c = BotDBFactory.instance().getConnection(this.db);
@@ -98,7 +94,6 @@ public class SqliteQuoteDAO implements QuoteDAO
         return quote;
     }
 
-    @Override
     public void createQuotesDB() throws SQLException
     {
         Connection c = BotDBFactory.instance().getConnection(this.db);
@@ -106,7 +101,7 @@ public class SqliteQuoteDAO implements QuoteDAO
         Statement smt = c.createStatement();
         smt.executeUpdate("CREATE TABLE quotes " +
                "(id INTEGER PRIMARY KEY AUTOINCREMENT," +
-               " nick VARCHAR, desc VARCHAR)");
+               " nick VARCHAR(50), desc VARCHAR(255))");
         smt.executeUpdate("CREATE UNIQUE INDEX _id ON quotes (id)");
         smt.executeUpdate("CREATE INDEX _nick ON quotes (nick)");
 
@@ -114,7 +109,6 @@ public class SqliteQuoteDAO implements QuoteDAO
         c.close();
     }
 
-    @Override
     public boolean quotesDBExists() throws SQLException
     {        
         Connection c = BotDBFactory.instance().getConnection(this.db);

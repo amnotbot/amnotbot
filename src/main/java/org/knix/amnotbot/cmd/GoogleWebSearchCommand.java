@@ -16,7 +16,6 @@ public class GoogleWebSearchCommand implements BotCommand
     {
     }
 
-    @Override
     public void execute(BotMessage message)
     {
         new GoogleSearchImp(
@@ -26,7 +25,6 @@ public class GoogleWebSearchCommand implements BotCommand
                 ).run();
     }
 
-    @Override
     public String help()
     {
         Locale currentLocale;

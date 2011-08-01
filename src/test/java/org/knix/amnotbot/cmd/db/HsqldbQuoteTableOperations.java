@@ -10,15 +10,15 @@ import java.sql.Statement;
  */
 public class HsqldbQuoteTableOperations implements TableOperations
 {
-    @Override
+
     public void createTable(Connection conn) throws SQLException
     {
         Statement statement;
 
         statement = conn.createStatement();
         statement.executeUpdate("CREATE TABLE quotes " +
-                "(id INTEGER IDENTITY, nick VARCHAR, " +
-                "desc VARCHAR)");
+                "(id INTEGER IDENTITY, nick VARCHAR(50), " +
+                "desc VARCHAR(255))");
         statement.executeUpdate("CREATE UNIQUE INDEX id_ ON quotes (id)");
         statement.executeUpdate("CREATE INDEX nick_ ON quotes (nick)");
 
@@ -31,7 +31,6 @@ public class HsqldbQuoteTableOperations implements TableOperations
         statement.close();
     }
 
-    @Override
     public void dropTable(Connection conn) throws SQLException
     {
         Statement statement;

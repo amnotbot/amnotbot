@@ -15,14 +15,12 @@ import org.knix.amnotbot.config.BotConfiguration;
 public class WeatherCommand implements BotCommand
 {
 
-    @Override
     public void execute(BotMessage message)
     {
         WeatherImp weather = new WeatherImp(message);
         weather.run();
     }
 
-    @Override
     public String help()
     {
         Locale currentLocale;

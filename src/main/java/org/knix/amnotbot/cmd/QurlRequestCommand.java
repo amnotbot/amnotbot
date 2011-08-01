@@ -20,7 +20,6 @@ public class QurlRequestCommand implements BotCommand
         this.qurl_length = config.getInt("qurl_length", 83);
     }
 
-    @Override
     public void execute(BotMessage message)
     {
         String url = message.getText().trim().split("\\s+")[0];
@@ -29,7 +28,6 @@ public class QurlRequestCommand implements BotCommand
         }
     }
 
-    @Override
     public String help()
     {
         Locale currentLocale;

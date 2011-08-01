@@ -33,13 +33,11 @@ public class BotHTMLParser implements WebPageInfo
         this.parsed = false;
     }
 
-    @Override
     public String getUrl()
     {
         return this.url;
     }
 
-    @Override
     public String getTitle()
     {
         if (!this.initialized()) {
@@ -48,7 +46,6 @@ public class BotHTMLParser implements WebPageInfo
         return this.title;
     }
 
-    @Override
     public String getDescription()
     {
         if (!this.initialized()) {
@@ -57,7 +54,6 @@ public class BotHTMLParser implements WebPageInfo
         return this.description;
     }
 
-    @Override
     public String[] getKeywords()
     {
         if (!this.initialized()) {

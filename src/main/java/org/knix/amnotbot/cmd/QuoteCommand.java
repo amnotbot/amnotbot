@@ -11,13 +11,11 @@ import org.knix.amnotbot.config.BotConfiguration;
 public class QuoteCommand implements BotCommand
 {
 
-    @Override
     public void execute(BotMessage message)
     {
         new QuoteImp(message).run();
     }
 
-    @Override
     public String help()
     {
         Locale currentLocale;

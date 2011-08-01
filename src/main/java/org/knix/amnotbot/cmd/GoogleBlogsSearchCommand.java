@@ -16,7 +16,6 @@ import org.knix.amnotbot.config.BotConfiguration;
 public class GoogleBlogsSearchCommand implements BotCommand
 {
 
-    @Override
     public void execute(BotMessage message)
     {
         new GoogleSearchImp(
@@ -25,7 +24,6 @@ public class GoogleBlogsSearchCommand implements BotCommand
                 message).run();
     }
 
-    @Override
     public String help()
     {
         String msg = new String();

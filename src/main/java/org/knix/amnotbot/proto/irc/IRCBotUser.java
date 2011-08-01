@@ -21,19 +21,16 @@ public class  IRCBotUser implements BotUser
         this.ircUser = new IRCUser(nick, username, host);
     }
 
-    @Override
     public String getHost()
     {
         return this.ircUser.getHost();
     }
 
-    @Override
     public String getNick()
     {
         return this.ircUser.getNick();
     }
 
-    @Override
     public String getUsername()
     {
         return this.ircUser.getUsername();

@@ -37,7 +37,6 @@ public class WebPageInfoProxy implements WebPageInfo
         return new WebPageInfoEntity();
     }
 
-    @Override
     public String getUrl()
     {
         if (this.info != null) {
@@ -49,7 +48,6 @@ public class WebPageInfoProxy implements WebPageInfo
         return this.info.getUrl();
     }
 
-    @Override
     public String getTitle()
     {
         if (this.info != null) {
@@ -61,7 +59,6 @@ public class WebPageInfoProxy implements WebPageInfo
         return this.info.getTitle();
     }
 
-    @Override
     public String getDescription()
     {
         if (this.info != null) {
@@ -73,7 +70,6 @@ public class WebPageInfoProxy implements WebPageInfo
         return this.info.getDescription();
     }
 
-    @Override
     public String[] getKeywords()
     {
         if (this.info != null) {

@@ -135,19 +135,16 @@ public class IRCBotConnection implements BotConnection
         this.conn.setPong(true);
     }
 
-    @Override
     public void setBotLogger(BotLogger logger)
     {
         this.logger = logger;
     }
 
-    @Override
     public BotLogger getBotLogger()
     {
         return logger;
     }
 
-    @Override
     public void doPrivmsg(String target, String msg)
     {
         if (silent) return;
@@ -157,14 +154,12 @@ public class IRCBotConnection implements BotConnection
         this.print(target, this.conn.getNick() + "> " + msg);
     }
 
-    @Override
     public void doNick(String nick)
     {
         print("doNick(" + nick + ") called.");
         this.conn.doNick(nick);
     }
 
-    @Override
     public void print(String msg)
     {
         if (this.logger != null) {
@@ -172,7 +167,6 @@ public class IRCBotConnection implements BotConnection
         }
     }
 
-    @Override
     public void print(String target, String msg)
     {
         if (this.logger != null) {
@@ -180,19 +174,16 @@ public class IRCBotConnection implements BotConnection
         }
     }
 
-    @Override
     public void doQuit()
     {
         this.conn.doQuit();
     }
 
-    @Override
     public boolean isConnected()
     {
         return this.conn.isConnected();
     }
 
-    @Override
     public void connect() throws IOException
     {
         this.conn.connect();
@@ -210,31 +201,26 @@ public class IRCBotConnection implements BotConnection
         this.conn.removeIRCEventListener(l);
     }
 
-    @Override
     public void setTimeout(int millis)
     {
         this.conn.setTimeout(millis);
     }
 
-    @Override
     public void setEncoding(String encoding)
     {
         this.conn.setEncoding(encoding);
     }
 
-    @Override
     public String getHost()
     {
         return this.conn.getHost();
     }
 
-    @Override
     public String getNick()
     {
         return this.conn.getNick();
     }
 
-    @Override
     public void doJoin(String room)
     {
         this.conn.doJoin(room);

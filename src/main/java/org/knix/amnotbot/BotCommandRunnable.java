@@ -15,7 +15,6 @@ public class BotCommandRunnable implements Runnable
         this.msg = msg;
     }
 
-    @Override
     public void run()
     {
         this.cmd.execute(this.msg);

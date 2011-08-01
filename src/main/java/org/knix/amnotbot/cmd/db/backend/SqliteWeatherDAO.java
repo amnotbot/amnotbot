@@ -22,7 +22,6 @@ public class SqliteWeatherDAO implements WeatherDAO
         this.db = db;
     }
 
-    @Override
     public String getStation(String network, String user)
             throws SQLException
     {
@@ -45,7 +44,6 @@ public class SqliteWeatherDAO implements WeatherDAO
         return station;
     }
 
-    @Override
     public void setStation(String network, String user, String station)
             throws SQLException
     {
@@ -73,7 +71,6 @@ public class SqliteWeatherDAO implements WeatherDAO
         c.close();
     }
 
-    @Override
     public void createStationDB() throws SQLException
     {
         Connection c = BotDBFactory.instance().getConnection(this.db);
@@ -81,14 +78,13 @@ public class SqliteWeatherDAO implements WeatherDAO
         Statement smt = c.createStatement();
 
         smt.executeUpdate("CREATE TABLE weather " +
-                "(user VARCHAR, network VARCHAR, station VARCHAR)");
+                "(user VARCHAR(50), network VARCHAR(255), station VARCHAR(50))");
         smt.executeUpdate("CREATE UNIQUE INDEX nn ON weather (user, network)");
 
         smt.close();
         c.close();
     }
 
-    @Override
     public boolean stationDBExists() throws SQLException
     {
         ResultSet rs = null;

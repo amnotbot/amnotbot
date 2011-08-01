@@ -67,9 +67,9 @@ public class WordCounterJDBCTest
             statement = connection.createStatement();
             
             statement.executeUpdate("CREATE TABLE words " +
-                    "(d DATE, nick VARCHAR, word VARCHAR, repetitions REAL)");           
+                    "(d DATE, nick VARCHAR(50), word VARCHAR(50), repetitions REAL)");           
             statement.executeUpdate("CREATE TABLE lines " +
-                    "(d DATE, nick VARCHAR, repetitions REAL)");
+                    "(d DATE, nick VARCHAR(50), repetitions REAL)");
             
             statement.executeUpdate("CREATE UNIQUE INDEX dnw ON words" +
                     " (d, nick, word)");            
