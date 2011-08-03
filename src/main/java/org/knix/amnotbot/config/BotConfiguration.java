@@ -13,6 +13,7 @@ public class BotConfiguration
     private static Configuration config = null;
     private static Configuration commands = null;
     private static Configuration tasks = null;
+    private static Configuration pom = null;
     private static BotConfiguration botConfig = null;
 
     protected BotConfiguration()
@@ -63,6 +64,18 @@ public class BotConfiguration
             }
         }
         return tasks;
+    }
+    
+    public static Configuration getPomProperties() 
+    {
+        if (pom == null) {
+            try {
+                pom = new PropertiesConfiguration("META-INF/maven/org.bitbucket.amnotbot/amnotbot-core/pom.properties");
+            } catch (ConfigurationException e) {
+                BotLogger.getDebugLogger().debug(e);
+            }
+        }
+        return pom;
     }
     
 }
