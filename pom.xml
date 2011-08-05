@@ -103,12 +103,5 @@
     	<artifactId>json</artifactId>
     	<version>20090211</version>
     </dependency>
-    <dependency>
-    	<groupId>com.yahoo</groupId>
-    	<artifactId>yahoo-search</artifactId>
-    	<version>2.0.2</version>
-    	<scope>system</scope>
-    	<systemPath>${project.basedir}/lib/yahoo_search-2.0.2.jar</systemPath>
-    </dependency>
   </dependencies>
 </project>
