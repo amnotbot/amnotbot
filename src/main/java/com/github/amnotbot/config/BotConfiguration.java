@@ -22,7 +22,7 @@ public final class BotConfiguration
     private static Configuration tasks = null;
     private static Configuration pom = null;
     private static BotConfiguration botConfig = null;
-    private static File home;
+    private static File home = null;
     
 
     protected BotConfiguration()
@@ -30,12 +30,19 @@ public final class BotConfiguration
         this.init();
     }
     
+    public static void setHomeDir(String home)
+    {
+        BotConfiguration.home  = new File(home);
+    }
+    
     private void init()
     {
         try {
             
-            BotConfiguration.home = new File(SystemUtils.getUserHome(), 
-                                            ".amnotbot");
+            if (BotConfiguration.home == null) {
+                BotConfiguration.home = new File(SystemUtils.getUserHome(), 
+                                                ".amnotbot");
+            }
             BotConfiguration.home.mkdirs();
             
             this.copyConfigFile("amnotbot.config");

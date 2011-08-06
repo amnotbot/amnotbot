@@ -78,6 +78,8 @@ public class QuoteTest
 
         connection.close();
         connection = null;
+        
+        BotConfiguration.setHomeDir("target/.amnotbot");
     }
 
     @After

@@ -35,6 +35,7 @@ public class BotCommandInterpreterTest
     {
         this.s = new SharedObject();
         this.conn = new DummyConnection();
+        BotConfiguration.setHomeDir("target/.amnotbot");
     }
 
     @After

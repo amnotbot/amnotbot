@@ -16,6 +16,7 @@ public class BotTestFactory
 
     public BotTestFactory()
     {
+        BotConfiguration.setHomeDir("target/.amnotbot");
         this.backend = BotConfiguration.getConfig().getString("backend");
     }
 
