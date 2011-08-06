@@ -1,14 +1,20 @@
 package com.github.amnotbot.config;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.log4j.PropertyConfigurator;
 
 import com.github.amnotbot.BotLogger;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
+import org.apache.commons.lang.SystemUtils;
 
-public class BotConfiguration
+public final class BotConfiguration
 {
 
     private static Configuration config = null;
@@ -16,9 +22,63 @@ public class BotConfiguration
     private static Configuration tasks = null;
     private static Configuration pom = null;
     private static BotConfiguration botConfig = null;
+    private static File home;
+    
 
     protected BotConfiguration()
     {
+        this.init();
+    }
+    
+    private void init()
+    {
+        try {
+            
+            BotConfiguration.home = new File(SystemUtils.getUserHome(), 
+                                            ".amnotbot");
+            BotConfiguration.home.mkdirs();
+            
+            this.copyConfigFile("amnotbot.config");
+            this.copyConfigFile("tasks.config");
+            this.copyConfigFile("commands.config");
+            this.copyConfigFile("log4j.properties");
+            
+        } catch (FileNotFoundException e) {
+            BotLogger.getDebugLogger().debug(e);
+        } catch (IOException e) {
+            BotLogger.getDebugLogger().debug(e);
+        }
+    }
+    
+    private void copyConfigFile(String filename) 
+            throws FileNotFoundException, IOException
+    {
+        File fileOnDisk = new File(BotConfiguration.home, 
+                File.separator + filename);
+        if (fileOnDisk.exists()) return;
+        
+        System.out.println("Copying file " + filename + " to " +
+                fileOnDisk.getAbsolutePath());
+        ClassLoader classLoader = this.getClass().getClassLoader();
+        
+        InputStream in = classLoader.getResourceAsStream(filename);
+        OutputStream out = new FileOutputStream(fileOnDisk);
+
+        int len;
+        byte[] buf = new byte[1024];
+        while ((len = in.read(buf)) > 0){
+            out.write(buf, 0, len);
+        }
+        in.close();
+        out.close();
+    }
+    
+    private static String getConfigFilePath(String filename)
+    {
+        File f = new File(BotConfiguration.home, File.separator + filename);
+        if (f.exists()) return f.getAbsolutePath();
+        
+        return filename;
     }
 
     public static Configuration getConfig()
@@ -26,13 +86,13 @@ public class BotConfiguration
         if (botConfig == null) {
             botConfig = new BotConfiguration();
             
-            String log4j = "log4j.properties";
-            boolean exists = (new File(log4j)).exists();
-            if (exists) {
-                PropertyConfigurator.configure(log4j);
-            }
-            try {                
-                config = new PropertiesConfiguration("amnotbot.config");
+            String log4j = 
+                    BotConfiguration.getConfigFilePath("log4j.properties");
+            PropertyConfigurator.configure(log4j);
+            try {
+                String filename = 
+                        BotConfiguration.getConfigFilePath("amnotbot.config");
+                config = new PropertiesConfiguration(filename);
             } catch (ConfigurationException e) {
                 BotLogger.getDebugLogger().debug(e);
                 if (config == null) {
@@ -47,7 +107,9 @@ public class BotConfiguration
     {
         if (commands == null) {
             try {
-                commands = new PropertiesConfiguration("commands.config");
+                String filename = 
+                        BotConfiguration.getConfigFilePath("commands.config");
+                commands = new PropertiesConfiguration(filename);
             } catch (ConfigurationException e) {
                 BotLogger.getDebugLogger().debug(e);
             }
@@ -59,7 +121,9 @@ public class BotConfiguration
     {
         if (tasks == null) {
             try {
-                tasks = new PropertiesConfiguration("tasks.config");
+                String filename = 
+                        BotConfiguration.getConfigFilePath("tasks.config");
+                tasks = new PropertiesConfiguration(filename);
             } catch (ConfigurationException e) {
                 BotLogger.getDebugLogger().debug(e);
             }

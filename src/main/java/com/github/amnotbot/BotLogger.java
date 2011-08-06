@@ -45,11 +45,6 @@ public class BotLogger
             new File(SystemUtils.getUserHome(), ".amnotbot");
     private File LOG_HOME;
 
-
-    static {
-        BOT_HOME.mkdirs();
-    }
-
     public BotLogger(String server)
     {
         LOG_HOME = new File(BOT_HOME, "log" + File.separator + server);
