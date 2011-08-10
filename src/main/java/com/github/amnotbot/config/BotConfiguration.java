@@ -142,7 +142,7 @@ public final class BotConfiguration
     {
         if (pom == null) {
             try {
-                pom = new PropertiesConfiguration("META-INF/maven/org.github.amnotbot/amnotbot-core/pom.properties");
+                pom = new PropertiesConfiguration("META-INF/maven/com.github.amnotbot/amnotbot-core/pom.properties");
             } catch (ConfigurationException e) {
                 BotLogger.getDebugLogger().debug(e);
             }
