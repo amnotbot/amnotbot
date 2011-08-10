@@ -36,6 +36,7 @@ import org.apache.commons.configuration.Configuration;
 
 import com.github.amnotbot.*;
 import com.github.amnotbot.config.BotConfiguration;
+import org.apache.commons.lang.StringUtils;
 
 /**
  * Event handler for MainBot. This is the real workhorse.
@@ -71,6 +72,10 @@ public class IRCBotListener implements IRCEventListener
     public void onPrivmsg(String target, IRCUser user, String msg)
     {
         conn.print(target, user.getNick() + "> " + msg);
+        
+        if (StringUtils.equals(target, this.conn.getNick())) {
+            target = user.getNick();
+        }
 
         this.cmdInterpreter.run( 
                 new BotMessage(this.conn, target, new IRCBotUser(user), msg) );
