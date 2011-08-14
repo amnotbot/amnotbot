@@ -77,12 +77,12 @@ public class GithubTask extends BotTask
     private void showAnswer(JSONArray commits) throws JSONException
     {
         int i = 0;
-        Boolean fCommit = false;
+        Boolean fCommit = true;
         while (i < this.ncommits) {
             JSONObject commit = 
                     commits.getJSONObject(i).getJSONObject("commit");
             String sha = commit.getJSONObject("tree").optString("sha");
-                        
+            
             if (this.seenCommit(fCommit, sha)) break;
             fCommit = false;
             
