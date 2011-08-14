@@ -20,6 +20,7 @@ public class BotTaskManager
 
     public void addTask(BotTask task)
     {
+        BotLogger.getDebugLogger().debug(task.getClass().getName());
         this.tasks.add(task);
         this.timer.scheduleAtFixedRate(task, 1000 * 60, task.getPeriod());
     }
