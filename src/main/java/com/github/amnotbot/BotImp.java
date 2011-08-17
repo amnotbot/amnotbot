@@ -120,12 +120,16 @@ public class BotImp extends Thread implements Bot
 
     private void checkConnections() throws IOException
     {
-        for (BotConnection conn : this.connections.keySet()) {
+        Map<BotConnection, String> connectionsCopy;
+        
+        connectionsCopy = this.connections;
+        for (BotConnection conn : connectionsCopy.keySet()) {
             if (!conn.isConnected()) {
-                String server = this.connections.get(conn);
+                String server = connectionsCopy.get(conn);
                 BotConnection nconn = this.createConnection(server);
                 this.connections.put(nconn, server);
                 this.connections.remove(conn);
+                conn = null;
             }
         }
     }
