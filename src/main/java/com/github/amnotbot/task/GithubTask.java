@@ -9,6 +9,9 @@ import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
 import org.apache.commons.lang.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -21,30 +24,36 @@ import org.json.JSONObject;
 public class GithubTask extends BotTask
 {
     private String githubApiUrl = "https://api.github.com";
-    private String repo;
-    private String user;
+    private String [] repos;
     private int ncommits;
     private String firstCommit = null;
-    private String newestCommit = null;
+    private HashMap<String, String> newestCommit;
     
     public GithubTask()
     {
-        this.repo = BotConfiguration.getConfig().getString("github_repo", 
-                "amnotbot");
-        this.user = BotConfiguration.getConfig().getString("github_user", 
-                "amnotbot");
+        this.repos = 
+                BotConfiguration.getConfig().getStringArray("github_repos");
         this.ncommits = 
                 BotConfiguration.getConfig().getInt("github_commits", 5);
+        
+        this.newestCommit = new HashMap<String, String>();
     }
 
-    private URL buildUrl() throws MalformedURLException
+    private LinkedList<URL> buildUrls() throws MalformedURLException
     {
-        String url;
+        LinkedList<URL> urls = new LinkedList<URL>();
+        String [] userRepo;
         
-        url = this.githubApiUrl + "/repos/" + this.user + "/" + this.repo
-                + "/commits";
-
-        return (new URL(url));
+        for (String repo : this.repos) {
+            userRepo = repo.split(":");
+        
+            String url = this.githubApiUrl + "/repos/" + userRepo[0] + 
+                    "/" + userRepo[1] + "/commits";
+            
+            urls.add(new URL(url));
+        }
+        
+        return urls;
     }
     
     private URLConnection startConnection(URL gitUrl) throws IOException
@@ -78,17 +87,21 @@ public class GithubTask extends BotTask
     {
         int i = 0;
         Boolean fCommit = true;
+        
+        String url = 
+                commits.getJSONObject(0).getJSONObject("commit").optString("url");
+        String [] userRepo = url.split("/");
         while (i < this.ncommits) {
             JSONObject commit = 
                     commits.getJSONObject(i).getJSONObject("commit");
             String sha = commit.getJSONObject("tree").optString("sha");
             
-            if (this.seenCommit(fCommit, sha)) break;
+            if (this.seenCommit(fCommit, userRepo[5], sha)) break;
             fCommit = false;
             
             for (String channel : this.getChannels()) {
                 this.getConnection().doPrivmsg(channel, "(github) " + 
-                        this.user + "/" +  this.repo + " - Commit: " + 
+                        userRepo[4] + "/" +  userRepo[5] + " - Commit: " + 
                         commit.optString("message") + ", " +
                         commit.getJSONObject("author").optString("email") + 
                         ", " +
@@ -102,14 +115,14 @@ public class GithubTask extends BotTask
             }
             ++i;
         }
-        this.newestCommit = this.firstCommit;
+        this.newestCommit.put(userRepo[5], this.firstCommit);
     }
     
-    private Boolean seenCommit(Boolean fCommit, String sha)
+    private Boolean seenCommit(Boolean fCommit, String repo, String sha)
     {
         if (fCommit) this.firstCommit = sha;
-        if (this.newestCommit == null) return true;
-        if (StringUtils.equals(this.newestCommit, sha)) return true;
+        if (this.newestCommit.get(repo) == null) return true;
+        if (StringUtils.equals(this.newestCommit.get(repo), sha)) return true;
         return false;
     }
     
@@ -117,15 +130,18 @@ public class GithubTask extends BotTask
     public void run() 
     {
         try {
-            URL gitUrl;
-            gitUrl = this.buildUrl();
+            LinkedList<URL> gitUrls;
+            gitUrls = this.buildUrls();
 
-            URLConnection gitConn;
-            gitConn = this.startConnection(gitUrl);
-
-            JSONArray commits = this.makeQuery(gitConn);
-            
-            this.showAnswer(commits);
+            Iterator<URL> it = gitUrls.iterator();
+            while(it.hasNext()) {
+                URLConnection gitConn;
+                gitConn = this.startConnection(it.next());
+                
+                JSONArray commits = this.makeQuery(gitConn);
+                
+                this.showAnswer(commits);
+            }
         } catch (Exception e) {
             BotLogger.getDebugLogger().debug(e.getMessage());
         }
