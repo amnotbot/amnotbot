@@ -7,8 +7,11 @@ import org.apache.commons.configuration.Configuration;
 
 import com.github.amnotbot.BotCommand;
 import com.github.amnotbot.BotMessage;
+import com.github.amnotbot.cmd.utils.URLGrabber;
 import com.github.amnotbot.cmd.utils.Utf8ResourceBundle;
 import com.github.amnotbot.config.BotConfiguration;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class QurlRequestCommand implements BotCommand
 {
@@ -23,9 +26,11 @@ public class QurlRequestCommand implements BotCommand
 
     public void execute(BotMessage message)
     {
-        String url = message.getText().trim().split("\\s+")[0];
+        URLGrabber urlGrabber = new URLGrabber(message.getText());
+        String url = urlGrabber.getURL();
+        System.out.println("URL: " + url + " length " + url.length());
         if (url.length() > this.qurl_length) {
-            new QurlRequest(message).run();
+            new QurlRequest(message, url).run();
         }
     }
 

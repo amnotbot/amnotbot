@@ -44,19 +44,21 @@ import java.net.URLEncoder;
 public class QurlRequest
 {
 
+    private String url;
     private BotMessage msg;
     public static final String QURL_REGEX =
             ".*a href=\"(http://qurl.org.*)\".*";
  
-    public QurlRequest(BotMessage msg)
+    public QurlRequest(BotMessage msg, String url)
     {
         this.msg = msg;
+        this.url = url;
     }
 
     public void run()
     {
         try {
-            String query = this.msg.getText();
+            String query = this.url;
             String encoded = URLEncoder.encode(query, "UTF-8");
 
             URL url = new URL("http://qurl.org/submit.jsp?url=" + encoded);

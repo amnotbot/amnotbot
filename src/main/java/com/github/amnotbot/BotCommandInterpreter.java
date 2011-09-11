@@ -71,7 +71,7 @@ public class BotCommandInterpreter
     private boolean isLink(BotMessage msg)
     {
         Pattern p = Pattern.compile(
-                "^((http://([a-zA-Z]*.)?[a-zA-Z0-9]+(.[a-z]{2,4})+\\S*).*)");
+                ".*((http://([a-zA-Z]*.)?[a-zA-Z0-9]+(.[a-z]{2,4})+\\S*).*)");
         Matcher m = p.matcher(msg.getText());
 
         return m.find() ? true : false;
