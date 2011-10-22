@@ -77,9 +77,9 @@ public class HsqldbWeatherDAO implements WeatherDAO
 
         Statement smt = c.createStatement();
 
-        smt.executeUpdate("CREATE TABLE weather " +
+        smt.execute("CREATE TABLE weather " +
                "(user VARCHAR(50), network VARCHAR(255), station VARCHAR(50))");
-        smt.executeUpdate("CREATE UNIQUE INDEX nn ON weather (user, network)");
+        smt.execute("CREATE UNIQUE INDEX nn ON weather (user, network)");
 
         smt.close();
         c.close();
