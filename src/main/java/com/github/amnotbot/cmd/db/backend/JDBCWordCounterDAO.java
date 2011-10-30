@@ -1,4 +1,4 @@
-package com.github.amnotbot.cmd.db;
+package com.github.amnotbot.cmd.db.backend;
 
 
 import java.sql.Connection;
@@ -8,6 +8,8 @@ import java.sql.Statement;
 import org.apache.commons.lang.StringUtils;
 
 import com.github.amnotbot.*;
+import com.github.amnotbot.cmd.db.BotDBFactory;
+import com.github.amnotbot.cmd.db.WordCounterDAO;
 
 public class JDBCWordCounterDAO implements WordCounterDAO
 {

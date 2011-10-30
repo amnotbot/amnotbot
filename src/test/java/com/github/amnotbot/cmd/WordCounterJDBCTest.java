@@ -11,7 +11,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.github.amnotbot.cmd.db.BotDBFactory;
-import com.github.amnotbot.cmd.db.JDBCWordCounterDAO;
+import com.github.amnotbot.cmd.db.backend.JDBCWordCounterDAO;
 
 import static org.junit.Assert.*;
 

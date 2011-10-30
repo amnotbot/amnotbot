@@ -1,5 +1,6 @@
 package com.github.amnotbot.cmd.db;
 
+import com.github.amnotbot.cmd.db.backend.JDBCWordCounterDAO;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
