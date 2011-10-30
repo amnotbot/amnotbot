@@ -170,4 +170,14 @@ public class WordCounterJDBCTest
         String result = wCounter.avgWordsLine(1, nicks, null);       
         assertEquals("gresco(0.23)", result);
     }
+    
+    @Test
+    public void testCountUniqueWords() throws SQLException
+    {
+        System.out.println("countUniqueWords");
+        String[] nicks = new String[] { "gresco", "knix" };
+        JDBCWordCounterDAO wCounter = new JDBCWordCounterDAO(dbFilename);
+        String result = wCounter.countUniqueWords(1, nicks, null);
+        assertEquals("gresco(2)", result);
+    }
 }

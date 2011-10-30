@@ -13,4 +13,7 @@ public interface WordCounterDAO
 
     public abstract String avgWordsLine(int numberOfusers, String [] nicks,
             String date);
+    
+    public abstract String countUniqueWords(int numberOfUsers, String [] nicks, 
+            String date);
 }

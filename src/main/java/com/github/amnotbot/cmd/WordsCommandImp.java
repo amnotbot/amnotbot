@@ -18,10 +18,10 @@ public class WordsCommandImp
 {
     
     BotMessage msg;
-    CommandOptions opts;    
+    CommandOptions opts;
 
     public enum countOperation {
-        WORDS, LINES
+        WORDS, LINES, UNIQUEWORDS
     }
     countOperation countOp;
 
@@ -100,6 +100,9 @@ public class WordsCommandImp
             case LINES:
                 results = this.countLines(wordCounter, n, nicks);
                 break;
+            case UNIQUEWORDS:
+                results = this.countUniqueWords(wordCounter, n, nicks);
+                break;
         }
         this.showResults(results);
     }
@@ -143,6 +146,21 @@ public class WordsCommandImp
                     this.opts.getOption("date").tokens()[0]);
             results.setOutputMessage("Lines per user for ");
         }
+        results.setWords(words);
+        
+        return results;
+    }
+    
+    private WordResults countUniqueWords(WordCounterDAO wordCounter, 
+            int n, 
+            String[] nicks) 
+    {
+        String words;
+        WordResults results = new WordResults();
+        
+        words = wordCounter.countUniqueWords(n, nicks, this.opts.getOption("date").tokens()[0]);
+        
+        results.setOutputMessage("Unique words for ");
         results.setWords(words);
         
         return results;

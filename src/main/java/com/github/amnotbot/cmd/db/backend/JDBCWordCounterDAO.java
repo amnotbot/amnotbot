@@ -222,4 +222,34 @@ public class JDBCWordCounterDAO implements WordCounterDAO
         }
         return this.runQuery(query);
     }
+
+    @Override
+    public String countUniqueWords(int numberOfUsers, String[] nicks, String date) 
+    {
+        String where = null;
+        if (nicks[0] != null) {
+            where = this.getNickWhereClause(nicks);
+        }
+
+        if (!StringUtils.isBlank(date)) {
+            if (where != null) {
+                where += " AND ";
+                where += this.getDateWhereClause(date);
+            } else {
+                where = this.getDateWhereClause(date);
+            }
+        }
+        
+        String query;
+        if (where == null) {
+            query = "SELECT nick, COUNT(*) AS rep FROM words " +
+                    "GROUP BY nick ORDER BY rep DESC LIMIT " +
+                    Integer.toString(numberOfUsers);
+        } else {
+            query = "SELECT nick, COUNT(*) AS rep FROM words WHERE " +
+                    where + " GROUP BY nick ORDER BY rep " +
+                    "DESC LIMIT " + Integer.toString(numberOfUsers);
+        }
+        return this.runQuery(query);
+    }
 }
