@@ -242,12 +242,12 @@ public class JDBCWordCounterDAO implements WordCounterDAO
         
         String query;
         if (where == null) {
-            query = "SELECT nick, COUNT(*) AS rep FROM words " +
-                    "GROUP BY nick ORDER BY rep DESC LIMIT " +
+            query = "SELECT nick, COUNT(DISTINCT word) AS w FROM words " +
+                    "GROUP BY nick ORDER BY w DESC LIMIT " +
                     Integer.toString(numberOfUsers);
         } else {
-            query = "SELECT nick, COUNT(*) AS rep FROM words WHERE " +
-                    where + " GROUP BY nick ORDER BY rep " +
+            query = "SELECT nick, COUNT(DISTINCT word) AS w FROM words WHERE " +
+                    where + " GROUP BY nick ORDER BY w " +
                     "DESC LIMIT " + Integer.toString(numberOfUsers);
         }
         return this.runQuery(query);
