@@ -1,12 +1,10 @@
 package com.github.amnotbot.cmd;
 
-import java.io.BufferedReader;
+import com.github.amnotbot.cmd.utils.BotURLConnection;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLConnection;
 import java.net.URLEncoder;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -35,10 +33,9 @@ public class DuckDuckGoSearch
         URL searchUrl;
         searchUrl = this.buildSearchUrl(sType, query);
 
-        URLConnection googleConn;
-        googleConn = this.startConnection(searchUrl);
+        BotURLConnection conn = new BotURLConnection(searchUrl);
 
-        return ( this.makeQuery(googleConn) );
+        return ( new JSONObject( conn.fetchURL() ) );
     }
 
     private URL buildSearchUrl(searchType sType, String query)
@@ -56,32 +53,4 @@ public class DuckDuckGoSearch
 
         return (new URL(url));
     }
-
-    private URLConnection startConnection(URL searchUrl)
-            throws IOException
-    {
-        URLConnection googleConn;
-
-        googleConn = searchUrl.openConnection();
-        googleConn.addRequestProperty("Referer", "http://packetpan.org");
-
-        return googleConn;
-    }
-
-    public JSONObject makeQuery(URLConnection googleConn)
-            throws IOException, JSONException
-    {
-        BufferedReader reader;
-        reader = new BufferedReader(
-                        new InputStreamReader(googleConn.getInputStream())
-                    );
-
-        String line;
-        StringBuilder builder = new StringBuilder();
-        while ((line = reader.readLine()) != null) {
-            builder.append(line);
-        }
-
-        return (new JSONObject(builder.toString()));
-    }    
 }

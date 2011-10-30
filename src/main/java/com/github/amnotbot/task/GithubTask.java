@@ -2,13 +2,10 @@ package com.github.amnotbot.task;
 
 import com.github.amnotbot.BotLogger;
 import com.github.amnotbot.BotTask;
+import com.github.amnotbot.cmd.utils.BotURLConnection;
 import com.github.amnotbot.config.BotConfiguration;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -54,33 +51,6 @@ public class GithubTask extends BotTask
         }
         
         return urls;
-    }
-    
-    private URLConnection startConnection(URL gitUrl) throws IOException
-    {
-        URLConnection gitConn;
-
-        gitConn = gitUrl.openConnection();
-        gitConn.addRequestProperty("Referer", "http://packetpan.org");
-
-        return gitConn;
-    }
-    
-    private JSONArray makeQuery(URLConnection gitConn) 
-            throws IOException, JSONException
-    {
-        BufferedReader reader;
-        reader = new BufferedReader(
-                        new InputStreamReader(gitConn.getInputStream())
-                    );
-
-        String line;
-        StringBuilder builder = new StringBuilder();
-        while ((line = reader.readLine()) != null) {
-            builder.append(line);
-        }
-
-        return (new JSONArray(builder.toString()));
     }
     
     private void showAnswer(JSONArray commits) throws JSONException
@@ -134,11 +104,11 @@ public class GithubTask extends BotTask
             gitUrls = this.buildUrls();
 
             Iterator<URL> it = gitUrls.iterator();
+            
             while(it.hasNext()) {
-                URLConnection gitConn;
-                gitConn = this.startConnection(it.next());
+                BotURLConnection conn = new BotURLConnection(it.next());
                 
-                JSONArray commits = this.makeQuery(gitConn);
+                JSONArray commits = new JSONArray ( conn.fetchURL() );
                 
                 this.showAnswer(commits);
             }
@@ -146,5 +116,4 @@ public class GithubTask extends BotTask
             BotLogger.getDebugLogger().debug(e.getMessage());
         }
     }
-    
 }
