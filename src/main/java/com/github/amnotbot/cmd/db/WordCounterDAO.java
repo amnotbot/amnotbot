@@ -11,7 +11,7 @@ public interface WordCounterDAO
 
     public abstract String topLines(int numberOfUsers, String date);
 
-    public abstract String avgWordsLine(int numberOfusers, String [] nicks,
+    public abstract String avgWordsLine(int numberOfUsers, String [] nicks,
             String date);
     
     public abstract String countUniqueWords(int numberOfUsers, String [] nicks, 

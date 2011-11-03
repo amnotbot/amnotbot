@@ -164,7 +164,7 @@ public class JDBCWordCounterDAO implements WordCounterDAO
         return this.runQuery(query);
     }
 
-    public String topLines(int numberOfusers, String date)
+    public String topLines(int numberOfUsers, String date)
     {
         String where = null;
         if (!StringUtils.isBlank(date)) {
@@ -175,17 +175,17 @@ public class JDBCWordCounterDAO implements WordCounterDAO
         if (where == null) {
             query = "SELECT nick, SUM(repetitions) AS rep FROM lines " +
                     "GROUP BY nick ORDER BY rep DESC LIMIT " +
-                    Integer.toString(numberOfusers);
+                    Integer.toString(numberOfUsers);
         } else {
             query = "SELECT nick, SUM(repetitions) AS rep FROM lines WHERE " +
                     where + " GROUP BY nick ORDER BY rep " +
                     "DESC LIMIT " +
-                    Integer.toString(numberOfusers);
+                    Integer.toString(numberOfUsers);
         }
         return this.runQuery(query);
     }
 
-    public String avgWordsLine(int numberOfusers, String [] nicks, String date)
+    public String avgWordsLine(int numberOfUsers, String [] nicks, String date)
     {
         String where = null;
         if (nicks[0] != null) {
@@ -209,7 +209,7 @@ public class JDBCWordCounterDAO implements WordCounterDAO
                     " FROM lines GROUP BY n2) " +
                     "WHERE n1 = n2 GROUP BY n1, n2, rep3 ORDER BY rep3 " +
                     "DESC LIMIT " +
-                    Integer.toString(numberOfusers);
+                    Integer.toString(numberOfUsers);
         } else {
             query = "SELECT n1, (rep1/rep2) as rep3 FROM " +
                     "(SELECT nick AS n1, SUM(repetitions) AS rep1" +
@@ -218,7 +218,7 @@ public class JDBCWordCounterDAO implements WordCounterDAO
                     " FROM lines WHERE " + where + " GROUP BY n2) " +
                     "WHERE n1 = n2 GROUP BY n1, n2, rep3 ORDER BY rep3 " +
                     "DESC LIMIT " +
-                    Integer.toString(numberOfusers);
+                    Integer.toString(numberOfUsers);
         }
         return this.runQuery(query);
     }
