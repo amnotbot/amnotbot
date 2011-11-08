@@ -50,10 +50,6 @@ public interface BotConnection {
 
     public void print(String target, String msg);
 
-    public void setTimeout(int millis);
-
-    public void setEncoding(String encoding);
-
     public void setBotLogger(BotLogger logger);
 
     public BotLogger getBotLogger();

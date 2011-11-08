@@ -185,19 +185,7 @@ public class XMPPBotConnection implements BotConnection
             this.logger.log(target.toLowerCase(), msg);
         }
     }
-
-    @Override
-    public void setTimeout(int millis) 
-    {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public void setEncoding(String encoding) 
-    {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
+    
     @Override
     public void setBotLogger(BotLogger logger) 
     {
