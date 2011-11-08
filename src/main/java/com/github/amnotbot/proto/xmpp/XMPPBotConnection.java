@@ -32,8 +32,6 @@ import com.github.amnotbot.config.BotConfiguration;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.jivesoftware.smack.Chat;
 import org.jivesoftware.smack.ChatManager;
 import org.jivesoftware.smack.ChatManagerListener;
@@ -42,10 +40,8 @@ import org.jivesoftware.smack.MessageListener;
 import org.jivesoftware.smack.PacketListener;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
-import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smackx.muc.DiscussionHistory;
 import org.jivesoftware.smackx.muc.MultiUserChat;
-import org.jivesoftware.smackx.packet.MUCInitialPresence;
 
 /**
  *
@@ -134,8 +130,6 @@ public class XMPPBotConnection implements BotConnection
         
         chat = this.chats.get(target);
         muchat = this.muchats.get(target);
-        System.out.println("target: " + target);
-        System.out.println("msg: " + msg);
         try {
             if (chat != null) chat.sendMessage(msg);
             if (muchat != null) muchat.sendMessage(msg);
