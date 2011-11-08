@@ -72,11 +72,6 @@ public class WordsCommandImp
             target = this.opts.getOption("channel").tokens()[0];
         }
 
-        if (target.charAt(0) != '#') {
-            throw new InvalidAttributeValueException("Not a valid channel: " +
-                    target + "). Use the 'channel:' option.");
-        }
-
         String db_file = this.msg.getConn().getBotLogger().getLoggingPath() +
                 "/" + target + ".db";
 
