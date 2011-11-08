@@ -46,7 +46,7 @@ import org.apache.commons.lang.StringUtils;
  */
 public class IRCBotListener implements IRCEventListener
 {
-    private BotConnection conn;
+    private IRCBotConnection conn;
     private List<String> channels;
     private BotCommandInterpreter cmdInterpreter;
     private BotTaskManager taskManager;
@@ -56,7 +56,7 @@ public class IRCBotListener implements IRCEventListener
      * @param con IRC Connection we're handling
      * @param channels Channels to join on connect
      */
-    public IRCBotListener(BotConnection conn, List<String> channels)
+    public IRCBotListener(IRCBotConnection conn, List<String> channels)
     {
         this.conn = conn;
         this.channels = channels;

@@ -38,11 +38,7 @@ public interface BotConnection {
 
     public void doPrivmsg(String target, String msg);
 
-    public void doNick(String nick);
-
     public void doQuit();
-
-    public void doJoin(String room);
 
     public boolean isConnected();    
 

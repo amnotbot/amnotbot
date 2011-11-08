@@ -111,8 +111,18 @@ public class XMPPBotConnection implements BotConnection
     
     private void joinRooms()
     {
-        for (String chan : channels) {
-            this.doJoin(chan);
+        DiscussionHistory history = new DiscussionHistory();
+        history.setMaxChars(0);
+        for (String room : channels) {
+            MultiUserChat muchat = new MultiUserChat(this.conn, room);
+            muchat.addMessageListener(this.packetListener);
+            try {
+                muchat.join(BotConfiguration.getConfig().getString("nick"), null, history, 10000);
+            } catch (XMPPException e) {
+                e.printStackTrace();
+                BotLogger.getDebugLogger().debug(e);
+            }
+            this.muchats.put(room, muchat);
         }
     }
 
@@ -136,32 +146,9 @@ public class XMPPBotConnection implements BotConnection
     }
 
     @Override
-    public void doNick(String nick) 
-    {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
     public void doQuit() 
     {
         this.conn.disconnect();
-    }
-
-    @Override
-    public void doJoin(String room) 
-    {
-        DiscussionHistory history = new DiscussionHistory();
-        history.setMaxChars(0);
-        
-        MultiUserChat muchat = new MultiUserChat(this.conn, room);
-        muchat.addMessageListener(this.packetListener);
-        try {
-            muchat.join(BotConfiguration.getConfig().getString("nick"), null, history, 10000);
-        } catch (XMPPException e) {
-            e.printStackTrace();
-            BotLogger.getDebugLogger().debug(e);
-        }
-        this.muchats.put(room, muchat);
     }
 
     @Override
