@@ -67,11 +67,15 @@ public class BotLogger
 
     public void log(String msg)
     {
+        if (msg.isEmpty()) return;
+        
         Logger.getRootLogger().info(msg);
     }
 
     public void log(String target, String msg)
     {
+        if (msg.isEmpty()) return;
+        
         Logger logger = Logger.getLogger(target);
         FileAppender appender = (FileAppender) logger.getAppender(target);
 

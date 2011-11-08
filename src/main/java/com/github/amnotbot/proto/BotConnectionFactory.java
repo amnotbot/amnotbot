@@ -33,6 +33,10 @@ import com.github.amnotbot.BotConnection;
 import com.github.amnotbot.BotLogger;
 import com.github.amnotbot.proto.irc.IRCBotConnection;
 import com.github.amnotbot.proto.irc.IRCBotListener;
+import com.github.amnotbot.proto.xmpp.XMPPBotConnection;
+import com.github.amnotbot.proto.xmpp.XMPPBotMessageListener;
+import com.github.amnotbot.proto.xmpp.XMPPBotPacketListener;
+import org.jivesoftware.smack.ConnectionConfiguration;
 
 /**
  *
@@ -52,6 +56,8 @@ public class BotConnectionFactory
                     config.getInt("port", 6667),
                     config.getList("channels")
                     );
+        } else if (protocol.equals("xmpp")) {
+            conn = this.createXMPPConnection(config);
         }
 
         return conn;
@@ -73,6 +79,27 @@ public class BotConnectionFactory
         conn.setTimeout(SO_TIMEOUT);
         conn.setEncoding("UTF-8");
 
+        return conn;
+    }
+    
+    private BotConnection createXMPPConnection(Configuration config)
+    {
+        XMPPBotConnection conn = null;
+        
+        ConnectionConfiguration connConfig = new ConnectionConfiguration(config.getString("server"), 
+                config.getInt("port", 5222));
+        connConfig.setCompressionEnabled(true);
+        connConfig.setSASLAuthenticationEnabled(false);
+        connConfig.setSelfSignedCertificateEnabled(true);
+
+        conn = new XMPPBotConnection(connConfig,
+                config.getString("user"),
+                config.getString("password"),
+                config.getString("resource"),
+                config.getList("channels")
+                );
+        conn.setBotLogger(new BotLogger(config.getString("server")));
+        
         return conn;
     }
 
