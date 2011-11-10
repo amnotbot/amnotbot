@@ -28,6 +28,9 @@ package com.github.amnotbot.proto.xmpp;
 
 import com.github.amnotbot.BotConnection;
 import com.github.amnotbot.BotLogger;
+import com.github.amnotbot.BotTaskBuilderFile;
+import com.github.amnotbot.BotTaskConstructor;
+import com.github.amnotbot.BotTaskManager;
 import com.github.amnotbot.config.BotConfiguration;
 import java.io.IOException;
 import java.util.HashMap;
@@ -56,6 +59,7 @@ public class XMPPBotConnection implements BotConnection
     private PacketListener packetListener;
     private HashMap<String, Chat> chats;
     private HashMap<String, MultiUserChat> muchats;
+    private BotTaskManager taskManager;
     private List<String> channels;
     private String user;
     private String passwd;
@@ -103,6 +107,9 @@ public class XMPPBotConnection implements BotConnection
                 });
         
         this.joinRooms();
+        
+        BotTaskConstructor tc = new BotTaskConstructor(new BotTaskBuilderFile());
+        this.taskManager = tc.construct(this, this.channels);
     }
     
     private void joinRooms()
@@ -143,6 +150,7 @@ public class XMPPBotConnection implements BotConnection
     public void doQuit() 
     {
         this.conn.disconnect();
+        this.taskManager.cancelTasks();
     }
 
     @Override
