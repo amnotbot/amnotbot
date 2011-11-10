@@ -66,7 +66,7 @@ public class XMPPBotPacketListener implements PacketListener
             String channel = packet.getFrom().split("/")[0];
             String nick = packet.getFrom().split("/")[1];
             // from = amnotbot@conference.jabber.org/gresco
-            this.conn.print(channel, nick + ">" + msg.getBody());
+            this.conn.print(channel, nick + "> " + msg.getBody());
     
             // avoid recurvise messages
             if (StringUtils.equals(BotConfiguration.getConfig().getString("nick"), nick)) return;
