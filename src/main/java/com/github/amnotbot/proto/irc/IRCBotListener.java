@@ -85,7 +85,8 @@ public class IRCBotListener implements IRCEventListener
     {
         conn.print(BotConstants.getBotConstants().getAppPFX() +
                 " DISCONNECTED!");
-        this.taskManager.cancelTasks();
+        // if it has registered
+        if (this.taskManager != null) this.taskManager.cancelTasks();
     }
 
     public void onError(int num, String msg)
