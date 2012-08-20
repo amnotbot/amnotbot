@@ -14,6 +14,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import org.apache.commons.lang.SystemUtils;
 
+/**
+ * Bot configuration
+ */
 public final class BotConfiguration
 {
 

@@ -41,7 +41,11 @@ public class BotCommandInterpreter
 {
     private String cmdTrigger;
     private BotSpamDetector spamDetector;
+    
+    /** Collection of commands to fire for links. */
     private LinkedList<BotCommand> linkListeners;
+    
+    /** Map of commands */
     private HashMap<BotCommandEvent, LinkedList<BotCommand>> cmdListeners;
 
     public BotCommandInterpreter(BotSpamDetector spamDetector)
@@ -108,6 +112,11 @@ public class BotCommandInterpreter
         return (this.cmdListeners.isEmpty() && this.linkListeners.isEmpty());
     }
 
+    /**
+     * Process a new message.
+     * 
+     * @param msg
+     */
     public void run(BotMessage msg)
     {
         if (this.isEmpty()) return;
@@ -121,6 +130,7 @@ public class BotCommandInterpreter
         }
     }
 
+    /** Get the trigger in a string */
     private String getTrigger(String text)
     {
         String trigger = new String();
@@ -135,6 +145,7 @@ public class BotCommandInterpreter
         return trigger;
     }
 
+    /** Process a help request */
     private void processHelpRequest(BotMessage msg)
     {
         String trigger = this.getTrigger(msg.getText().substring(1));
@@ -148,6 +159,12 @@ public class BotCommandInterpreter
         }
     }
 
+    /**
+     * Process message and fire command detected.
+     * 
+     * @param msg
+     * @param help
+     */
     private void processMessage(BotMessage msg, boolean help)
     {
         String trigger = this.getTrigger(msg.getText());
@@ -165,6 +182,7 @@ public class BotCommandInterpreter
                     return;
                 }
 
+                // Strip the !command prefix from the message
                 msg.setText( this.removeTriggerString(msg.getText()) );
                 if (help) {
                     this.showHelp(this.cmdListeners.get(event), msg);
@@ -175,6 +193,12 @@ public class BotCommandInterpreter
         }
     }
     
+    /**
+     * Executes all commands in List l with BotMessage
+     * 
+     * @param l List of BotCommands to execute
+     * @param msg Message sent to commands
+     */
     private void execute(LinkedList<BotCommand> l, BotMessage msg)
     {
         Iterator<BotCommand> cmds;
@@ -186,6 +210,12 @@ public class BotCommandInterpreter
         }
     }
 
+    /**
+     * Show help for the given collection of commands
+     * 
+     * @param l
+     * @param msg
+     */
     private void showHelp(LinkedList<BotCommand> l, BotMessage msg)
     {
         Iterator<BotCommand> cmds;
@@ -197,6 +227,7 @@ public class BotCommandInterpreter
         }
     }
 
+    /** Strip the !command prefix from a string */
     private String removeTriggerString(String text)
     {
         return text.substring(this.getTrigger(text).length() + 1,

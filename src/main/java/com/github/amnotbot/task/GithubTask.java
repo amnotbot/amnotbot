@@ -41,7 +41,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- *
+ * BotTask that reports recent github activity.
+ * 
  * @author gpoppino
  */
 public class GithubTask extends BotTask
@@ -95,6 +96,7 @@ public class GithubTask extends BotTask
             if (this.seenCommit(fCommit, userRepo[5], sha)) break;
             fCommit = false;
             
+            // Display the commit in channel
             for (String channel : this.getChannels()) {
                 this.getConnection().doPrivmsg(channel, "(github) " + 
                         userRepo[4] + "/" +  userRepo[5] + " - Commit: " + 

@@ -26,7 +26,6 @@
  */
 package com.github.amnotbot.proto.irc;
 
-
 import java.util.List;
 
 import org.schwering.irc.lib.IRCEventListener;

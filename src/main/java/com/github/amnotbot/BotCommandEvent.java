@@ -30,12 +30,14 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- *
+ * Object used for triggering commands
+ * 
+ * FIXME - This is not an event. It is used by an event-handler to trigger events.
+ *         I'm not even sure if this should be its own class
  * @author gpoppino
  */
 public class BotCommandEvent
 {
-
     private Pattern trigger;
 
     public BotCommandEvent(String trigger)

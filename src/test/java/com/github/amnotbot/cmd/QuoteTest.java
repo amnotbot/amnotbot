@@ -26,9 +26,12 @@
  */
 package com.github.amnotbot.cmd;
 
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
 import java.sql.Connection;
 import java.sql.SQLException;
+
 import org.apache.commons.lang.SystemUtils;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -41,13 +44,10 @@ import com.github.amnotbot.BotMessage;
 import com.github.amnotbot.BotTestFactory;
 import com.github.amnotbot.BotUser;
 import com.github.amnotbot.DummyConnection;
-import com.github.amnotbot.cmd.QuoteImp;
 import com.github.amnotbot.cmd.db.BotDBFactory;
 import com.github.amnotbot.cmd.db.TableOperations;
 import com.github.amnotbot.config.BotConfiguration;
 import com.github.amnotbot.proto.irc.IRCBotUser;
-
-import static org.junit.Assert.*;
 
 /**
  *

@@ -30,13 +30,16 @@ import java.util.List;
 import java.util.TimerTask;
 
 /**
- *
+ * A task that is executed periodically based upon a defined period.
  * @author gpoppino
  */
 public abstract class BotTask extends TimerTask
 {
+	// FIXME - this should be configurable
     int period;
+    
     BotConnection conn;
+    
     List<String> channels;
 
     public BotTask()
