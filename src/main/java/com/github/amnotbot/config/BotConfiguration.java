@@ -52,6 +52,7 @@ public final class BotConfiguration
             this.copyConfigFile("tasks.config");
             this.copyConfigFile("commands.config");
             this.copyConfigFile("log4j.properties");
+            this.copyConfigFile("ignore.words");
             
         } catch (FileNotFoundException e) {
             BotLogger.getDebugLogger().debug(e);
