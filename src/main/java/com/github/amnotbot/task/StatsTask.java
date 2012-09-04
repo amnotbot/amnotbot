@@ -21,7 +21,7 @@ public class StatsTask extends BotTask
         this.p.setProperty("backend",
                 BotConfiguration.getConfig().getString("backend"));
         this.p.setProperty("ignorefile",
-                BotConfiguration.getConfig().getString("ignored_words_file"));
+                BotLogger.BOT_HOME + File.separator + "ignore.words");
         this.p.setProperty("logdirectory",
                 BotLogger.BOT_HOME + File.separator + "log");
         this.p.setProperty("botnick",
