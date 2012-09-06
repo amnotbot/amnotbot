@@ -9,9 +9,13 @@ import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.log4j.PropertyConfigurator;
 
 import com.github.amnotbot.BotLogger;
+import com.github.amnotbot.cmd.utils.Utf8ResourceBundle;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.text.MessageFormat;
+import java.util.Locale;
+import java.util.ResourceBundle;
 import org.apache.commons.lang.SystemUtils;
 
 /**
@@ -48,11 +52,18 @@ public final class BotConfiguration
             }
             BotConfiguration.home.mkdirs();
             
-            this.copyConfigFile("amnotbot.config");
+            boolean firstRun = false;
+            if( this.copyConfigFile("amnotbot.config") ) {
+                firstRun = true;
+            }
             this.copyConfigFile("tasks.config");
             this.copyConfigFile("commands.config");
             this.copyConfigFile("log4j.properties");
             this.copyConfigFile("ignore.words");
+            
+            if (firstRun) {
+                this.runFirstSetupAndExit();
+            }
             
         } catch (FileNotFoundException e) {
             BotLogger.getDebugLogger().debug(e);
@@ -61,12 +72,47 @@ public final class BotConfiguration
         }
     }
     
-    private void copyConfigFile(String filename) 
+    private void runFirstSetupAndExit()
+    {
+        Configuration pomConfig;
+        Locale currentLocale;
+        ResourceBundle welcomeMessage;
+        pomConfig = BotConfiguration.getPomProperties();
+
+        currentLocale = new Locale(
+                BotConfiguration.getConfig().getString("language"),
+                BotConfiguration.getConfig().getString("country"));
+        welcomeMessage = Utf8ResourceBundle.getBundle("WelcomeMessageBundle",
+                currentLocale);
+
+        Object[] messageArguments = {
+            pomConfig.getString("version"),
+            BotConfiguration.home + File.separator + "amnotbot.config",
+        };
+
+        MessageFormat formatter = new MessageFormat("");
+        formatter.setLocale(currentLocale);
+        formatter.applyPattern(welcomeMessage.getString("template"));
+
+        String output = formatter.format(messageArguments);
+        
+        System.out.println("\n\n");
+        System.out.println(output);
+        System.out.println("\n\n");
+        
+        System.exit(0);
+    }
+            
+            
+    
+    private boolean copyConfigFile(String filename) 
             throws FileNotFoundException, IOException
     {
         File fileOnDisk = new File(BotConfiguration.home, 
                 File.separator + filename);
-        if (fileOnDisk.exists()) return;
+        if (fileOnDisk.exists()) {
+            return false;
+        }
         
         System.out.println("Copying file " + filename + " to " +
                 fileOnDisk.getAbsolutePath());
@@ -82,12 +128,16 @@ public final class BotConfiguration
         }
         in.close();
         out.close();
+        
+        return true;
     }
     
     private static String getConfigFilePath(String filename)
     {
         File f = new File(BotConfiguration.home, File.separator + filename);
-        if (f.exists()) return f.getAbsolutePath();
+        if (f.exists()) {
+            return f.getAbsolutePath();
+        }
         
         return filename;
     }
