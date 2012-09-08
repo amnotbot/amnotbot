@@ -28,7 +28,6 @@ public class QurlRequestCommand implements BotCommand
     {
         URLGrabber urlGrabber = new URLGrabber(message.getText());
         String url = urlGrabber.getURL();
-        System.out.println("URL: " + url + " length " + url.length());
         if (url.length() > this.qurl_length) {
             new QurlRequest(message, url).run();
         }
