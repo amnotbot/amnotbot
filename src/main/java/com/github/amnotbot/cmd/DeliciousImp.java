@@ -1,14 +1,18 @@
 package com.github.amnotbot.cmd;
 
 
-import com.github.amnotbot.*;
-import com.github.amnotbot.cmd.utils.*;
-
+import com.github.amnotbot.BotLogger;
+import com.github.amnotbot.BotMessage;
+import com.github.amnotbot.cmd.utils.CmdOption;
+import com.github.amnotbot.cmd.utils.CmdOptionImp;
+import com.github.amnotbot.cmd.utils.CommandOptions;
+import com.github.amnotbot.cmd.utils.URLGrabber;
+import com.github.amnotbot.cmd.utils.WebPageInfo;
+import com.github.amnotbot.cmd.utils.WebPageInfoProxy;
 import java.util.Date;
 
 public class DeliciousImp
 {
-    private String url;
     private BotMessage msg;
     private int maxTagLength;
     private CommandOptions opts;
@@ -18,9 +22,10 @@ public class DeliciousImp
     public DeliciousImp(DeliciousBookmarks delicious, BotMessage msg,
             int maxTagLength)
     {
+        URLGrabber urlGrabber = new URLGrabber(msg.getText());
+        
         this.msg = msg;
         this.delicious = delicious;
-        this.url = msg.getText().trim().split("\\s+")[0];
         this.maxTagLength = maxTagLength;
 
         opts = new CommandOptions(msg.getText());
@@ -29,7 +34,7 @@ public class DeliciousImp
         opts.addOption(new CmdOptionImp("tags", ","));
         opts.addOption(new CmdOptionImp("comment"));
 
-        this.webPageInfo = new WebPageInfoProxy(this.url);
+        this.webPageInfo = new WebPageInfoProxy(urlGrabber.getURL());
     }
 
     private String getTags()
@@ -76,7 +81,7 @@ public class DeliciousImp
 
         String title = this.webPageInfo.getTitle();
         if (title != null) return title;
-        return this.url;
+        return this.webPageInfo.getUrl();
     }
 
     private String getComment()
@@ -104,7 +109,7 @@ public class DeliciousImp
         comment = this.getComment();
 
         Boolean success;
-        success = this.delicious.addPost(this.url,
+        success = this.delicious.addPost(this.webPageInfo.getUrl(),
                 title, comment, tags.trim(), new Date());
         if (!success) {
             BotLogger.getDebugLogger().debug("Post failed! :-(");
