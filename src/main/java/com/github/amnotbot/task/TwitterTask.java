@@ -80,7 +80,7 @@ public class TwitterTask extends BotTask
         List<Status> statuses;
         Boolean firstTweet = true;
         try {
-            statuses = twitter.getFriendsTimeline();
+            statuses = twitter.getHomeTimeline();
             for (Status status : statuses) {
                 String text = StringUtils.replace(status.getText(), "\n", " ");
                 if (this.seenTweet(firstTweet, text)) break;
