@@ -85,8 +85,10 @@ public final class BotConfiguration
         welcomeMessage = Utf8ResourceBundle.getBundle("WelcomeMessageBundle",
                 currentLocale);
 
+        String version;
+        version = pomConfig == null ? "Unknown" : pomConfig.getString("version");
         Object[] messageArguments = {
-            pomConfig.getString("version"),
+            version,
             BotConfiguration.home + File.separator + "amnotbot.config",
         };
 
