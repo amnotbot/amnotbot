@@ -3,8 +3,20 @@
   <groupId>com.github.amnotbot</groupId>
   <artifactId>amnotbot-core</artifactId>
   <version>0.0.1-SNAPSHOT</version>
+
+  <scm>
+    <connection>scm:git:file://localhost/</connection>
+    <developerConnection>scm:git:file://localhost/</developerConnection>
+    <url>scm:git:file://localhost/</url>
+  </scm>
   
   <build>
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+        <filtering>true</filtering>
+      </resource>
+    </resources>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -37,7 +49,24 @@
             </goals>
           </execution>
         </executions>
-    </plugin>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>buildnumber-maven-plugin</artifactId>
+        <version>1.2</version>
+        <executions>
+          <execution>
+          <phase>validate</phase>
+          <goals>
+            <goal>create</goal>
+          </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <doCheck>false</doCheck>
+          <doUpdate>false</doUpdate>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
 

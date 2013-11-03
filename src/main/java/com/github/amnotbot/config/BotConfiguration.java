@@ -27,7 +27,7 @@ public final class BotConfiguration
     private static Configuration config = null;
     private static Configuration commands = null;
     private static Configuration tasks = null;
-    private static Configuration pom = null;
+    private static Configuration appProperties = null;
     private static BotConfiguration botConfig = null;
     private static File home = null;
     
@@ -74,10 +74,10 @@ public final class BotConfiguration
     
     private void runFirstSetupAndExit()
     {
-        Configuration pomConfig;
+        Configuration appConfig;
         Locale currentLocale;
         ResourceBundle welcomeMessage;
-        pomConfig = BotConfiguration.getPomProperties();
+        appConfig = BotConfiguration.getAppProperties();
 
         currentLocale = new Locale(
                 BotConfiguration.getConfig().getString("language"),
@@ -85,10 +85,12 @@ public final class BotConfiguration
         welcomeMessage = Utf8ResourceBundle.getBundle("WelcomeMessageBundle",
                 currentLocale);
 
-        String version;
-        version = pomConfig == null ? "Unknown" : pomConfig.getString("version");
+        String version, buildNumber;
+        version = appConfig == null ? "Unknown" : appConfig.getString("application.version");
+        buildNumber = appConfig == null ? "Unknown" : appConfig.getString("application.buildnumber");
         Object[] messageArguments = {
             version,
+            buildNumber,
             BotConfiguration.home + File.separator + "amnotbot.config",
         };
 
@@ -194,16 +196,17 @@ public final class BotConfiguration
         return tasks;
     }
     
-    public static Configuration getPomProperties() 
+    public static Configuration getAppProperties()
     {
-        if (pom == null) {
+        if (appProperties == null) {
             try {
-                pom = new PropertiesConfiguration("META-INF/maven/com.github.amnotbot/amnotbot-core/pom.properties");
+                appProperties = new PropertiesConfiguration(
+                    BotConfiguration.class.getClass().getResource("/application.properties"));
             } catch (ConfigurationException e) {
                 BotLogger.getDebugLogger().debug(e);
             }
         }
-        return pom;
+        return appProperties;
     }
     
 }

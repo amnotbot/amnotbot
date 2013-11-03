@@ -42,9 +42,10 @@ public class VersionCommand implements BotCommand
     @Override
     public void execute(BotMessage message) 
     {
-        Configuration config = BotConfiguration.getPomProperties();
-        String version = config.getString("artifactId") + " " +
-                config.getString("version");
+        Configuration config = BotConfiguration.getAppProperties();
+        String version = config.getString("application.name") + " v" +
+                config.getString("application.version") + " (" +
+                config.getString("application.buildnumber") + ")";
         
         message.getConn().doPrivmsg(message.getTarget(), version);
     }
