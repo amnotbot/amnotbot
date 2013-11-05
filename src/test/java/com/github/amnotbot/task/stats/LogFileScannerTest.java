@@ -1,6 +1,5 @@
 package com.github.amnotbot.task.stats;
 
-import com.github.amnotbot.stats.DbFileFilter;
 import java.io.File;
 import java.sql.Connection;
 import java.sql.ResultSet;

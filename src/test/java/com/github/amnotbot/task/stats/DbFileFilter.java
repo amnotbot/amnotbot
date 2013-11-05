@@ -1,4 +1,4 @@
-package com.github.amnotbot.stats;
+package com.github.amnotbot.task.stats;
 
 import java.io.File;
 import java.io.FilenameFilter;

@@ -43,9 +43,9 @@ public class BotCommandInterpreterBuilderFile
     private BotCommandInterpreter cmdInterpreter;
 
     @Override
-    public void buildInterpreter(BotSpamDetector spamDetector)
+    public void buildInterpreter()
     {
-        this.cmdInterpreter = new BotCommandInterpreter(spamDetector);
+        this.cmdInterpreter = new BotCommandInterpreter();
     }
 
     @Override
@@ -87,11 +87,4 @@ public class BotCommandInterpreterBuilderFile
             }
         }
     }
-
-    @Override
-    public BotSpamDetector buildSpamFilter(BotConnection conn)
-    {
-        return new BotSpamDetector();
-    }
-    
 }

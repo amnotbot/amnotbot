@@ -48,9 +48,9 @@ public class BotCommandInterpreter
     /** Map of commands */
     private HashMap<BotCommandEvent, LinkedList<BotCommand>> cmdListeners;
 
-    public BotCommandInterpreter(BotSpamDetector spamDetector)
+    public BotCommandInterpreter()
     {    
-        this.spamDetector = spamDetector;
+        this.spamDetector = new BotSpamDetector();
         this.cmdTrigger =
                 BotConfiguration.getConfig().getString("command_trigger", ".");
         this.cmdListeners =
@@ -176,8 +176,8 @@ public class BotCommandInterpreter
             if (event.test(trigger)) {
                 BotUser user = msg.getUser();
                 String target = msg.getTarget();
-                
-                if (this.spamDetector.checkForSpam(target, user)) {
+                if (this.spamDetector.checkForSpam(
+                        msg.getConn().hashCode() + target, user)) {
                     BotLogger.getDebugLogger().debug("Spam Detected!");
                     return;
                 }

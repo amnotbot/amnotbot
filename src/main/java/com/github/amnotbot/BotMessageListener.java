@@ -1,5 +1,7 @@
+package com.github.amnotbot;
+
 /*
- * Copyright (c) 2011 Geronimo Poppino <gresco@gmail.com>
+ * Copyright (c) 2013 Geronimo Poppino <gresco@gmail.com>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,30 +26,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.github.amnotbot.proto.irc;
-
-
-import com.github.amnotbot.BotCommandInterpreterBuilderFile;
-import com.github.amnotbot.BotConnection;
-import com.github.amnotbot.spam.BotSpamDetector;
-import com.github.amnotbot.spam.IRCListenerSpamDetectorAdapter;
-
-/**
- *
- * @author gpoppino
- */
-public class IRCBotCommandInterpreterBuilderFile
-        extends BotCommandInterpreterBuilderFile
+public interface BotMessageListener
 {
-    @Override
-    public BotSpamDetector buildSpamFilter(BotConnection _conn)
-    {
-        IRCBotConnection conn = (IRCBotConnection)_conn;
-        BotSpamDetector spamDetector = new BotSpamDetector();
-
-        conn.addIRCEventListener(
-                new IRCListenerSpamDetectorAdapter(spamDetector, conn));
-
-        return spamDetector;
-    }
+    public void processMessage(BotMessage msg);
 }

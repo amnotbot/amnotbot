@@ -1,5 +1,9 @@
+package com.github.amnotbot;
+
+import java.util.LinkedList;
+
 /*
- * Copyright (c) 2007 Geronimo Poppino
+ * Copyright (c) 2013 Geronimo Poppino <gresco@gmail.com>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,40 +28,40 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
-package com.github.amnotbot.spam;
-
-import org.schwering.irc.lib.IRCEventAdapter;
-import org.schwering.irc.lib.IRCUser;
-
-import com.github.amnotbot.BotConnection;
-
-public class IRCListenerSpamDetectorAdapter extends IRCEventAdapter
+public final class BotMessageNotifier
 {
-    private BotConnection conn;
-    private BotSpamDetector spamDetector;    
+    private LinkedList<BotMessageListener> observers;
+    private static BotMessageNotifier _instance = null;
 
-    public IRCListenerSpamDetectorAdapter(
-            BotSpamDetector spamDetector,
-            BotConnection conn)
+    protected BotMessageNotifier()
     {
-        this.conn = conn;
-        this.spamDetector = spamDetector;
+        this.observers = new LinkedList<BotMessageListener>();
+
+        this.attach(new BotMessageDefaultListener());
     }
 
-    @Override
-    public void onJoin(String chan, IRCUser user)
+    public static BotMessageNotifier instance()
     {
-        if (this.conn.getNick().equals( user.getNick() )) {
-           this.spamDetector.addChannel(chan);
+        if (_instance == null) {
+            _instance = new BotMessageNotifier();
         }
+        return _instance;
     }
 
-    @Override
-    public void onPart(String chan, IRCUser user, String msg)
+    public synchronized void attach(BotMessageListener observer)
     {
-        if (this.conn.getNick().equals( user.getNick() )) {
-            this.spamDetector.removeChannel(chan);
+        this.observers.add(observer);
+    }
+
+    public synchronized void detach(BotMessageListener observer)
+    {
+        this.observers.remove(observer);
+    }
+
+    public synchronized void notify(BotMessage msg)
+    {
+        for (BotMessageListener observer : this.observers) {
+            observer.processMessage(msg);
         }
-    }   
+    }
 }

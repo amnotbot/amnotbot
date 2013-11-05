@@ -71,7 +71,10 @@ public class BotSpamDetector
         ChannelSpamDetector spamDetector;
 
         spamDetector = this.chanSpamDetector.get(channel);
-        if (spamDetector == null) return false;
+        if (spamDetector == null) {
+            this.addChannel(channel);
+            spamDetector = this.chanSpamDetector.get(channel);
+        }
            
         if (spamDetector.checkForSpam(user)) return true;
         return false;

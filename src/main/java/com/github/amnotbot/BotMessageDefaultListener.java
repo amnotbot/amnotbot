@@ -1,5 +1,7 @@
+package com.github.amnotbot;
+
 /*
- * Copyright (c) 2011 Geronimo Poppino <gresco@gmail.com>
+ * Copyright (c) 2013 Geronimo Poppino <gresco@gmail.com>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,41 +26,23 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.github.amnotbot.proto.xmpp;
-
-import com.github.amnotbot.BotConnection;
-import com.github.amnotbot.BotMessage;
-import com.github.amnotbot.BotMessageNotifier;
-import org.jivesoftware.smack.Chat;
-import org.jivesoftware.smack.MessageListener;
-import org.jivesoftware.smack.packet.Message;
-
-/**
- *
- * @author gpoppino
- */
-public class XMPPBotMessageListener implements MessageListener 
+public class BotMessageDefaultListener implements BotMessageListener
 {
+    private BotCommandInterpreter cmdInterpreter;
 
-    private BotConnection conn;
-    
-    public XMPPBotMessageListener(BotConnection conn)
+    public BotMessageDefaultListener()
     {
-        this.conn = conn;
+        BotCommandInterpreterConstructor c =
+                new BotCommandInterpreterConstructor(
+                        new BotCommandInterpreterBuilderFile()
+                );
+
+        this.cmdInterpreter = c.construct();
     }
-    
+
     @Override
-    public void processMessage(Chat chat, Message msg) 
+    public void processMessage(BotMessage msg)
     {
-        this.conn.print(chat.getParticipant().split("/")[0],  msg.getBody());
-
-        BotMessageNotifier.instance().notify(
-                new BotMessage(this.conn,
-                        chat.getParticipant(),
-                        new XMPPBotUser(chat),
-                        msg.getBody()
-                )
-        );
+        this.cmdInterpreter.run(msg);
     }
-    
 }

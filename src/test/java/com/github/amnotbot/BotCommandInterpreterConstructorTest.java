@@ -73,7 +73,7 @@ public class BotCommandInterpreterConstructorTest
                 new BotCommandInterpreterConstructor(
                     new BotCommandInterpreterBuilderFile()
                     );        
-        BotCommandInterpreter result = c.construct(conn);
+        BotCommandInterpreter result = c.construct();
         assertTrue(result != null);
     }
 

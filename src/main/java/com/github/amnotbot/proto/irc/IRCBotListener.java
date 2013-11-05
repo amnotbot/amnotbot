@@ -47,25 +47,17 @@ public class IRCBotListener implements IRCEventListener
 {
     private IRCBotConnection conn;
     private List<String> channels;
-    private BotCommandInterpreter cmdInterpreter;
     private BotTaskManager taskManager;
 
     /**
      * Create a new BotListener object
-     * @param con IRC Connection we're handling
+     * @param conn IRC Connection we're handling
      * @param channels Channels to join on connect
      */
     public IRCBotListener(IRCBotConnection conn, List<String> channels)
     {
         this.conn = conn;
         this.channels = channels;
-
-        BotCommandInterpreterConstructor c =
-                new BotCommandInterpreterConstructor(
-                                new IRCBotCommandInterpreterBuilderFile()
-                );
-
-        this.cmdInterpreter = c.construct(conn);
     }
 
     public void onPrivmsg(String target, IRCUser user, String msg)
@@ -76,8 +68,9 @@ public class IRCBotListener implements IRCEventListener
             target = user.getNick();
         }
 
-        this.cmdInterpreter.run( 
-                new BotMessage(this.conn, target, new IRCBotUser(user), msg) );
+        BotMessageNotifier.instance().notify(
+                new BotMessage(this.conn, target, new IRCBotUser(user), msg)
+        );
     }
 
     public void onDisconnected()
