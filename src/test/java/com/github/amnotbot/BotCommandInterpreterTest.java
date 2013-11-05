@@ -65,7 +65,7 @@ public class BotCommandInterpreterTest
         this.s = new SharedObject();
         this.conn = new DummyConnection();
         this.min_diff_allowed_by_spam = SpamConstants.MIN_DIFF_ALLOWED;
-        this.wait_for_thread_sleep = this.wait_for_thread_sleep;
+        this.wait_for_thread_sleep = 300;
         BotConfiguration.setHomeDir("target/.amnotbot");
     }
 
