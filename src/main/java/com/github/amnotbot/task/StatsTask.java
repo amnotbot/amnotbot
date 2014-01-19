@@ -31,7 +31,7 @@ public class StatsTask extends BotTask
         this.p.setProperty("minwordlen",
                 String.valueOf(BotConfiguration.getConfig().getInt("stats_min_word_length", 4)));
     }
-    
+
     @Override
     public void run() 
     {
@@ -39,5 +39,11 @@ public class StatsTask extends BotTask
         scanner = new LogFileScanner(p);
         
         scanner.scanLogFiles();
+    }
+
+    @Override
+    public void stop()
+    {
+        // Nothing to do.
     }
 }

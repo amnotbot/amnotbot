@@ -77,4 +77,6 @@ public abstract class BotTask extends TimerTask
         return this.channels;
     }
 
+    public abstract void stop();
+
 }

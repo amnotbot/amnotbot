@@ -144,4 +144,10 @@ public class GithubTask extends BotTask
             BotLogger.getDebugLogger().debug(e.getMessage());
         }
     }
+
+    @Override
+    public void stop()
+    {
+        // nothing to do.
+    }
 }
