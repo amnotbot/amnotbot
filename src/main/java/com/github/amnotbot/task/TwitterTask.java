@@ -62,7 +62,7 @@ public class TwitterTask extends BotTask
         TwitterStreamFactory tsf = new TwitterStreamFactory(cb.build());
         this.twitterStream = tsf.getInstance();
 
-        UserStreamListener listener = new TwitterTaskUserStreamListener(this);
+        StatusListener listener = new TwitterTaskUserStreamListener(this);
         this.twitterStream.addListener(listener);
     }
 

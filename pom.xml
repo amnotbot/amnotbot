@@ -129,7 +129,7 @@
     <dependency>
         <groupId>org.twitter4j</groupId>
         <artifactId>twitter4j-stream</artifactId>
-        <version>[3.0,)</version>
+        <version>[4.0,)</version>
         <type>jar</type>
     </dependency>
     <dependency>
