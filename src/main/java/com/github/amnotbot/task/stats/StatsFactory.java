@@ -31,8 +31,7 @@ public class StatsFactory
     protected StatsFactory()
     {
         try {
-            Class.forName("org.sqlite.JDBC");
-            Class.forName("org.hsqldb.jdbcDriver");
+            Class.forName("org.hsqldb.jdbc.JDBCDriver");
         } catch (ClassNotFoundException e) {
             System.err.println(e);
         }
@@ -51,23 +50,10 @@ public class StatsFactory
         return driver;
     }
 
-    private void setDefaults(String backend, Connection conn) throws SQLException
-    {
-        if (backend.equals("hsqldb")) {
-            Statement smt = conn.createStatement();
-            smt.execute("SET LOGSIZE 50");
-            smt.close();
-        } else if (backend.equals("sqlite")) {
-            Statement smt = conn.createStatement();
-            smt.execute("PRAGMA synchronous=OFF");
-            smt.close();
-        }
-    }
-
     /**
      * Gets a database connection for the specified backend and database file
      * name.
-     * @param backend Database backend: hsqldb or sqlite.
+     * @param backend Database backend: hsqldb.
      * @param db Database file name.
      * @return A database connection object.
      * @throws SQLException
@@ -80,7 +66,6 @@ public class StatsFactory
 
         driver = this.getDriver(backend);
         connection = DriverManager.getConnection("jdbc:" + driver + ":" + db);
-        this.setDefaults(backend, connection);
 
         return connection;
     }
@@ -88,7 +73,7 @@ public class StatsFactory
     /**
      * Closes a database connection, using the specific procedure of each
      * database to perform this task.
-     * @param backend Database backend: hsqldb or sqlite.
+     * @param backend Database backend: hsqldb.
      * @param conn Database connection object.
      * @throws SQLException
      */
@@ -106,7 +91,7 @@ public class StatsFactory
     /**
      * Creates all statistics table objects associated with a specific backend,
      * and returns them in a linked list.
-     * @param backend Database backend: hsqldb or sqlite.
+     * @param backend Database backend: hsqldb.
      * @return A list of all the statistics tables associated with the backend.
      */
     public LinkedList<StatsTableDAO> getTables(String backend)

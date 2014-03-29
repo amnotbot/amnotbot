@@ -58,21 +58,16 @@ public class BotDBFactory
     protected BotDBFactory()
     {
         try {
-            Class.forName("org.sqlite.JDBC");
-            Class.forName("org.hsqldb.jdbcDriver");
+            Class.forName("org.hsqldb.jdbc.JDBCDriver");
         } catch (ClassNotFoundException e) {
             BotLogger.getDebugLogger().debug(e);
         }
-        
+
         this.backend = BotConfiguration.getConfig().getString("backend");
 
         this.properties = new Properties();
-        if (this.backend.equals("hsqldb")) {
-            this.driver = this.backend + ":file";
-            this.properties.setProperty("shutdown", "true");
-        } else {
-            this.driver = this.backend;
-        }
+        this.driver = this.backend + ":file";
+        this.properties.setProperty("shutdown", "true");
     }
 
     public Connection getConnection(String db) throws SQLException

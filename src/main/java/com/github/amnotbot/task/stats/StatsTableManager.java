@@ -19,7 +19,7 @@ public class StatsTableManager
 
     /**
      * Creates a new table manager.
-     * @param backend Database type to use for stats: hsqldb or sqlite.
+     * @param backend Database type to use for stats: hsqldb.
      */
     public StatsTableManager(String backend)
     {

@@ -94,7 +94,7 @@
     <dependency>
       <groupId>org.hsqldb</groupId>
       <artifactId>hsqldb</artifactId>
-      <version>1.8.0.10</version>
+      <version>[2.3,)</version>
     </dependency>
     <dependency>
       <groupId>org.htmlparser</groupId>
@@ -115,11 +115,6 @@
       <groupId>org.schwering</groupId>
       <artifactId>irclib</artifactId>
       <version>1.10</version>
-    </dependency>
-    <dependency>
-      <groupId>org.xerial</groupId>
-      <artifactId>sqlite-jdbc</artifactId>
-      <version>3.7.2</version>
     </dependency>
     <dependency>
         <groupId>commons-configuration</groupId>

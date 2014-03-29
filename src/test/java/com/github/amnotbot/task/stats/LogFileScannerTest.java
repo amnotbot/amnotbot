@@ -72,9 +72,6 @@ public class LogFileScannerTest
     public static Collection testParameters()
     {
         Object[][] data = new Object[][] {
-            {"sqlite", "irclogs/oftc/#amnotbot.db"},
-            {"sqlite", "irclogs/freenode/#amnotbot.db"},
-            {"sqlite", "irclogs/ircnet/#amnotbot.db"},
             {"hsqldb", "irclogs/oftc/#amnotbot.db"},
             {"hsqldb", "irclogs/freenode/#amnotbot.db"},
             {"hsqldb", "irclogs/ircnet/#amnotbot.db"}

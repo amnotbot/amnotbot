@@ -28,7 +28,6 @@ package com.github.amnotbot;
 
 
 import com.github.amnotbot.cmd.db.HsqldbQuoteTableOperations;
-import com.github.amnotbot.cmd.db.SqliteQuoteTableOperations;
 import com.github.amnotbot.cmd.db.TableOperations;
 import com.github.amnotbot.config.BotConfiguration;
 
@@ -48,9 +47,7 @@ public class BotTestFactory
 
     public TableOperations createTableOperationsObject()
     {
-        if (this.backend.equals("sqlite")) {
-            return new SqliteQuoteTableOperations();
-        } else if (this.backend.equals("hsqldb")) {
+        if (this.backend.equals("hsqldb")) {
             return new HsqldbQuoteTableOperations();
         }
         return null;
