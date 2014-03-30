@@ -44,7 +44,7 @@ public class HsqldbLinesTableDAO implements StatsTableDAO
     public void update(Connection conn, StatsRecordDAO r)
             throws SQLException
     {
-        if (r.getWord() != null) return;
+        if (r.getWord() != null || r.getDate() == null || r.getNick() == null) return;
 
         PreparedStatement updateLines = conn.prepareStatement(
                 "UPDATE lines SET d = ?, nick = ?, " +
