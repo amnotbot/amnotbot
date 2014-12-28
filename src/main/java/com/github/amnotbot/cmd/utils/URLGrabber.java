@@ -41,7 +41,7 @@ public class URLGrabber
     public URLGrabber(String text)
     {
         Pattern urlPattern = Pattern.compile(
-                ".*((http://([a-zA-Z]*.)?[a-zA-Z0-9]+(.[a-z]{2,4})+\\S*).*)");
+                ".*((http[s]?://([a-zA-Z]*.)?[a-zA-Z0-9]+(.[a-z]{2,4})+\\S*).*)");
         this.m = urlPattern.matcher(text);
     }
     
