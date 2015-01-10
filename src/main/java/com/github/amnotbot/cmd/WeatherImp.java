@@ -119,7 +119,7 @@ class WeatherImp
     private void showHelp()
     {
         this.msg.getConn().doPrivmsg(this.msg.getTarget(), "Station IDs: " +
-                    "http://www.weather.gov/tg/siteloc.shtml");
+                    "http://www.nws.noaa.gov/tg/siteloc.php");
     }
 
     private String getReport(Metar metar)

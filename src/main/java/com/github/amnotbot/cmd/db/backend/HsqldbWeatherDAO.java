@@ -48,20 +48,19 @@ public class HsqldbWeatherDAO implements WeatherDAO
         this.db = db;        
     }
 
-    public String getStation(String network, String user)
+    public String getStation(String network, String ircname)
             throws SQLException
     {
         Connection c = BotDBFactory.instance().getConnection(this.db);
-
         PreparedStatement smt = c.prepareStatement(
-                "SELECT station FROM weather WHERE network = ? AND user = ?");
+                "SELECT station FROM weather WHERE network = ? AND ircname = ?");
         smt.setString(1, network);
-        smt.setString(2, user);
+        smt.setString(2, ircname);
 
         String station = null;
         ResultSet rs = smt.executeQuery();
         if (rs.next()) {
-            station = rs.getString(1);
+            station = rs.getString("station");
         }
         rs.close();
         smt.close();
@@ -70,24 +69,23 @@ public class HsqldbWeatherDAO implements WeatherDAO
         return station;
     }
 
-    public void setStation(String network, String user, String station)
+    public void setStation(String network, String ircname, String station)
             throws SQLException
     {
         Connection c = BotDBFactory.instance().getConnection(this.db);
 
         PreparedStatement updateSmt = c.prepareStatement(
-                "UPDATE weather SET station = ?" +
-                " WHERE network = ? AND user = ?");
+                "UPDATE weather SET station = ? WHERE ircname = ? AND network = ?");
         updateSmt.setString(1, station);
-        updateSmt.setString(2, network);
-        updateSmt.setString(3, user);
+        updateSmt.setString(2, ircname);
+        updateSmt.setString(3, network);
 
         int ret = updateSmt.executeUpdate();
         updateSmt.close();
         if (ret == 0) {
             PreparedStatement insertSmt = c.prepareStatement(
                     "INSERT INTO weather values(?,?,?)");
-            insertSmt.setString(1, user);
+            insertSmt.setString(1, ircname);
             insertSmt.setString(2, network);
             insertSmt.setString(3, station);
 
@@ -95,6 +93,7 @@ public class HsqldbWeatherDAO implements WeatherDAO
             insertSmt.close();
         }
         c.close();
+        c = null;
     }
 
     public void createStationDB() throws SQLException
@@ -103,9 +102,9 @@ public class HsqldbWeatherDAO implements WeatherDAO
 
         Statement smt = c.createStatement();
 
-        smt.execute("CREATE TABLE weather " +
-               "(user VARCHAR(50), network VARCHAR(255), station VARCHAR(50))");
-        smt.execute("CREATE UNIQUE INDEX nn ON weather (user, network)");
+        smt.execute("CREATE CACHED TABLE weather " +
+               "(ircname VARCHAR(50), network VARCHAR(255), station VARCHAR(50))");
+        smt.execute("CREATE UNIQUE INDEX nn ON weather (network, ircname)");
 
         smt.close();
         c.close();

@@ -58,7 +58,7 @@ public class BotDBFactory
     protected BotDBFactory()
     {
         try {
-            Class.forName("org.hsqldb.jdbc.JDBCDriver");
+            Class.forName("org.hsqldb.jdbcDriver");
         } catch (ClassNotFoundException e) {
             BotLogger.getDebugLogger().debug(e);
         }
@@ -77,6 +77,7 @@ public class BotDBFactory
         connection = DriverManager.getConnection(
                 "jdbc:" + this.driver + ":" + db, this.properties);
 
+        connection.setAutoCommit(true);
         return connection;
     }
 
