@@ -2,9 +2,11 @@ package com.github.amnotbot.cmd.utils;
 
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.charset.Charset;
 
 import org.htmlparser.Parser;
 import org.htmlparser.filters.AndFilter;
@@ -150,8 +152,7 @@ public class BotHTMLParser implements WebPageInfo
         }
     }
 
-    private void parseHeaders() throws ParserException
-    {
+    private void parseHeaders() throws ParserException, UnsupportedEncodingException {
         NodeList nl;
 
         nl = this.parser.parse(null);
@@ -160,7 +161,8 @@ public class BotHTMLParser implements WebPageInfo
         NodeList titles = nl.extractAllNodesThatMatch(titleFilter, true);
         if (titles.size() > 0) {
             TitleTag titletag = (TitleTag) titles.elementAt(0);
-            this.setTitle(Translate.decode(titletag.getTitle().trim()));
+            this.setTitle(Translate.decode(
+                    new String(titletag.getTitle().trim().getBytes(this.parser.getEncoding()))));
         }
 
         NodeList keywordsList = nl.extractAllNodesThatMatch(

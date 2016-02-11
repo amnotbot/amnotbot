@@ -39,19 +39,18 @@ import org.apache.commons.configuration.Configuration;
  *
  * @author gpoppino
  */
-public class DuckDuckGoDefineCommand implements BotCommand {
+public class DuckDuckGoSearchCommand implements BotCommand {
 
     @Override
-    public void execute(BotMessage message) 
+    public void execute(BotMessage message)
     {
         new DuckDuckGoSearchImp(
-                DuckDuckGoSearch.searchType.DEFINITION_SEARCH,
-                new DuckDuckGoOutputDefineStrategy(),
+                new DuckDuckGoOutputSearchStrategy(),
                 message).run();
     }
 
     @Override
-    public String help() 
+    public String help()
     {
         Locale currentLocale;
         ResourceBundle helpMessage;
@@ -64,12 +63,12 @@ public class DuckDuckGoDefineCommand implements BotCommand {
 
 
         Configuration cmdConfig = BotConfiguration.getCommandsConfig();
-        String cmd = cmdConfig.getString("DuckDuckGoDefineCommand");
+        String cmd = cmdConfig.getString("DuckDuckGoSearchCommand");
 
         Object[] messageArguments = {
             BotConfiguration.getConfig().getString("command_trigger"),
             cmd,
-            helpMessage.getString("define_short_description"),
+            helpMessage.getString("short_description"),
             helpMessage.getString("parameters"),
             helpMessage.getString("search_term"),
             helpMessage.getString("example")
@@ -82,5 +81,4 @@ public class DuckDuckGoDefineCommand implements BotCommand {
         String output = formatter.format(messageArguments);
         return output;
     }
-    
 }

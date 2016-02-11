@@ -33,19 +33,18 @@ import org.json.JSONObject;
  *
  * @author gpoppino
  */
-public class DuckDuckGoOutputDefineStrategy implements DuckDuckGoOutputStrategy {
+public class DuckDuckGoOutputSearchStrategy implements DuckDuckGoOutputStrategy {
 
     @Override
     public void showAnswer(BotMessage msg, JSONObject answer) throws Exception 
     {
         String heading = answer.optString("Heading");
-        String definition = answer.optString("AbstractText");
-        
-        if (definition.isEmpty()) {
-            msg.getConn().doPrivmsg(msg.getTarget(), "Word not found!");
+        String abstractURL = answer.optString("AbstractURL");
+
+        if (abstractURL.isEmpty()) {
+            msg.getConn().doPrivmsg(msg.getTarget(), "Not found!");
         } else {
-            msg.getConn().doPrivmsg(msg.getTarget(), heading + ": " + definition);
+            msg.getConn().doPrivmsg(msg.getTarget(), heading + ": " + abstractURL);
         }
     }
-    
 }
