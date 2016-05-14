@@ -40,7 +40,7 @@ import com.github.amnotbot.config.BotConfiguration;
  *
  * @author gpoppino
  */
-public class GoogleVideoSearchCommand implements BotCommand
+public class GoogleSpellingSearchCommand implements BotCommand
 {
 
     public void execute(BotMessage message)
@@ -48,8 +48,8 @@ public class GoogleVideoSearchCommand implements BotCommand
         if (message.getText().isEmpty()) return;
         
         new GoogleSearchImp(
-                GoogleSearch.searchType.VIDEOS_SEARCH,
-                new GoogleResultOutputVideosStrategy(),
+                GoogleSearchImp.searchType.SPELLING_SEARCH,
+                new GoogleResultOutputSpellingStrategy(),
                 message).run();
     }
 
@@ -67,12 +67,12 @@ public class GoogleVideoSearchCommand implements BotCommand
 
 
         Configuration cmdConfig = BotConfiguration.getCommandsConfig();
-        String cmd = cmdConfig.getString("GoogleVideoSearchCommand");
+        String cmd = cmdConfig.getString("GoogleSpellingSearchCommand");
 
         Object[] messageArguments = {
             BotConfiguration.getConfig().getString("command_trigger"),
             cmd,
-            helpMessage.getString("video_short_description"),
+            helpMessage.getString("spelling_short_description"),
             helpMessage.getString("parameters"),
             helpMessage.getString("search_term"),
             helpMessage.getString("example")

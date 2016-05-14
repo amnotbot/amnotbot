@@ -39,16 +39,20 @@ public class GoogleSearchImp
 {
 
     private BotMessage msg;
-    private GoogleSearch.searchType sType;
     private GoogleResultOutputStrategy outputStrategy;
 
-    public GoogleSearchImp(
-            GoogleSearch.searchType s,
+    public enum searchType {
+        SPELLING_SEARCH, WEB_SEARCH
+    }
+
+    private searchType sType;
+
+    public GoogleSearchImp(searchType sType,
             GoogleResultOutputStrategy outputStrategy,
             BotMessage msg)
     {
         this.msg = msg;
-        this.sType = s;
+        this.sType = sType;
         this.outputStrategy = outputStrategy;
     }
 
@@ -58,8 +62,8 @@ public class GoogleSearchImp
             GoogleSearch google = new GoogleSearch();
 
             JSONObject answer;
-            answer = google.search(this.sType, this.msg.getText());
-            this.outputStrategy.showAnswer(this.msg, new GoogleResult(answer));
+            answer = google.search(this.msg.getText());
+            this.outputStrategy.showAnswer(this.msg, new GoogleResult(sType, answer));
         } catch (Exception e) {
             e.printStackTrace();
             BotLogger.getDebugLogger().debug(e.getMessage());

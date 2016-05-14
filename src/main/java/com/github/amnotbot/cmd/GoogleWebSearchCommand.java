@@ -20,7 +20,7 @@ public class GoogleWebSearchCommand implements BotCommand
     public void execute(BotMessage message)
     {
         new GoogleSearchImp(
-                GoogleSearch.searchType.WEB_SEARCH,
+                GoogleSearchImp.searchType.WEB_SEARCH,
                 new GoogleResultOutputWebStrategy(),
                 message
                 ).run();

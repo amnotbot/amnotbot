@@ -32,6 +32,8 @@ import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
+
+import com.github.amnotbot.config.BotConfiguration;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -41,55 +43,32 @@ import org.json.JSONObject;
  */
 public class GoogleSearch
 {
+    private final String SEARCH_URL = "https://www.googleapis.com/customsearch/v1?";
 
-    public enum searchType {
-        BOOKS_SEARCH, NEWS_SEARCH, WEB_SEARCH, PATENT_SEARCH, BLOGS_SEARCH,
-        VIDEOS_SEARCH
-    }
-
-    private final String SEARCH_URL =
-            "http://ajax.googleapis.com/ajax/services/search/";
+    private final String key;
+    private final String engineID;
 
     public GoogleSearch()
     {
+        this.key = BotConfiguration.getConfig().getString("google_search_key");
+        this.engineID = BotConfiguration.getConfig().getString("google_search_engine_id");
     }
 
-    public JSONObject search(searchType sType, String query)
+    public JSONObject search(String query)
             throws MalformedURLException, IOException, JSONException
     {
         URL searchUrl;
-        searchUrl = this.buildGoogleSearchUrl(sType, query);
+        searchUrl = this.buildGoogleSearchUrl(query);
 
         BotURLConnection conn = new BotURLConnection(searchUrl);
 
         return ( new JSONObject( conn.fetchURL() ) );
     }
 
-    private URL buildGoogleSearchUrl(searchType sType, String query)
+    private URL buildGoogleSearchUrl(String query)
             throws MalformedURLException, UnsupportedEncodingException 
     {
-        String url = null;
-
-        switch (sType) {
-            case WEB_SEARCH:
-                url = this.SEARCH_URL + "web?v=1.0&q=";
-                break;
-            case BOOKS_SEARCH:
-                url = this.SEARCH_URL + "books?v=1.0&q=";
-                break;
-            case NEWS_SEARCH:
-                url = this.SEARCH_URL + "news?v=1.0&q=";
-                break;
-            case PATENT_SEARCH:
-                url = this.SEARCH_URL + "patent?v=1.0&q=";
-                break;
-            case BLOGS_SEARCH:
-                url = this.SEARCH_URL + "blogs?v=1.0&q=";
-                break;
-            case VIDEOS_SEARCH:
-                url = this.SEARCH_URL + "video?v=1.0&q=";
-                break;
-        }
+        String url = this.SEARCH_URL + "key=" + this.key + "&cx=" + this.engineID + "&q=";
 
         url += URLEncoder.encode(query, "UTF-8");
 
