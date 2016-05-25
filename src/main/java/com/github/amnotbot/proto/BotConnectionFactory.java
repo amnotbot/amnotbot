@@ -27,6 +27,7 @@
 package com.github.amnotbot.proto;
 
 import java.util.List;
+
 import org.apache.commons.configuration.Configuration;
 
 import com.github.amnotbot.BotConnection;
@@ -34,8 +35,6 @@ import com.github.amnotbot.BotLogger;
 import com.github.amnotbot.proto.irc.IRCBotConnection;
 import com.github.amnotbot.proto.irc.IRCBotListener;
 import com.github.amnotbot.proto.xmpp.XMPPBotConnection;
-import com.github.amnotbot.proto.xmpp.XMPPBotMessageListener;
-import com.github.amnotbot.proto.xmpp.XMPPBotPacketListener;
 import org.jivesoftware.smack.ConnectionConfiguration;
 
 /**
@@ -54,7 +53,8 @@ public class BotConnectionFactory
             conn = this.createIRCConnection(
                     config.getString("server"),
                     config.getInt("port", 6667),
-                    config.getList("channels")
+                    config.getList("channels"),
+                    config.getBoolean("ssl")
                     );
         } else if (protocol.equals("xmpp")) {
             conn = this.createXMPPConnection(config);
@@ -64,14 +64,22 @@ public class BotConnectionFactory
     }
 
     private BotConnection createIRCConnection(String server, int port,
-            List<String> channels)
+            List<String> channels, Boolean ssl)
     {
         IRCBotConnection conn = null;
 
-        if (port > 0) {
-            conn = new IRCBotConnection(server, port);
+        if (ssl) {
+            if (port > 0) {
+                conn = new IRCBotConnection(server, port, true);
+            } else {
+                conn = new IRCBotConnection(server, true);
+            }
         } else {
-            conn = new IRCBotConnection(server);
+            if (port > 0) {
+                conn = new IRCBotConnection(server, port, false);
+            } else {
+                conn = new IRCBotConnection(server, false);
+            }
         }
 
         conn.setBotLogger(new BotLogger(server));
