@@ -106,6 +106,14 @@ public class BotCommandInterpreter
 
         return m.find() ? true : false;
     }
+
+    private boolean isSpotifyURI(BotMessage msg)
+    {
+        String text = msg.getText();
+
+        if (text.startsWith("spotify:") && text.split(":").length == 3) return true;
+        return false;
+    }
     
     private boolean isEmpty()
     {
@@ -124,18 +132,21 @@ public class BotCommandInterpreter
         if (this.isHelp(msg)) {
             this.processHelpRequest(msg);
         } else if (this.isCommand(msg)) {
-            this.processMessage(msg, false);
+            this.processMessage(msg, false, true);
         } else if (this.isLink(msg)) {
             this.execute(this.linkListeners, msg);
+        } else if (this.isSpotifyURI(msg)) {
+            this.processMessage(msg, false, false);
         }
     }
 
     /** Get the trigger in a string */
-    private String getTrigger(String text)
+    private String getTrigger(String text, boolean skipCmdTrigger)
     {
         String trigger = new String();
 
-        for (int i = 1; i < text.length(); ++i) {
+        int i = skipCmdTrigger == true ? 1 : 0;
+        for (;i < text.length(); ++i) {
             char c = text.charAt(i);
 
             if (!Character.isLetterOrDigit(c)) break;
@@ -148,14 +159,14 @@ public class BotCommandInterpreter
     /** Process a help request */
     private void processHelpRequest(BotMessage msg)
     {
-        String trigger = this.getTrigger(msg.getText().substring(1));
+        String trigger = this.getTrigger(msg.getText().substring(1), false);
         if (trigger.isEmpty()) {
             this.showEventTriggers(msg);
         } else if (trigger.equals("url")) {
             this.showHelp(this.linkListeners, msg);
         } else {
             msg.setText( msg.getText().substring(1) );
-            this.processMessage(msg, true);
+            this.processMessage(msg, true, false);
         }
     }
 
@@ -165,9 +176,9 @@ public class BotCommandInterpreter
      * @param msg
      * @param help
      */
-    private void processMessage(BotMessage msg, boolean help)
+    private void processMessage(BotMessage msg, boolean help, boolean skipCmdTrigger)
     {
-        String trigger = this.getTrigger(msg.getText());
+        String trigger = this.getTrigger(msg.getText(), skipCmdTrigger);
         Iterator<BotCommandEvent> it = this.cmdListeners.keySet().iterator();
         
         while (it.hasNext()) {
@@ -230,7 +241,7 @@ public class BotCommandInterpreter
     /** Strip the !command prefix from a string */
     private String removeTriggerString(String text)
     {
-        return text.substring(this.getTrigger(text).length() + 1,
+        return text.substring(this.getTrigger(text, true).length() + 1,
                 text.length());
     }
 
