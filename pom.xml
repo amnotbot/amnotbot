@@ -60,14 +60,6 @@
                   <mainClass>com.github.amnotbot.Main</mainClass>
                 </transformer>
               </transformers>
-              <filters>
-                <filter>
-                  <artifact>net.sourceforge.jweather:jweather</artifact>
-                  <excludes>
-                    <exclude>log4j.properties</exclude>
-                  </excludes>
-                </filter>
-              </filters>
             </configuration>
           </execution>
         </executions>
@@ -87,9 +79,9 @@
       <version>1.14</version>
     </dependency>
     <dependency>
-      <groupId>net.sourceforge.jweather</groupId>
-      <artifactId>jweather</artifactId>
-      <version>0.3.0</version>
+      <groupId>net.aksingh</groupId>
+      <artifactId>owm-japis</artifactId>
+      <version>2.5.0.3</version>
     </dependency>
     <dependency>
       <groupId>org.hsqldb</groupId>
@@ -146,6 +138,11 @@
       <groupId>se.michaelthelin.spotify</groupId>
       <artifactId>spotify-web-api-java</artifactId>
       <version>1.5.0</version>
+    </dependency>
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+      <version>1.2.17</version>
     </dependency>
   </dependencies>
 </project>
