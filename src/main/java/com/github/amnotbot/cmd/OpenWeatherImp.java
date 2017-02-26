@@ -3,7 +3,6 @@ package com.github.amnotbot.cmd;
 import com.github.amnotbot.BotMessage;
 import com.github.amnotbot.config.BotConfiguration;
 import net.aksingh.owmjapis.CurrentWeather;
-import net.aksingh.owmjapis.DailyForecast;
 import net.aksingh.owmjapis.OpenWeatherMap;
 import org.schwering.irc.lib.IRCConstants;
 
@@ -12,12 +11,24 @@ import java.io.IOException;
 public class OpenWeatherImp
 {
     private final BotMessage msg;
-    private final String city;
+    private String city = null;
+    private String country = null;
 
     public OpenWeatherImp(BotMessage msg)
     {
         this.msg = msg;
-        this.city = msg.getText().trim();
+
+        if (msg.getText().contains(",")) {
+            String args[] = msg.getText().split(",");
+            if (args.length > 1) {
+                this.city = args[0].trim();
+                this.country = args[1].trim().isEmpty() ? null : args[1].trim();
+            } else {
+                this.city = args[0].trim();
+            }
+        } else {
+            this.city = msg.getText().trim();
+        }
     }
 
     public void run() throws IOException
@@ -33,22 +44,36 @@ public class OpenWeatherImp
                     BotConfiguration.getConfig().getString("openweather_key"));
         }
 
-        CurrentWeather cw = owm.currentWeatherByCityName(this.city);
+        CurrentWeather cw = null;
+        if (this.country == null) {
+            cw = owm.currentWeatherByCityName(this.city);
+        } else {
+            cw = owm.currentWeatherByCityName(this.city, this.country);
+        }
+
         if (cw.isValid()) {
 
             String weatherString = IRCConstants.UNDERLINE_INDICATOR + "City: " + IRCConstants.UNDERLINE_INDICATOR +
                     cw.getCityName();
 
+            if (cw.hasWeatherInstance()) {
+                if (cw.getWeatherInstance(0).hasWeatherName() && cw.getWeatherInstance(0).hasWeatherDescription()) {
+                    weatherString += IRCConstants.UNDERLINE_INDICATOR + " Sky: " + IRCConstants.UNDERLINE_INDICATOR +
+                            cw.getWeatherInstance(0).getWeatherDescription();
+                }
+            }
+
             if (cw.hasMainInstance()) {
+                String temp_unit = unit.compareTo("metric") == 0 ? " ˚C" : " ˚F";
                 if (cw.getMainInstance().hasTemperature()) {
                     weatherString += IRCConstants.UNDERLINE_INDICATOR + " Current Temperature: " +
-                            IRCConstants.UNDERLINE_INDICATOR + cw.getMainInstance().getTemperature() + " ˚C";
+                            IRCConstants.UNDERLINE_INDICATOR + cw.getMainInstance().getTemperature() + temp_unit;
                 }
 
                 if (cw.getMainInstance().hasMaxTemperature() && cw.getMainInstance().hasMinTemperature()) {
                     weatherString += IRCConstants.UNDERLINE_INDICATOR + " Temperature Max/Min: " +
                             IRCConstants.UNDERLINE_INDICATOR + cw.getMainInstance().getMaxTemperature() +
-                            "/" + cw.getMainInstance().getMinTemperature() + " ˚C";
+                            "/" + cw.getMainInstance().getMinTemperature() + temp_unit;
                 }
 
                 if (cw.getMainInstance().hasHumidity()) {
@@ -58,7 +83,7 @@ public class OpenWeatherImp
 
                 if (cw.getMainInstance().hasPressure()) {
                     weatherString += IRCConstants.UNDERLINE_INDICATOR + " Pressure: " + IRCConstants.UNDERLINE_INDICATOR +
-                            cw.getMainInstance().getPressure();
+                            cw.getMainInstance().getPressure() + " hpa";
                 }
             }
 
@@ -87,10 +112,7 @@ public class OpenWeatherImp
 
             if (cw.hasWindInstance()) {
                 if (cw.getWindInstance().hasWindSpeed() && cw.getWindInstance().hasWindDegree()) {
-                    String speed_unit = " miles/hour";
-                    if (unit.compareTo("metric") == 0) {
-                        speed_unit = " meter/sec";
-                    }
+                    String speed_unit = unit.compareTo("metric") == 0 ? " meter/sec" : "miles/hour";
                     weatherString += IRCConstants.UNDERLINE_INDICATOR + " Wind Speed: " + IRCConstants.UNDERLINE_INDICATOR +
                             cw.getWindInstance().getWindSpeed() + speed_unit + IRCConstants.UNDERLINE_INDICATOR +
                             " Wind Degree: " + IRCConstants.UNDERLINE_INDICATOR + cw.getWindInstance().getWindDegree();
