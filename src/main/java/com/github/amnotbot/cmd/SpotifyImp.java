@@ -9,6 +9,7 @@ import com.wrapper.spotify.models.Album;
 import com.wrapper.spotify.models.Artist;
 import com.wrapper.spotify.models.SimpleArtist;
 import com.wrapper.spotify.models.Track;
+import org.schwering.irc.lib.IRCConstants;
 
 import java.util.List;
 
@@ -43,10 +44,12 @@ public class SpotifyImp
                     final Artist artist = artistRequest.get();
 
                     msg.getConn().doPrivmsg(msg.getTarget(),
-                            "[ Artist: " + artist.getName() + "  Ranking: " + artist.getPopularity() + " ]");
+                            "[ " + IRCConstants.UNDERLINE_INDICATOR + "Artist: " + IRCConstants.UNDERLINE_INDICATOR +
+                                    artist.getName() + IRCConstants.UNDERLINE_INDICATOR + "  Ranking: " +
+                                    IRCConstants.UNDERLINE_INDICATOR + artist.getPopularity() + " ]");
 
                 } catch (Exception e) {
-                    msg.getConn().doPrivmsg(msg.getTarget(), "No artista... jeje");
+                    msg.getConn().doPrivmsg(msg.getTarget(), "No artist found!");
                 }
                 break;
             case ALBUM_SEARCH:
@@ -61,10 +64,14 @@ public class SpotifyImp
                         mArtists += " " + artist.getName();
                     }
                     msg.getConn().doPrivmsg(msg.getTarget(),
-                            "[ Album: " + album.getName() + "  Artists: " + mArtists + "  Release date: " + album.getReleaseDate() + "  Songs: " +
+                            "[ " + IRCConstants.UNDERLINE_INDICATOR + " Album: " + IRCConstants.UNDERLINE_INDICATOR +
+                                    album.getName() + IRCConstants.UNDERLINE_INDICATOR + "  Artists: " +
+                                    IRCConstants.UNDERLINE_INDICATOR + mArtists + IRCConstants.UNDERLINE_INDICATOR +
+                                    "  Release date: " + IRCConstants.UNDERLINE_INDICATOR + album.getReleaseDate() +
+                                    IRCConstants.UNDERLINE_INDICATOR + "  Songs: " + IRCConstants.UNDERLINE_INDICATOR +
                                     album.getTracks().getTotal() + " ]");
                 } catch (Exception e) {
-                    msg.getConn().doPrivmsg(msg.getTarget(), "Could not get album... chingate wey");
+                    msg.getConn().doPrivmsg(msg.getTarget(), "Could not get album!");
                 }
                 break;
             case TRACK_SEARCH:
@@ -88,11 +95,18 @@ public class SpotifyImp
                     int minutes = track.getDuration() / 1000 / 60;
                     int seconds = track.getDuration() / 1000 - (minutes * 60);
 
+                    Integer secs = new Integer(seconds);
+                    String secondsString = seconds < 10 ? "0" + secs.toString() : secs.toString();
+
                     msg.getConn().doPrivmsg(msg.getTarget(),
-                            "[ Track: " + track.getName() + "  Artists: " + mArtists + "  Duration: " + minutes + ":" + seconds  + "  " +
-                                    "Ranking: " + track.getPopularity() + " ]");
+                            "[ " + IRCConstants.UNDERLINE_INDICATOR + " Track: "  + IRCConstants.UNDERLINE_INDICATOR +
+                                    track.getName() + IRCConstants.UNDERLINE_INDICATOR + "  Artists: " +
+                                    IRCConstants.UNDERLINE_INDICATOR + mArtists + IRCConstants.UNDERLINE_INDICATOR +
+                                    "  Duration: " + IRCConstants.UNDERLINE_INDICATOR + minutes + ":" +
+                                    secondsString + IRCConstants.UNDERLINE_INDICATOR + " Preview: " +
+                                    IRCConstants.UNDERLINE_INDICATOR + track.getPreviewUrl() + " ]");
                 } catch (Exception e) {
-                    msg.getConn().doPrivmsg(msg.getTarget(), "Track not found... tengo chaleco viteh");
+                    msg.getConn().doPrivmsg(msg.getTarget(), "Track not found!");
                 }
                 break;
         }
