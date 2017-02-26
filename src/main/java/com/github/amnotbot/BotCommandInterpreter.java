@@ -82,7 +82,7 @@ public class BotCommandInterpreter
     {
         String text = msg.getText();
 
-        if (text.startsWith(this.cmdTrigger + this.cmdTrigger))
+        if (text.startsWith(this.cmdTrigger + "help"))
             return true;
         else
             return false;
@@ -159,13 +159,12 @@ public class BotCommandInterpreter
     /** Process a help request */
     private void processHelpRequest(BotMessage msg)
     {
-        String trigger = this.getTrigger(msg.getText().substring(1), false);
+        String trigger = this.removeTriggerString(msg.getText()).trim();
         if (trigger.isEmpty()) {
             this.showEventTriggers(msg);
         } else if (trigger.equals("url")) {
             this.showHelp(this.linkListeners, msg);
         } else {
-            msg.setText( msg.getText().substring(1) );
             this.processMessage(msg, true, false);
         }
     }
@@ -178,7 +177,12 @@ public class BotCommandInterpreter
      */
     private void processMessage(BotMessage msg, boolean help, boolean skipCmdTrigger)
     {
-        String trigger = this.getTrigger(msg.getText(), skipCmdTrigger);
+        String trigger = null;
+        if (help) {
+            trigger = this.removeTriggerString(msg.getText()).trim();
+        } else {
+            trigger = this.getTrigger(msg.getText(), skipCmdTrigger);
+        }
         Iterator<BotCommandEvent> it = this.cmdListeners.keySet().iterator();
         
         while (it.hasNext()) {
