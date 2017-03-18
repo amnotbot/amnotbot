@@ -8,6 +8,9 @@ import java.sql.Statement;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.junit.After;
 import org.junit.AfterClass;
 import static org.junit.Assert.*;
@@ -61,6 +64,7 @@ public class LogFileScannerTest
     @Before
     public void setUp()
     {
+        this.scanLogs();
     }
 
     @After
@@ -80,8 +84,7 @@ public class LogFileScannerTest
         return Arrays.asList(data);
     }
 
-    @Test
-    public void testScanLogs()
+    public void scanLogs()
     {
         System.out.println("scanLogFiles: " + backend + ":" + dbFilename);
         Properties p = new Properties();

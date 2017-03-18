@@ -75,60 +75,39 @@ public class BotCommandInterpreterTest
     }
 
     @Test
-    public void testAddListener() throws InterruptedException
+    public void testCommands() throws InterruptedException
     {
         System.out.println("addListener");
         BotUser user = new IRCBotUser("gresco1", "geronimo1", "localhost");
-        String trigger =
-                BotConfiguration.getConfig().getString("command_trigger", ".");
-        BotMessage msg = new BotMessage(this.conn, "#chanA", user,
-                trigger + "a testA");
+        BotMessage msg = new BotMessage(this.conn, "#chanA", user, "!a testA");
         BotCommandInterpreter instance = new BotCommandInterpreter();
 
-        instance.addListener(new BotCommandEvent("a"), new CommandA(this.s));
-        instance.addListener(new BotCommandEvent("b"), new CommandB(this.s));
+        instance.addListener(new BotCommandEvent("!a"), new CommandA(this.s));
+        instance.addListener(new BotCommandEvent("!b"), new CommandB(this.s));
 
         this.s.setValue("D");
         instance.run(msg);
         Thread.sleep(this.wait_for_thread_sleep); // wait for command thread to finalize.
-        assertEquals("A", this.s.getValue());
+        assertEquals("CommandA", this.s.getValue());
 
-        msg.setText(trigger + "b testB");
+        msg.setText("!b testB");
         Thread.sleep(this.min_diff_allowed_by_spam);
         instance.run(msg);
         Thread.sleep(this.wait_for_thread_sleep);
-        assertEquals("B", this.s.getValue());
+        assertEquals("CommandB", this.s.getValue());
 
         this.s.setValue("C");
-        msg.setText(trigger + "g");
+        msg.setText("!g");
         Thread.sleep(this.min_diff_allowed_by_spam);
         instance.run(msg);
         Thread.sleep(this.wait_for_thread_sleep);
         assertEquals("C", this.s.getValue());
 
-        msg.setText(trigger + "a testA");
+        msg.setText("!a testA");
         Thread.sleep(this.min_diff_allowed_by_spam);
         instance.run(msg);
         Thread.sleep(this.wait_for_thread_sleep);
-        assertEquals("A", this.s.getValue());
-    }
-
-    @Test
-    public void testAddLinkListener() throws InterruptedException
-    {
-        System.out.println("addLinkListener");   
-        BotCommandInterpreter instance = new BotCommandInterpreter();
-        BotUser user = new IRCBotUser("gresco", "geronimo", "localhost");
-        BotMessage msg = new BotMessage(this.conn, "#chanB", user,
-                "http://www.abc.com");
-        
-        instance.addLinkListener(new CommandLink(this.s));
-
-        this.s.setValue("D");
-        Thread.sleep(this.min_diff_allowed_by_spam);
-        instance.run(msg);
-        Thread.sleep(this.wait_for_thread_sleep);
-        assertEquals("Link", this.s.getValue());
+        assertEquals("CommandA", this.s.getValue());
     }
 
     @Test
@@ -137,44 +116,35 @@ public class BotCommandInterpreterTest
         System.out.println("testHelp");
         BotUser user = new IRCBotUser("gresco1", "geronimo1", "localhost");
         String trigger =
-                BotConfiguration.getConfig().getString("command_trigger", ".");
-        BotMessage msg = new BotMessage(this.conn, "#chan", user,
-                trigger + trigger + "a");
+                BotConfiguration.getConfig().getString("help_trigger", "!help");
+        BotMessage msg = new BotMessage(this.conn, "#chan", user, trigger + " a");
         BotCommandInterpreter instance = new BotCommandInterpreter();
 
         instance.addListener(new BotCommandEvent("a"), new CommandA(this.s));
         instance.addListener(new BotCommandEvent("b"), new CommandB(this.s));
-        instance.addLinkListener(new CommandLink(this.s));
 
         instance.run(msg);
         Thread.sleep(this.wait_for_thread_sleep);
         assertEquals("HelpA", this.s.getValue());
 
-        msg.setText(trigger + trigger + "b");
+        msg.setText(trigger + " b");
         Thread.sleep(this.min_diff_allowed_by_spam);
         instance.run(msg);
         Thread.sleep(this.wait_for_thread_sleep);
         assertEquals("HelpB", this.s.getValue());
 
         this.s.setValue("C");
-        msg.setText(trigger + trigger + "g");
+        msg.setText(trigger + " g");
         Thread.sleep(this.min_diff_allowed_by_spam);
         instance.run(msg);
         Thread.sleep(this.wait_for_thread_sleep);
         assertEquals("C", this.s.getValue());
 
-        msg.setText(trigger + trigger + "a testA");
+        msg.setText(trigger + " a");
         Thread.sleep(this.min_diff_allowed_by_spam);
         instance.run(msg);
         Thread.sleep(this.wait_for_thread_sleep);
         assertEquals("HelpA", this.s.getValue());
-
-        this.s.setValue("D");
-        msg.setText(trigger + trigger + "url");
-        Thread.sleep(this.min_diff_allowed_by_spam);
-        instance.run(msg);
-        Thread.sleep(this.wait_for_thread_sleep);
-        assertEquals("HelpLink", this.s.getValue());
     }
     
     class SharedObject 
@@ -208,8 +178,8 @@ public class BotCommandInterpreterTest
 
         public void execute(BotMessage msg)
         {
-            this.a.setValue("A");
-            System.out.println("A:" + msg.getText());
+            this.a.setValue("CommandA");
+            System.out.println("CommandA:" + msg.getText());
         }
 
         public String help()
@@ -232,38 +202,14 @@ public class BotCommandInterpreterTest
 
         public void execute(BotMessage msg)
         {
-            this.b.setValue("B");
-            System.out.println("B:" + msg.getText());
+            this.b.setValue("CommandB");
+            System.out.println("CommandB:" + msg.getText());
         }
 
         public String help() 
         {
             String h = "HelpB";
             this.b.setValue(h);
-            System.out.println("Help: " + h);
-            return h;
-        }
-    }
-
-    class CommandLink implements BotCommand
-    {
-        SharedObject l;
-
-        public CommandLink(SharedObject a)
-        {
-            this.l = a;
-        }
-
-        public void execute(BotMessage msg)
-        {
-            this.l.setValue("Link");
-            System.out.println("Link: " + msg.getText());
-        }
-
-        public String help() 
-        {
-            String h = "HelpLink";
-            this.l.setValue(h);
             System.out.println("Help: " + h);
             return h;
         }
