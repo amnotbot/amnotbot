@@ -77,13 +77,7 @@ public class BotCommandInterpreterBuilderFile
             if (o instanceof BotCommand) {
                 String trigger = cmdConfig.getString(cname);
                 BotCommand cmd = (BotCommand)o;
-                if (trigger.compareTo("URL") == 0) {
-                    this.cmdInterpreter.addLinkListener(cmd);
-                } else {
-                    this.cmdInterpreter.addListener(
-                            new BotCommandEvent(trigger), cmd
-                            );
-                }
+                this.cmdInterpreter.addListener(new BotCommandEvent(trigger), cmd);
             }
         }
     }

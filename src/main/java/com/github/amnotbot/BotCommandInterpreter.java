@@ -39,11 +39,7 @@ public class BotCommandInterpreter
 {
     private String helpTrigger;
     private BotSpamDetector spamDetector;
-    
-    /** Collection of commands to fire for links. */
-    private List<BotCommand> linkListeners;
-    
-    /** Map of commands */
+
     private HashMap<BotCommandEvent, List<BotCommand>> cmdListeners;
 
     public BotCommandInterpreter()
@@ -53,7 +49,6 @@ public class BotCommandInterpreter
                 BotConfiguration.getConfig().getString("help_trigger", "!help");
         this.cmdListeners =
                 new HashMap<>();
-        this.linkListeners = new LinkedList<BotCommand>();
     }
 
     public void addListener(BotCommandEvent e, BotCommand command)
@@ -71,11 +66,6 @@ public class BotCommandInterpreter
         this.cmdListeners.put(e, cmds);
     }
 
-    public void addLinkListener(BotCommand command)
-    {
-        this.linkListeners.add(command);
-    }
-
     private boolean isHelp(BotMessage msg)
     {
         return msg.getText().startsWith(this.helpTrigger);
@@ -83,7 +73,7 @@ public class BotCommandInterpreter
     
     private boolean isEmpty()
     {
-        return (this.cmdListeners.isEmpty() && this.linkListeners.isEmpty());
+        return this.cmdListeners.isEmpty();
     }
 
     /**
