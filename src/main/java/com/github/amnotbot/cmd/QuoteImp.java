@@ -24,7 +24,7 @@ public class QuoteImp
     {
         this.msg = msg;
         this.quoteDAO = null;
-        this.opts = new CommandOptions(msg.getText());
+        this.opts = new CommandOptions(msg.getParams());
 
         this.opts.addOption(new CmdOptionImp("text"));
         this.opts.addOption(new CmdOptionImp("id"));

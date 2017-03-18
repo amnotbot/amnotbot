@@ -71,8 +71,7 @@ public class WeatherCommand implements BotCommand
             BotConfiguration.getCommandsConfig().getString("WeatherCommand"),
             helpMessage.getString("short_description"),
             helpMessage.getString("options"),
-            helpMessage.getString("city_name"),
-            helpMessage.getString("example")
+            helpMessage.getString("city_name")
         };
 
         MessageFormat formatter = new MessageFormat("");

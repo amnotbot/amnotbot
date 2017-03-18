@@ -31,6 +31,9 @@ import org.json.JSONObject;
 
 import com.github.amnotbot.*;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  *
  * @author gpoppino
@@ -61,8 +64,20 @@ public class GoogleSearchImp
         try {
             GoogleSearch google = new GoogleSearch();
 
-            JSONObject answer;
-            answer = google.search(this.msg.getText());
+            String searchTerm = new String();
+            switch (this.sType) {
+                case WEB_SEARCH:
+                    searchTerm = this.msg.getParams();
+                    break;
+                case SPELLING_SEARCH:
+                    Pattern p =
+                            Pattern.compile("([\\w]+)[\\s]?\\Q(sp?)\\E", Pattern.CASE_INSENSITIVE);
+                    Matcher m = p.matcher(msg.getText().trim());
+                    if (!m.find()) return;
+                    searchTerm = m.group(1).trim();
+                    break;
+            }
+            JSONObject answer = google.search(searchTerm);
             this.outputStrategy.showAnswer(this.msg, new GoogleResult(sType, answer));
         } catch (Exception e) {
             e.printStackTrace();

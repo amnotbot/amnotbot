@@ -46,8 +46,7 @@ public class GoogleWebSearchCommand implements BotCommand
             cmd,
             helpMessage.getString("web_short_description"),
             helpMessage.getString("parameters"),
-            helpMessage.getString("search_term"),
-            helpMessage.getString("example")
+            helpMessage.getString("search_term")
         };
 
         MessageFormat formatter = new MessageFormat("");

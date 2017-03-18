@@ -69,8 +69,7 @@ public class UniqueWordsCommand implements BotCommand
             helpMessage.getString("date"),
             helpMessage.getString("nick"),
             helpMessage.getString("nick_example"),
-            helpMessage.getString("date_description"),
-            helpMessage.getString("example")
+            helpMessage.getString("date_description")
         };
 
         MessageFormat formatter = new MessageFormat("");

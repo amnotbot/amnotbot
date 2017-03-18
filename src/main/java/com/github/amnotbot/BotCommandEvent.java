@@ -47,10 +47,7 @@ public class BotCommandEvent
 
     public boolean test(String msg)
     {
-        Matcher m;
-        m = this.trigger.matcher(msg);
-        if (m.matches()) return true;
-        return false;
+        return this.trigger.matcher(msg).find();
     }
 
     public String getTrigger()

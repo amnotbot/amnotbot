@@ -39,8 +39,7 @@ public class QuoteCommand implements BotCommand
             helpMessage.getString("delete"),
             helpMessage.getString("number"),
             helpMessage.getString("info"),
-            helpMessage.getString("get"),
-            helpMessage.getString("example")
+            helpMessage.getString("get")
         };
 
         MessageFormat formatter = new MessageFormat("");

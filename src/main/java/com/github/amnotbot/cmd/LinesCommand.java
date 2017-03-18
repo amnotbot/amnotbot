@@ -43,8 +43,7 @@ public class LinesCommand implements BotCommand
             helpMessage.getString("nick_example"),
             helpMessage.getString("date"),
             helpMessage.getString("number"),
-            helpMessage.getString("date_description"),
-            helpMessage.getString("example")
+            helpMessage.getString("date_description")
         };
 
         MessageFormat formatter = new MessageFormat("");

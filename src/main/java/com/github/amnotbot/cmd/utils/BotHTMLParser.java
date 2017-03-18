@@ -103,26 +103,13 @@ public class BotHTMLParser implements WebPageInfo
 
     private void setTitle(String title)
     {
-        if (title != null) {
-            title = title.trim();
-            if (title.length() == 0) {
-                title = null;
-            } else {
-                String[] str;
-                String tmp = new String();
-                str = title.split("\n");
-                for (String t : str) {
-                    tmp += " " + t.trim();
-                }
-                title = tmp.trim();
-            }
-        }
+        title.trim().replaceAll("\n", "");
         this.title = title;
     }
 
     private void setDescription(String description)
     {
-        this.description = description;
+        this.description = description.trim().replaceAll("\n", "");
     }
 
     private void setKeywords(String keywords)

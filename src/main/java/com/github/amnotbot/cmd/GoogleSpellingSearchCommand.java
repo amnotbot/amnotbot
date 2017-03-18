@@ -45,7 +45,7 @@ public class GoogleSpellingSearchCommand implements BotCommand
 
     public void execute(BotMessage message)
     {
-        if (message.getText().isEmpty()) return;
+        if (message.getParams().isEmpty()) return;
         
         new GoogleSearchImp(
                 GoogleSearchImp.searchType.SPELLING_SEARCH,
@@ -74,8 +74,7 @@ public class GoogleSpellingSearchCommand implements BotCommand
             cmd,
             helpMessage.getString("spelling_short_description"),
             helpMessage.getString("parameters"),
-            helpMessage.getString("search_term"),
-            helpMessage.getString("example")
+            helpMessage.getString("search_term")
         };
 
         MessageFormat formatter = new MessageFormat("");

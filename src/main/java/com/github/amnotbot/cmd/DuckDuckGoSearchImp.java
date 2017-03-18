@@ -53,7 +53,7 @@ public class DuckDuckGoSearchImp {
             DuckDuckGoSearch duckduckgo = new DuckDuckGoSearch();
 
             JSONObject answer;
-            answer = duckduckgo.search(this.msg.getText());
+            answer = duckduckgo.search(this.msg.getParams());
             this.outputStrategy.showAnswer(this.msg, answer);
         } catch (Exception e) {
             e.printStackTrace();

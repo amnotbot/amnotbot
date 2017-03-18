@@ -70,8 +70,7 @@ public class DuckDuckGoSearchCommand implements BotCommand {
             cmd,
             helpMessage.getString("short_description"),
             helpMessage.getString("parameters"),
-            helpMessage.getString("search_term"),
-            helpMessage.getString("example")
+            helpMessage.getString("search_term")
         };
 
         MessageFormat formatter = new MessageFormat("");

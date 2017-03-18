@@ -42,6 +42,6 @@ public class GoogleResultOutputWebStrategy implements GoogleResultOutputStrategy
     {        
         msg.getConn().doPrivmsg(msg.getTarget(), result.title());
         msg.getConn().doPrivmsg(msg.getTarget(), result.decodedUrl("link"));
-        msg.getConn().doPrivmsg(msg.getTarget(), result.optString("snippet"));
+        msg.getConn().doPrivmsg(msg.getTarget(), result.optString("snippet").replaceAll("\n", ""));
     }
 }

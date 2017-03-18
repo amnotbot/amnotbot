@@ -17,8 +17,7 @@ public class OpenWeatherImp
     public OpenWeatherImp(BotMessage msg)
     {
         this.msg = msg;
-
-        if (msg.getText().contains(",")) {
+        if (msg.getParams().contains(",")) {
             String args[] = msg.getText().split(",");
             if (args.length > 1) {
                 this.city = args[0].trim();
@@ -27,7 +26,7 @@ public class OpenWeatherImp
                 this.city = args[0].trim();
             }
         } else {
-            this.city = msg.getText().trim();
+            this.city = msg.getParams().trim();
         }
     }
 

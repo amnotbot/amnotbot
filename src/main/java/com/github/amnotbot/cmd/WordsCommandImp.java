@@ -30,7 +30,7 @@ public class WordsCommandImp
         this.msg = msg;
         this.countOp = op;
 
-        opts = new CommandOptions(msg.getText());
+        opts = new CommandOptions(msg.getParams());
 
         opts.addOption(new CmdOptionImp("nick", ","));
         opts.addOption(new CmdOptionImp("word", ","));
