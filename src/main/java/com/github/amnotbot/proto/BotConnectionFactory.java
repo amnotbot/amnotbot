@@ -26,6 +26,7 @@
  */
 package com.github.amnotbot.proto;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.configuration.Configuration;
@@ -53,7 +54,7 @@ public class BotConnectionFactory
             conn = this.createIRCConnection(
                     config.getString("server"),
                     config.getInt("port", 6667),
-                    config.getList("channels"),
+                    Arrays.asList(config.getStringArray("channels")),
                     config.getBoolean("ssl")
                     );
         } else if (protocol.equals("xmpp")) {
@@ -104,7 +105,7 @@ public class BotConnectionFactory
                 config.getString("user"),
                 config.getString("password"),
                 config.getString("resource"),
-                config.getList("channels")
+                Arrays.asList(config.getStringArray("channels"))
                 );
         conn.setBotLogger(new BotLogger(config.getString("server")));
         
