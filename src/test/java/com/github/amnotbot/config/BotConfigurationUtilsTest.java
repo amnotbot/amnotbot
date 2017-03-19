@@ -60,8 +60,8 @@ public class BotConfigurationUtilsTest {
     }
 
     @Before
-    public void setUp() {
-        BotConfiguration.setHomeDir("target/.amnotbot");
+    public void setUp()
+    {
     }
 
     @After

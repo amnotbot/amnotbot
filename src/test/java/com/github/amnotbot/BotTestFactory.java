@@ -29,7 +29,6 @@ package com.github.amnotbot;
 
 import com.github.amnotbot.cmd.db.HsqldbQuoteTableOperations;
 import com.github.amnotbot.cmd.db.TableOperations;
-import com.github.amnotbot.config.BotConfiguration;
 
 /**
  *
@@ -37,8 +36,6 @@ import com.github.amnotbot.config.BotConfiguration;
  */
 public class BotTestFactory
 {
-    private String backend;
-
     public BotTestFactory()
     {
     }

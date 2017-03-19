@@ -41,11 +41,12 @@ import com.github.amnotbot.config.BotConfiguration;
  */
 public class BotDBFactory
 {
-    String backend, driver;
+    String driver;
     Properties properties;
     static BotDBFactory _instance = null;
     QuoteDAO quoteDAO = null;
     WeatherDAO weatherDAO = null;
+    private final String backend = "hsqldb";
 
     public static BotDBFactory instance()
     {
@@ -62,8 +63,6 @@ public class BotDBFactory
         } catch (ClassNotFoundException e) {
             BotLogger.getDebugLogger().debug(e);
         }
-
-        this.backend = BotConfiguration.getConfig().getString("backend");
 
         this.properties = new Properties();
         this.driver = this.backend + ":file";

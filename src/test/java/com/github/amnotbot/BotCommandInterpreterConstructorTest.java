@@ -27,6 +27,8 @@
 package com.github.amnotbot;
 
 import java.io.File;
+
+import com.github.amnotbot.config.BotConfiguration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.junit.After;
@@ -55,6 +57,7 @@ public class BotCommandInterpreterConstructorTest
     @Before
     public void setUp()
     {
+        BotConfiguration.setHomeDir("target/test-classes");
         this.createCommandsFile();
     }
 
@@ -67,7 +70,7 @@ public class BotCommandInterpreterConstructorTest
     @Test
     public void testConstruct()
     {
-        System.out.println("construct");
+        System.out.println("testConstruct");
         BotConnection conn = new DummyConnection();
         BotCommandInterpreterConstructor c =
                 new BotCommandInterpreterConstructor(

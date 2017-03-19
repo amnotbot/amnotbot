@@ -32,7 +32,6 @@ import java.io.File;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-import org.apache.commons.lang.SystemUtils;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -46,7 +45,6 @@ import com.github.amnotbot.BotUser;
 import com.github.amnotbot.DummyConnection;
 import com.github.amnotbot.cmd.db.BotDBFactory;
 import com.github.amnotbot.cmd.db.TableOperations;
-import com.github.amnotbot.config.BotConfiguration;
 import com.github.amnotbot.proto.irc.IRCBotUser;
 
 /**
@@ -55,7 +53,6 @@ import com.github.amnotbot.proto.irc.IRCBotUser;
  */
 public class QuoteTest
 {
-    private String trigger;
     private BotTestFactory factory;    
     private TableOperations tableOperations;
     private static final String dbFilename = "quotes.db";
@@ -64,14 +61,6 @@ public class QuoteTest
     {
         this.factory = new BotTestFactory();
         this.tableOperations = this.factory.createTableOperationsObject();
-        
-        File f = new File(
-                SystemUtils.getUserDir().getAbsolutePath() + "/build");
-        if (f.exists()) {
-            System.setProperty("user.home", "build/test/");
-        } else {
-            System.setProperty("user.home", "test/");
-        }
     }
 
     @BeforeClass
@@ -93,7 +82,7 @@ public class QuoteTest
 
     @Before
     public void setUp() throws SQLException
-    {        
+    {
         Connection connection =
                     BotDBFactory.instance().getConnection(BotLogger.BOT_HOME +
                     "/" + dbFilename);
@@ -102,8 +91,6 @@ public class QuoteTest
 
         connection.close();
         connection = null;
-        
-        BotConfiguration.setHomeDir("target/.amnotbot");
     }
 
     @After
