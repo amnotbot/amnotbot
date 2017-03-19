@@ -41,15 +41,10 @@ public class BotTestFactory
 
     public BotTestFactory()
     {
-        BotConfiguration.setHomeDir("target/.amnotbot");
-        this.backend = BotConfiguration.getConfig().getString("backend");
     }
 
     public TableOperations createTableOperationsObject()
     {
-        if (this.backend.equals("hsqldb")) {
-            return new HsqldbQuoteTableOperations();
-        }
-        return null;
+        return new HsqldbQuoteTableOperations();
     }
 }

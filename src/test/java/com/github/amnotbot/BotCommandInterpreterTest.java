@@ -115,9 +115,7 @@ public class BotCommandInterpreterTest
     {
         System.out.println("testHelp");
         BotUser user = new IRCBotUser("gresco1", "geronimo1", "localhost");
-        String trigger =
-                BotConfiguration.getConfig().getString("help_trigger", "!help");
-        BotMessage msg = new BotMessage(this.conn, "#chan", user, trigger + " a");
+        BotMessage msg = new BotMessage(this.conn, "#chan", user, "!help a");
         BotCommandInterpreter instance = new BotCommandInterpreter();
 
         instance.addListener(new BotCommandEvent("a"), new CommandA(this.s));
@@ -127,20 +125,20 @@ public class BotCommandInterpreterTest
         Thread.sleep(this.wait_for_thread_sleep);
         assertEquals("HelpA", this.s.getValue());
 
-        msg.setText(trigger + " b");
+        msg.setText("!help b");
         Thread.sleep(this.min_diff_allowed_by_spam);
         instance.run(msg);
         Thread.sleep(this.wait_for_thread_sleep);
         assertEquals("HelpB", this.s.getValue());
 
         this.s.setValue("C");
-        msg.setText(trigger + " g");
+        msg.setText("!help g");
         Thread.sleep(this.min_diff_allowed_by_spam);
         instance.run(msg);
         Thread.sleep(this.wait_for_thread_sleep);
         assertEquals("C", this.s.getValue());
 
-        msg.setText(trigger + " a");
+        msg.setText("!help a");
         Thread.sleep(this.min_diff_allowed_by_spam);
         instance.run(msg);
         Thread.sleep(this.wait_for_thread_sleep);

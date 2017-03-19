@@ -64,8 +64,6 @@ public class QuoteTest
     {
         this.factory = new BotTestFactory();
         this.tableOperations = this.factory.createTableOperationsObject();
-        this.trigger =
-                BotConfiguration.getConfig().getString("command_trigger", ".");
         
         File f = new File(
                 SystemUtils.getUserDir().getAbsolutePath() + "/build");
@@ -129,7 +127,7 @@ public class QuoteTest
         DummyConnection conn = new DummyConnection();
         BotUser user = new IRCBotUser("gresco", "Geronimo",
                 "localhost@mydomain");
-        msg = new BotMessage(conn, "#chan", user, this.trigger + "quote");
+        msg = new BotMessage(conn, "#chan", user, "!quote");
 
         new QuoteImp(msg).run();
 
@@ -146,7 +144,7 @@ public class QuoteTest
         BotUser user = new IRCBotUser("gresco", "Geronimo",
                 "localhost@mydomain");
         msg = new BotMessage(conn, "#chan", user,
-                this.trigger + "quote op:set text:" + text);
+                "!quote op:set text:" + text);
 
         new QuoteImp(msg).run();
 
@@ -162,7 +160,7 @@ public class QuoteTest
         BotUser user = new IRCBotUser("gresco", "Geronimo",
                 "localhost@mydomain");
         msg = new BotMessage(conn, "#chan", user,
-                this.trigger + "quote op:del id:1");
+                "!quote op:del id:1");
 
         new QuoteImp(msg).run();
 
@@ -178,7 +176,7 @@ public class QuoteTest
         BotUser user = new IRCBotUser("gresco", "Geronimo",
                 "localhost@mydomain");
         msg = new BotMessage(conn, "#chan", user,
-                this.trigger + "quote op:info id:1");
+                "!quote op:info id:1");
 
         new QuoteImp(msg).run();
 
