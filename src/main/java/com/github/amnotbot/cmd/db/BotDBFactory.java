@@ -45,7 +45,6 @@ public class BotDBFactory
     Properties properties;
     static BotDBFactory _instance = null;
     QuoteDAO quoteDAO = null;
-    WeatherDAO weatherDAO = null;
     private final String backend = "hsqldb";
 
     public static BotDBFactory instance()
@@ -121,35 +120,5 @@ public class BotDBFactory
         }
 
         return wCounterDAO;
-    }
-
-    public WeatherDAO createWeatherDAO()
-    {
-        if (this.weatherDAO != null) return this.weatherDAO;
-
-        Class weatherClass = null;
-        String db = BotLogger.BOT_HOME + "/" + "weather.db";
-        
-        try {
-            String className = this.backend.substring(0, 1).toUpperCase() +
-                    this.backend.substring(1);
-            weatherClass = Class.forName("com.github.amnotbot.cmd.db.backend." +
-                    className + "WeatherDAO");
-
-            Class[] types = { java.lang.String.class };
-            java.lang.reflect.Constructor constructor =
-                    weatherClass.getConstructor(types);
-            Object[] params = { db };
-            
-            this.weatherDAO = (WeatherDAO) constructor.newInstance( params );
-            if (!this.weatherDAO.stationDBExists()) {
-                this.weatherDAO.createStationDB();
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            BotLogger.getDebugLogger().debug(e);
-        }
-        return this.weatherDAO;
     }
 }
