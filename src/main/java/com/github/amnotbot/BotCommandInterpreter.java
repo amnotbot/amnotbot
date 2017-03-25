@@ -31,6 +31,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import com.github.amnotbot.config.BotConfiguration;
 import com.github.amnotbot.spam.BotSpamDetector;
@@ -108,11 +109,8 @@ public class BotCommandInterpreter
     {
         return this.cmdListeners.keySet().stream()
                 .filter(e -> e.test(cmdTrigger))
-                .map(e -> this.cmdListeners.get(e))
-                .reduce(new LinkedList<>(), (a, b) -> {
-                    a.addAll(b);
-                    return a;
-                });
+                .flatMap(e -> this.cmdListeners.get(e).stream())
+                .collect(Collectors.toList());
     }
 
     /**
@@ -128,22 +126,11 @@ public class BotCommandInterpreter
 
         this.execute(cmds, msg);
     }
-    
-    /**
-     * Executes all commands in List l with BotMessage
-     * 
-     * @param l List of BotCommands to execute
-     * @param msg Message sent to commands
-     */
-    private void execute(List<BotCommand> l, BotMessage msg)
+
+    private void execute(List<BotCommand> cmds, BotMessage msg)
     {
-        Iterator<BotCommand> cmds;
-        cmds = l.iterator();
-        
-        while (cmds.hasNext()) {
-            BotCommand command = cmds.next();
-            new Thread(new BotCommandRunnable(command, msg)).start();
-        }
+        cmds.stream()
+                .forEach(command -> new Thread(new BotCommandRunnable(command, msg)).start());
     }
 
     private void showHelp(BotMessage msg)
@@ -163,13 +150,10 @@ public class BotCommandInterpreter
 
     private void showEventTriggers(BotMessage msg)
     {
-        Iterator<BotCommandEvent> it = this.cmdListeners.keySet().iterator();
+        String triggers = this.cmdListeners.keySet().stream()
+                .map(BotCommandEvent::getTrigger)
+                .collect(Collectors.joining(", "));
 
-        String triggersList = new String();
-        while (it.hasNext()) {
-            BotCommandEvent event = it.next();
-            triggersList += "\"" + event.getTrigger() + "\", ";
-        }
-        msg.getConn().doPrivmsg(msg.getTarget(), "Patterns: " + triggersList);
+        msg.getConn().doPrivmsg(msg.getTarget(), "Patterns: " + triggers);
     }
 }
