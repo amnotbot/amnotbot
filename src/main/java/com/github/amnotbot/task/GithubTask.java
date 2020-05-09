@@ -42,7 +42,7 @@ import org.json.JSONObject;
 
 /**
  * BotTask that reports recent github activity.
- * 
+ *
  * @author gpoppino
  */
 public class GithubTask extends BotTask
@@ -52,14 +52,14 @@ public class GithubTask extends BotTask
     private int ncommits;
     private String firstCommit = null;
     private HashMap<String, String> newestCommit;
-    
+
     public GithubTask()
     {
-        this.repos = 
+        this.repos =
                 BotConfiguration.getConfig().getStringArray("github_repos");
-        this.ncommits = 
+        this.ncommits =
                 BotConfiguration.getConfig().getInt("github_commits", 5);
-        
+
         this.newestCommit = new HashMap<String, String>();
     }
 
@@ -67,45 +67,45 @@ public class GithubTask extends BotTask
     {
         LinkedList<URL> urls = new LinkedList<URL>();
         String [] userRepo;
-        
+
         for (String repo : this.repos) {
             userRepo = repo.split(":");
-        
-            String url = this.githubApiUrl + "/repos/" + userRepo[0] + 
+
+            String url = this.githubApiUrl + "/repos/" + userRepo[0] +
                     "/" + userRepo[1] + "/commits";
-            
+
             urls.add(new URL(url));
         }
-        
+
         return urls;
     }
-    
+
     private void showAnswer(JSONArray commits) throws JSONException
     {
         int i = 0;
         Boolean fCommit = true;
-        
-        String url = 
+
+        String url =
                 commits.getJSONObject(0).getJSONObject("commit").optString("url");
         String [] userRepo = url.split("/");
         while (i < this.ncommits) {
-            JSONObject commit = 
+            JSONObject commit =
                     commits.getJSONObject(i).getJSONObject("commit");
             String sha = commit.getJSONObject("tree").optString("sha");
-            
+
             if (this.seenCommit(fCommit, userRepo[5], sha)) break;
             fCommit = false;
-            
+
             // Display the commit in channel
             for (String channel : this.getChannels()) {
-                this.getConnection().doPrivmsg(channel, "(github) " + 
-                        userRepo[4] + "/" +  userRepo[5] + " - Commit: " + 
+                this.getConnection().doPrivmsg(channel, "(github) " +
+                        userRepo[4] + "/" +  userRepo[5] + " - Commit: " +
                         commit.optString("message") + ", " +
-                        commit.getJSONObject("author").optString("email") + 
+                        commit.getJSONObject("author").optString("email") +
                         ", " +
                         commit.getJSONObject("author").optString("date"));
             }
-            
+
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
@@ -115,7 +115,7 @@ public class GithubTask extends BotTask
         }
         this.newestCommit.put(userRepo[5], this.firstCommit);
     }
-    
+
     private Boolean seenCommit(Boolean fCommit, String repo, String sha)
     {
         if (fCommit) this.firstCommit = sha;
@@ -123,21 +123,20 @@ public class GithubTask extends BotTask
         if (StringUtils.equals(this.newestCommit.get(repo), sha)) return true;
         return false;
     }
-    
+
     @Override
-    public void run() 
+    public void run()
     {
         try {
             LinkedList<URL> gitUrls;
             gitUrls = this.buildUrls();
 
             Iterator<URL> it = gitUrls.iterator();
-            
             while(it.hasNext()) {
                 BotURLConnection conn = new BotURLConnection(it.next());
-                
+
                 JSONArray commits = new JSONArray ( conn.fetchURL() );
-                
+
                 this.showAnswer(commits);
             }
         } catch (Exception e) {
