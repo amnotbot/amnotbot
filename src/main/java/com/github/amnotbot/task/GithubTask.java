@@ -35,6 +35,7 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -63,9 +64,9 @@ public class GithubTask extends BotTask
         this.newestCommit = new HashMap<String, String>();
     }
 
-    private LinkedList<URL> buildUrls() throws MalformedURLException
+    private List<URL> buildUrls() throws MalformedURLException
     {
-        LinkedList<URL> urls = new LinkedList<URL>();
+        List<URL> urls = new LinkedList<URL>();
         String [] userRepo;
 
         for (String repo : this.repos) {
@@ -128,8 +129,7 @@ public class GithubTask extends BotTask
     public void run()
     {
         try {
-            LinkedList<URL> gitUrls;
-            gitUrls = this.buildUrls();
+            List<URL> gitUrls = this.buildUrls();
 
             Iterator<URL> it = gitUrls.iterator();
             while(it.hasNext()) {
