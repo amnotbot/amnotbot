@@ -53,6 +53,7 @@ public class GithubTask extends BotTask
     private final String[] repos;
     private final int ncommits;
     private final Set<String> storedCommits;
+    private boolean firstRun = true;
 
     public GithubTask() {
         this.repos = BotConfiguration.getConfig().getStringArray("github_repos");
@@ -85,7 +86,7 @@ public class GithubTask extends BotTask
             final JSONObject commit = commits.getJSONObject(i).getJSONObject("commit");
             final String sha = commit.getJSONObject("tree").optString("sha");
 
-            if (!this.storedCommits.add(sha)) { ++i; continue; }
+            if (!this.storedCommits.add(sha) || this.firstRun) { ++i; continue; }
 
             // Display the commit in channel
             for (final String channel : this.getChannels()) {
@@ -120,6 +121,7 @@ public class GithubTask extends BotTask
         } catch (final Exception e) {
             BotLogger.getDebugLogger().debug(e.getMessage());
         }
+        this.firstRun = false;
     }
 
     @Override
