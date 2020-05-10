@@ -96,6 +96,11 @@ public class TwitterTask extends BotTask {
             if (!this.storedStatuses.contains(this.getSHA1FromTweet(status.getUser().getScreenName() + status.getText()))) {
                 this.getConnection().doPrivmsg(channel, "@" + status.getUser().getScreenName() + ": " + text);
                 this.storeStatus(status);
+                try {
+                    Thread.sleep(1000);
+                } catch (final InterruptedException e) {
+                    BotLogger.getDebugLogger().debug(e);
+                }
             }
         }
     }
