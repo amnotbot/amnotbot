@@ -74,11 +74,6 @@
       <version>4.12</version>
     </dependency>
     <dependency>
-      <groupId>net.sf.delicious-java</groupId>
-      <artifactId>delicious</artifactId>
-      <version>1.14</version>
-    </dependency>
-    <dependency>
       <groupId>net.aksingh</groupId>
       <artifactId>owm-japis</artifactId>
       <version>2.5.0.3</version>
