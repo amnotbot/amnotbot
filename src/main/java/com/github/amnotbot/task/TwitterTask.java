@@ -70,7 +70,7 @@ public class TwitterTask extends BotTask
     public void run()
     {
         if (this.firstRun) {
-            twitterStream.user();
+            this.twitterStream.sample();
             this.firstRun = false;
         }
     }
