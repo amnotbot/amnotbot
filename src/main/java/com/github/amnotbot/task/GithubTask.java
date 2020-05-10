@@ -32,11 +32,12 @@ import com.github.amnotbot.cmd.utils.BotURLConnection;
 import com.github.amnotbot.config.BotConfiguration;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import org.apache.commons.lang.StringUtils;
+import java.util.Set;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -48,32 +49,26 @@ import org.json.JSONObject;
  */
 public class GithubTask extends BotTask
 {
-    private String githubApiUrl = "https://api.github.com";
-    private String [] repos;
-    private int ncommits;
-    private String firstCommit = null;
-    private HashMap<String, String> newestCommit;
+    private final String githubApiUrl = "https://api.github.com";
+    private final String[] repos;
+    private final int ncommits;
+    private final Set<String> storedCommits;
 
-    public GithubTask()
-    {
-        this.repos =
-                BotConfiguration.getConfig().getStringArray("github_repos");
-        this.ncommits =
-                BotConfiguration.getConfig().getInt("github_commits", 5);
+    public GithubTask() {
+        this.repos = BotConfiguration.getConfig().getStringArray("github_repos");
+        this.ncommits = BotConfiguration.getConfig().getInt("github_commits", 5);
 
-        this.newestCommit = new HashMap<String, String>();
+        this.storedCommits = new HashSet<String>(this.ncommits + 64);
     }
 
-    private List<URL> buildUrls() throws MalformedURLException
-    {
-        List<URL> urls = new LinkedList<URL>();
-        String [] userRepo;
+    private List<URL> buildUrls() throws MalformedURLException {
+        final List<URL> urls = new LinkedList<URL>();
+        String[] userRepo;
 
-        for (String repo : this.repos) {
+        for (final String repo : this.repos) {
             userRepo = repo.split(":");
 
-            String url = this.githubApiUrl + "/repos/" + userRepo[0] +
-                    "/" + userRepo[1] + "/commits";
+            final String url = this.githubApiUrl + "/repos/" + userRepo[0] + "/" + userRepo[1] + "/commits";
 
             urls.add(new URL(url));
         }
@@ -81,72 +76,54 @@ public class GithubTask extends BotTask
         return urls;
     }
 
-    private void showAnswer(JSONArray commits) throws JSONException
-    {
+    private void showAnswer(final JSONArray commits) throws JSONException {
+
+        final String url = commits.getJSONObject(0).getJSONObject("commit").optString("url");
+        final String[] userRepo = url.split("/");
         int i = 0;
-        Boolean fCommit = true;
-
-        String url =
-                commits.getJSONObject(0).getJSONObject("commit").optString("url");
-        String [] userRepo = url.split("/");
         while (i < this.ncommits) {
-            JSONObject commit =
-                    commits.getJSONObject(i).getJSONObject("commit");
-            String sha = commit.getJSONObject("tree").optString("sha");
+            final JSONObject commit = commits.getJSONObject(i).getJSONObject("commit");
+            final String sha = commit.getJSONObject("tree").optString("sha");
 
-            if (this.seenCommit(fCommit, userRepo[5], sha)) break;
-            fCommit = false;
+            if (!this.storedCommits.add(sha)) { ++i; continue; }
 
             // Display the commit in channel
-            for (String channel : this.getChannels()) {
-                this.getConnection().doPrivmsg(channel, "(github) " +
-                        userRepo[4] + "/" +  userRepo[5] + " - Commit: " +
-                        commit.optString("message") + ", " +
-                        commit.getJSONObject("author").optString("email") +
-                        ", " +
-                        commit.getJSONObject("author").optString("date"));
+            for (final String channel : this.getChannels()) {
+                this.getConnection().doPrivmsg(channel,
+                        "(github) " + userRepo[4] + "/" + userRepo[5] + " - Commit: " + commit.optString("message")
+                                + ", " + commit.getJSONObject("author").optString("email") + ", "
+                                + commit.getJSONObject("author").optString("date"));
             }
 
+            ++i;
             try {
                 Thread.sleep(1000);
-            } catch (InterruptedException e) {
+            } catch (final InterruptedException e) {
                 BotLogger.getDebugLogger().debug(e);
             }
-            ++i;
         }
-        this.newestCommit.put(userRepo[5], this.firstCommit);
-    }
-
-    private Boolean seenCommit(Boolean fCommit, String repo, String sha)
-    {
-        if (fCommit) this.firstCommit = sha;
-        if (this.newestCommit.get(repo) == null) return true;
-        if (StringUtils.equals(this.newestCommit.get(repo), sha)) return true;
-        return false;
     }
 
     @Override
-    public void run()
-    {
+    public void run() {
         try {
-            List<URL> gitUrls = this.buildUrls();
+            final List<URL> gitUrls = this.buildUrls();
 
-            Iterator<URL> it = gitUrls.iterator();
-            while(it.hasNext()) {
-                BotURLConnection conn = new BotURLConnection(it.next());
+            final Iterator<URL> it = gitUrls.iterator();
+            while (it.hasNext()) {
+                final BotURLConnection conn = new BotURLConnection(it.next());
 
-                JSONArray commits = new JSONArray ( conn.fetchURL() );
+                final JSONArray commits = new JSONArray(conn.fetchURL());
 
                 this.showAnswer(commits);
             }
-        } catch (Exception e) {
+        } catch (final Exception e) {
             BotLogger.getDebugLogger().debug(e.getMessage());
         }
     }
 
     @Override
-    public void stop()
-    {
+    public void stop() {
         // nothing to do.
     }
 }
