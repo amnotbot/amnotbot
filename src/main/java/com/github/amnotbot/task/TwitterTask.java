@@ -44,25 +44,25 @@ public class TwitterTask extends BotTask
 
     public TwitterTask()
     {
-        String key = BotConfiguration.getConfig().getString("twitter_key");
-        String secret =
+        final String key = BotConfiguration.getConfig().getString("twitter_key");
+        final String secret =
                 BotConfiguration.getConfig().getString("twitter_secret");
-        String accessToken =
+        final String accessToken =
                 BotConfiguration.getConfig().getString("twitter_token");
-        String tokenSecret =
+        final String tokenSecret =
                 BotConfiguration.getConfig().getString("twitter_token_secret");
 
-        ConfigurationBuilder cb = new ConfigurationBuilder();
+        final ConfigurationBuilder cb = new ConfigurationBuilder();
         cb.setDebugEnabled(true)
         .setOAuthConsumerKey(key)
         .setOAuthConsumerSecret(secret)
         .setOAuthAccessToken(accessToken)
         .setOAuthAccessTokenSecret(tokenSecret);
 
-        TwitterStreamFactory tsf = new TwitterStreamFactory(cb.build());
+        final TwitterStreamFactory tsf = new TwitterStreamFactory(cb.build());
         this.twitterStream = tsf.getInstance();
 
-        StatusListener listener = new TwitterTaskUserStreamListener(this);
+        final StatusListener listener = new TwitterTaskUserStreamListener(this);
         this.twitterStream.addListener(listener);
     }
 
@@ -85,17 +85,17 @@ public class TwitterTask extends BotTask
     {
         TwitterTask task;
 
-        TwitterTaskUserStreamListener(TwitterTask task)
+        TwitterTaskUserStreamListener(final TwitterTask task)
         {
             this.task = task;
         }
 
         @Override
-        public void onStatus(Status status)
+        public void onStatus(final Status status)
         {
-            String text = StringUtils.replace(status.getText(), "\n", " ");
+            final String text = StringUtils.replace(status.getText(), "\n", " ");
 
-            for (String channel : this.task.getChannels()) {
+            for (final String channel : this.task.getChannels()) {
                 this.task.getConnection().doPrivmsg(channel,
                         "@" + status.getUser().getScreenName()
                                 + ": " + text);
@@ -103,7 +103,7 @@ public class TwitterTask extends BotTask
         }
 
         @Override
-        public void onException(Exception e)
+        public void onException(final Exception e)
         {
             e.printStackTrace();
             BotLogger.getDebugLogger().debug(e);
