@@ -72,7 +72,6 @@ public class TwitterTask extends BotTask {
         try {
             statuses = this.twitter.getHomeTimeline();
             if (this.firstRun) {
-                BotLogger.getDebugLogger().debug("First run!");
                 statuses.stream().forEach(s -> this.storeStatus(s));
                 this.firstRun = false;
             } else {
