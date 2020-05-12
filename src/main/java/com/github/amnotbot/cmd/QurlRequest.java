@@ -26,8 +26,9 @@
  */
 package com.github.amnotbot.cmd;
 
-
 import com.github.amnotbot.*;
+
+import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -38,48 +39,36 @@ import java.net.URLEncoder;
 
 /**
  * Request a shortened URL from Qurl.org
- * 
+ *
  * @author Jimmy Mitchener
  */
 public class QurlRequest
 {
 
-    private String url;
+    private String query;
     private BotMessage msg;
-    public static final String QURL_REGEX =
-            ".*a href=\"(http://qurl.org.*)\".*";
- 
-    public QurlRequest(BotMessage msg, String url)
+
+    public QurlRequest(BotMessage msg, String query)
     {
         this.msg = msg;
-        this.url = url;
+        this.query = query;
     }
 
     public void run()
     {
         try {
-            String query = this.url;
-            String encoded = URLEncoder.encode(query, "UTF-8");
+            String encoded = URLEncoder.encode(this.query, "UTF-8");
 
-            URL url = new URL("http://qurl.org/submit.jsp?url=" + encoded);
+            URL url = new URL("http://qurl.org/api/url?url=" + encoded);
             HttpURLConnection http = (HttpURLConnection) url.openConnection();
 
             BufferedReader reader = new BufferedReader(new InputStreamReader(
                     http.getInputStream()));
 
-            String buf = reader.readLine();
-            if (buf.matches(QURL_REGEX)) {
-                String qurl = buf.replaceFirst(QURL_REGEX, "$1");
-                String domain;               
-                domain = query.replaceFirst(".*https?://([\\w.-]+)/.*",
-                                                                        "<$1>");
-                if (domain.equals(query)) {
-                    domain = "";
-                }
-                this.msg.getConn().doPrivmsg(this.msg.getTarget(),
-                        this.msg.getUser().getNick() + ": " + qurl +
-                        " " + domain);
-            }
+            String qurl = new JSONObject( reader.readLine() ).optString("url");
+            String domain = this.query.replaceFirst(".*https?://([\\w.-]+)/.*", "<$1>");
+            if (domain.equals(query)) domain = "";
+            this.msg.getConn().doPrivmsg(this.msg.getTarget(), this.msg.getUser().getNick() + ": " + qurl + " " + domain);
         } catch (Exception e) {
             BotLogger.getDebugLogger().debug(e);
         }
