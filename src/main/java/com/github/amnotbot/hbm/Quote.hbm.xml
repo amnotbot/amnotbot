@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="com.github.amnotbot.hbm">
+
+    <class name="Quote" table="QUOTES">
+        <id name="id">
+            <generator class="increment"/>
+        </id>
+        <property name="date" type="timestamp" column="QUOTE_DATE"/>
+        <property name="server"/>
+        <property name="channel"/>
+        <property name="nick"/>
+        <property name="text"/>
+    </class>
+
+</hibernate-mapping>
+

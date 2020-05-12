@@ -9,12 +9,19 @@
     <developerConnection>scm:git:file://localhost/</developerConnection>
     <url>scm:git:file://localhost/</url>
   </scm>
-  
+
   <build>
     <resources>
       <resource>
         <directory>src/main/resources</directory>
         <filtering>true</filtering>
+      </resource>
+      <resource>
+        <directory>src/main/java</directory>
+        <includes>
+          <include>**/*.xml</include>
+        </includes>
+        <filtering>false</filtering>
       </resource>
     </resources>
     <plugins>
@@ -143,6 +150,16 @@
       <groupId>log4j</groupId>
       <artifactId>log4j</artifactId>
       <version>1.2.17</version>
+    </dependency>
+    <dependency>
+      <groupId>org.postgresql</groupId>
+      <artifactId>postgresql</artifactId>
+      <version>42.2.1</version>
+    </dependency>
+    <dependency>
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate-core</artifactId>
+      <version>5.4.15.Final</version>
     </dependency>
   </dependencies>
 </project>

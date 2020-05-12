@@ -77,7 +77,7 @@ public class IRCv3BotConnection implements BotConnection {
 
     @Override
     public String getHost() {
-        return "";
+       return "";
     }
 
     @Override
