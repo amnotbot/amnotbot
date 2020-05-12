@@ -36,8 +36,6 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.github.amnotbot.config.BotConfigurationUtils;
-
 import static org.junit.Assert.*;
 
 /**
@@ -72,17 +70,17 @@ public class BotConfigurationUtilsTest {
     public void testGetRoots() throws ConfigurationException
     {
         System.out.println("getRoots");
-        Configuration config = new PropertiesConfiguration("amnotbot.config");
+        final Configuration config = new PropertiesConfiguration("target/test-classes/amnotbot.config");
 
-        ArrayList<String> expResult = new ArrayList<String>();
-        expResult.add("irc");                
-        ArrayList<String> result = BotConfigurationUtils.getRoots(config);
+        final ArrayList<String> expResult = new ArrayList<String>();
+        expResult.add("irc");
+        final ArrayList<String> result = BotConfigurationUtils.getRoots(config);
         assertEquals(expResult, result);
 
-        ArrayList<String> expResultSubset = new ArrayList<String>();
+        final ArrayList<String> expResultSubset = new ArrayList<String>();
         expResultSubset.add("oftc");
         expResultSubset.add("freenode");
-        ArrayList<String> resultSubset = BotConfigurationUtils.getRoots(
+        final ArrayList<String> resultSubset = BotConfigurationUtils.getRoots(
                 config.subset("irc"));
         assertEquals(expResultSubset, resultSubset);
     }
