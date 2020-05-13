@@ -1,23 +1,28 @@
 package com.github.amnotbot.cmd;
 
+import com.github.amnotbot.config.BotConfiguration;
+import com.wrapper.spotify.SpotifyApi;
+import com.wrapper.spotify.exceptions.SpotifyWebApiException;
+import com.wrapper.spotify.model_objects.credentials.ClientCredentials;
+import com.wrapper.spotify.model_objects.specification.Album;
+import com.wrapper.spotify.model_objects.specification.Artist;
+import com.wrapper.spotify.model_objects.specification.ArtistSimplified;
+import com.wrapper.spotify.model_objects.specification.Track;
+import com.wrapper.spotify.requests.authorization.client_credentials.ClientCredentialsRequest;
+import com.wrapper.spotify.requests.data.albums.GetAlbumRequest;
+import com.wrapper.spotify.requests.data.artists.GetArtistRequest;
+import com.wrapper.spotify.requests.data.tracks.GetTrackRequest;
 import com.github.amnotbot.BotMessage;
-import com.wrapper.spotify.Api;
-import com.wrapper.spotify.methods.AlbumRequest;
-import com.wrapper.spotify.methods.ArtistRequest;
-import com.wrapper.spotify.methods.TrackRequest;
-import com.wrapper.spotify.models.Album;
-import com.wrapper.spotify.models.Artist;
-import com.wrapper.spotify.models.SimpleArtist;
-import com.wrapper.spotify.models.Track;
+
+import org.apache.hc.core5.http.ParseException;
 import org.schwering.irc.lib.IRCConstants;
 
-import java.util.List;
+import java.io.IOException;
 
 /**
  * Created by Geronimo on 21/11/16.
  */
-public class SpotifyImp
-{
+public class SpotifyImp {
 
     private final BotMessage msg;
 
@@ -25,42 +30,57 @@ public class SpotifyImp
         ARTIST_SEARCH, ALBUM_SEARCH, TRACK_SEARCH
     }
 
-    private searchType sType;
+    private static final String clientId = BotConfiguration.getConfig().getString("spotify_client_id");
+    private static final String clientSecret = BotConfiguration.getConfig().getString("spotify_client_secret");
+    private static final SpotifyApi spotifyApi = new SpotifyApi.Builder().setClientId(clientId).setClientSecret(clientSecret).build();
+    private static final ClientCredentialsRequest clientCredentialsRequest = spotifyApi.clientCredentials().build();
 
-    public SpotifyImp(BotMessage msg)
-    {
+    public SpotifyImp(BotMessage msg) {
         this.msg = msg;
+
+        this.obtainAccessToken();
     }
 
-    public void search(searchType sType, String id)
-    {
-        Api api = Api.DEFAULT_API;
+    public void obtainAccessToken() {
+        try {
+            final ClientCredentials clientCredentials = clientCredentialsRequest.execute();
 
+            // Set access token for further "spotifyApi" object usage
+            spotifyApi.setAccessToken(clientCredentials.getAccessToken());
+
+            System.out.println("Expires in: " + clientCredentials.getExpiresIn() + " Access Token is: "
+                    + clientCredentials.getAccessToken());
+        } catch (IOException | SpotifyWebApiException | ParseException e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+    }
+
+    public void search(searchType sType, String id) {
         switch (sType) {
             case ARTIST_SEARCH:
-                final ArtistRequest artistRequest = api.getArtist(id).build();
+                final GetArtistRequest artistRequest = spotifyApi.getArtist(id).build();
 
                 try {
-                    final Artist artist = artistRequest.get();
+                    final Artist artist = artistRequest.execute();
 
                     msg.getConn().doPrivmsg(msg.getTarget(),
-                            "[ " + IRCConstants.UNDERLINE_INDICATOR + "Artist: " + IRCConstants.UNDERLINE_INDICATOR +
-                                    artist.getName() + IRCConstants.UNDERLINE_INDICATOR + "  Ranking: " +
-                                    IRCConstants.UNDERLINE_INDICATOR + artist.getPopularity() + " ]");
+                            "[ " + IRCConstants.UNDERLINE_INDICATOR + "Artist: " + IRCConstants.UNDERLINE_INDICATOR
+                                    + artist.getName() + IRCConstants.UNDERLINE_INDICATOR + "  Ranking: "
+                                    + IRCConstants.UNDERLINE_INDICATOR + artist.getPopularity() + " ]");
 
                 } catch (Exception e) {
                     msg.getConn().doPrivmsg(msg.getTarget(), "No artist found!");
                 }
                 break;
             case ALBUM_SEARCH:
-                AlbumRequest albumRequest = api.getAlbum(id).build();
+                GetAlbumRequest albumRequest = spotifyApi.getAlbum(id).build();
 
                 try {
-                    Album album = albumRequest.get();
+                    Album album = albumRequest.execute();
 
                     String mArtists = new String();
-                    List<SimpleArtist> artists = album.getArtists();
-                    for (SimpleArtist artist : artists) {
+                    ArtistSimplified[] artists = album.getArtists();
+                    for (ArtistSimplified artist : artists) {
                         mArtists += " " + artist.getName();
                     }
                     msg.getConn().doPrivmsg(msg.getTarget(),
@@ -75,15 +95,15 @@ public class SpotifyImp
                 }
                 break;
             case TRACK_SEARCH:
-                TrackRequest trackRequest = api.getTrack(id).build();
+                GetTrackRequest trackRequest = spotifyApi.getTrack(id).build();
 
                 try {
-                    final Track track = trackRequest.get();
+                    final Track track = trackRequest.execute();
 
                     String mArtists = new String();
-                    List<SimpleArtist> artists = track.getArtists();
+                    ArtistSimplified [] artists = track.getArtists();
                     boolean isFirst = true;
-                    for (SimpleArtist artist : artists) {
+                    for (ArtistSimplified artist : artists) {
                         if (isFirst) {
                             mArtists += artist.getName();
                             isFirst = false;
@@ -92,10 +112,10 @@ public class SpotifyImp
                         }
                     }
 
-                    int minutes = track.getDuration() / 1000 / 60;
-                    int seconds = track.getDuration() / 1000 - (minutes * 60);
+                    int minutes = track.getDurationMs() / 1000 / 60;
+                    int seconds = track.getDurationMs() / 1000 - (minutes * 60);
 
-                    Integer secs = new Integer(seconds);
+                    Integer secs = Integer.valueOf(seconds);
                     String secondsString = seconds < 10 ? "0" + secs.toString() : secs.toString();
 
                     msg.getConn().doPrivmsg(msg.getTarget(),

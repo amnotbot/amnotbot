@@ -24,14 +24,18 @@ public class SpotifyCommand implements BotCommand
         final String id = tmp[2];
 
         SpotifyImp spotify = new SpotifyImp(message);
-        if (type.compareTo("artist") == 0) {
-            spotify.search(SpotifyImp.searchType.ARTIST_SEARCH, id);
-        } else if (type.compareTo("album") == 0) {
-            spotify.search(SpotifyImp.searchType.ALBUM_SEARCH, id);
-        } else if (type.compareTo("track") == 0) {
-            spotify.search(SpotifyImp.searchType.TRACK_SEARCH, id);
-        } else {
-            message.getConn().doPrivmsg(message.getTarget(), "Valid types: artist, album or track (second field)");
+        switch (type) {
+            case "artist":
+                spotify.search(SpotifyImp.searchType.ARTIST_SEARCH, id);
+                break;
+            case "album":
+                spotify.search(SpotifyImp.searchType.ALBUM_SEARCH, id);
+                break;
+            case "track":
+                spotify.search(SpotifyImp.searchType.TRACK_SEARCH, id);
+                break;
+            default:
+                message.getConn().doPrivmsg(message.getTarget(), "Valid types: artist, album or track (second field)");
         }
     }
 
