@@ -1,6 +1,7 @@
 package com.github.amnotbot.proto.ircv3;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import com.github.amnotbot.BotConnection;
 import com.github.amnotbot.BotConstants;
@@ -77,7 +78,15 @@ public class IRCv3BotConnection implements BotConnection {
 
     @Override
     public String getHost() {
-       return "";
+        String host = "";
+        try {
+            host = client.getServerInfo().getAddress().get();
+        } catch(NoSuchElementException e) {
+            if (this.logger != null) {
+                System.err.println(e);
+            }
+        }
+       return host;
     }
 
     @Override
