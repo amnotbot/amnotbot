@@ -4,7 +4,6 @@ RUN useradd -m -s /bin/bash amnotbot
 RUN mkdir -p /home/amnotbot/.amnotbot
 
 COPY src/main/resources/*.config /home/amnotbot/.amnotbot/
-COPY src/main/resources/log4j.properties /home/amnotbot/.amnotbot/
 ADD . /home/amnotbot/app
 
 RUN chown -R amnotbot:amnotbot /home/amnotbot
