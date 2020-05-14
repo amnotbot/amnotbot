@@ -1,5 +1,7 @@
 FROM maven:latest
 
+RUN yum install -y git; rm -rf /var/cache/yum
+
 RUN useradd -m -s /bin/bash amnotbot
 RUN mkdir -p /home/amnotbot/.amnotbot
 
