@@ -27,13 +27,14 @@
 package com.github.amnotbot;
 
 import java.io.File;
-import java.io.IOException;
 
 import org.apache.commons.lang.SystemUtils;
-
-import org.apache.log4j.Logger;
-import org.apache.log4j.FileAppender;
-import org.apache.log4j.PatternLayout;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.LoggerContext;
+import org.apache.logging.log4j.core.config.Configuration;
+import org.apache.logging.log4j.core.layout.PatternLayout;
+import org.apache.logging.log4j.core.appender.FileAppender;
 
 /**
  * @author Jimmy Mitchener
@@ -44,7 +45,7 @@ public class BotLogger
     public static final File BOT_HOME =
             new File(SystemUtils.getUserHome(), ".amnotbot");
     private File LOG_HOME;
-    
+
     static {
         BOT_HOME.mkdirs();
     }
@@ -57,7 +58,7 @@ public class BotLogger
 
     public static Logger getDebugLogger()
     {
-        return Logger.getLogger("debugLogger");
+        return LogManager.getLogger("debugLogger");
     }
 
     public String getLoggingPath()
@@ -68,34 +69,31 @@ public class BotLogger
     public void log(String msg)
     {
         if (msg.isEmpty()) return;
-        
-        Logger.getRootLogger().info(msg);
+
+        LogManager.getRootLogger().info(msg);
     }
 
     public void log(String target, String msg)
     {
         if (msg.isEmpty()) return;
-        
-        Logger logger = Logger.getLogger(target);
-        FileAppender appender = (FileAppender) logger.getAppender(target);
+
+        final LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
+        final Configuration config = ctx.getConfiguration();
+
+        FileAppender appender = (FileAppender) config.getAppender(target);
 
         if (appender == null) {
-            PatternLayout layout = new PatternLayout("[%d] %m%n");
+            PatternLayout layout = PatternLayout.newBuilder().withPattern("[%d] %m%n").build();
 
-            try {
-                appender = new FileAppender(layout,
-                        this.LOG_HOME.getAbsolutePath() + "/" + target);
-            } catch (IOException e) {
-                BotLogger.getDebugLogger().debug("Logging failed:" + target, e);
-                return;
-            }
+            appender = FileAppender.newBuilder().withFileName(this.LOG_HOME.getAbsolutePath() + "/" + target).setLayout(layout)
+                            .setName(target).build();
+            appender.start();
 
-            appender.setName(target);
-            appender.setEncoding("UTF-8");
-            logger.addAppender(appender);
+            config.addAppender(appender);
+            ctx.getRootLogger().addAppender(appender);
+            ctx.updateLoggers();
         }
-
-        logger.info(msg);
+        LogManager.getLogger(target).info(msg);
     }
 }
 
