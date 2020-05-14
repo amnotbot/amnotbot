@@ -170,13 +170,11 @@ public final class BotConfiguration
     public static Configuration getAppProperties() {
         if (appProperties == null) {
             try {
-                appProperties = new PropertiesConfiguration(
-                        BotConfiguration.class.getClass().getResource("/application.properties"));
+                appProperties = new PropertiesConfiguration("application.properties");
             } catch (final ConfigurationException e) {
                 BotLogger.getDebugLogger().debug(e);
             }
         }
         return appProperties;
     }
-    
 }
