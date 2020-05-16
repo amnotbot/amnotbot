@@ -45,7 +45,9 @@ public final class BotConfiguration
             if (BotConfiguration.home == null) {
                 BotConfiguration.home = new File(SystemUtils.getUserHome(), ".amnotbot");
             }
-            BotConfiguration.home.mkdirs();
+            if (!BotConfiguration.home.exists()) {
+                BotConfiguration.home.mkdirs();
+            }
 
             boolean firstRun = false;
             if (this.copyConfigFile("amnotbot.config")) {
