@@ -26,20 +26,19 @@
  */
 package com.github.amnotbot;
 
+import java.lang.reflect.Constructor;
 import java.util.Iterator;
 import org.apache.commons.configuration.Configuration;
 
 import com.github.amnotbot.config.BotConfiguration;
-import com.github.amnotbot.spam.BotSpamDetector;
 
 /**
  *
  * @author gpoppino
  */
-public class BotCommandInterpreterBuilderFile  
+public class BotCommandInterpreterBuilderFile
         extends BotCommandInterpreterBuilder
 {
-    
     private BotCommandInterpreter cmdInterpreter;
 
     @Override
@@ -67,7 +66,8 @@ public class BotCommandInterpreterBuilderFile
             fpath = "com.github.amnotbot.cmd." + cname;
             Object o;
             try {
-                o = Class.forName(fpath).newInstance();
+                Constructor constructor = Class.forName(fpath).getConstructor();
+                o = constructor.newInstance();
             } catch (Exception e) {
                 e.printStackTrace();
                 BotLogger.getDebugLogger().debug(e);
