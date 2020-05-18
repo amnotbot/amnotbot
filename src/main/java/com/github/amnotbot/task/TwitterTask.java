@@ -105,7 +105,7 @@ public class TwitterTask extends BotTask {
     }
 
     private String getSHA1FromTweet(final String text) {
-        return DigestUtils.shaHex(text);
+        return DigestUtils.sha1Hex(text);
     }
 
     public void stop() { }
