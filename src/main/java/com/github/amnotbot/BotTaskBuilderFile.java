@@ -26,6 +26,7 @@
  */
 package com.github.amnotbot;
 
+import java.lang.reflect.Constructor;
 import java.util.Iterator;
 import java.util.List;
 import org.apache.commons.configuration.Configuration;
@@ -66,7 +67,8 @@ public class BotTaskBuilderFile extends BotTaskBuilder
             fpath = "com.github.amnotbot.task." + cname;
             Object o;
             try {
-                o = Class.forName(fpath).newInstance();
+                Constructor constructor = Class.forName(fpath).getConstructor();
+                o = constructor.newInstance();
             } catch (Exception e) {
                 e.printStackTrace();
                 BotLogger.getDebugLogger().debug(e);
