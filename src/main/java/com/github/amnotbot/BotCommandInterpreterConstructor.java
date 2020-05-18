@@ -26,8 +26,6 @@
  */
 package com.github.amnotbot;
 
-import com.github.amnotbot.spam.BotSpamDetector;
-
 /**
  *
  * @author gpoppino
@@ -48,5 +46,4 @@ public class BotCommandInterpreterConstructor
 
         return this.builder.getInterpreter();
     }
-    
 }

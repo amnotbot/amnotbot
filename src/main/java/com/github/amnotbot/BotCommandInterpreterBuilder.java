@@ -26,8 +26,6 @@
  */
 package com.github.amnotbot;
 
-import com.github.amnotbot.spam.BotSpamDetector;
-
 /**
  *
  * @author gpoppino
