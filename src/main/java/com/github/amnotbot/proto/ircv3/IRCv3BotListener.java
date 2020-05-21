@@ -30,8 +30,6 @@ public class IRCv3BotListener {
     public void onPrivmsg(ChannelMessageEvent event) {
         User user = event.getActor();
 
-        this.conn.print(event.getChannel().getMessagingName(), user.getNick() + "> " + event.getMessage());
-
         BotMessageNotifier.instance().notify(
             new BotMessage(this.conn, event.getChannel().getMessagingName(), new IRCv3BotUser(user), event.getMessage()));
     }

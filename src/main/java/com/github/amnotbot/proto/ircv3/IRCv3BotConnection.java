@@ -17,12 +17,16 @@ public class IRCv3BotConnection implements BotConnection {
     private Client client = null;
     private BotLogger logger;
 
-    public IRCv3BotConnection(final String server, final int port, List<String> channels, final boolean ssl) {
+    public IRCv3BotConnection(final String host, final int port, List<String> channels, final boolean ssl) {
 
         String nick = BotConstants.getBotConstants().getNick();
         Configuration config = BotConfiguration.getConfig();
 
-        this.client = Client.builder().nick(nick).server().secure(ssl).host(server).then().build();
+        this.client = Client.builder().nick(nick).server().host(host).secure(ssl).then()
+                        .listeners()
+                        .input(line -> System.out.println(" <- " + line))
+                        .output(line -> System.out.println(" -> " + line))
+                        .exception(Throwable::printStackTrace).then().build();
 
         this.client.getAuthManager().addProtocol(new SaslPlain(this.client, config.getString("account_name"),
             config.getString("account_password")));
@@ -54,16 +58,12 @@ public class IRCv3BotConnection implements BotConnection {
 
     public void print(String msg)
     {
-        if (this.logger != null) {
-            this.logger.log(msg);
-        }
+        // Nothing to do. We have an output listener... see the constructor.
     }
 
     public void print(String target, String msg)
     {
-        if (this.logger != null) {
-            this.logger.log(target.toLowerCase(), msg);
-        }
+        // Nothing to do. We have an output listener... see the constructor.
     }
 
     @Override
@@ -82,9 +82,7 @@ public class IRCv3BotConnection implements BotConnection {
         try {
             host = client.getServerInfo().getAddress().get();
         } catch(NoSuchElementException e) {
-            if (this.logger != null) {
                 System.err.println(e);
-            }
         }
        return host;
     }
