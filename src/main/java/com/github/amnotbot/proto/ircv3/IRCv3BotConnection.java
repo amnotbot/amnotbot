@@ -1,5 +1,7 @@
 package com.github.amnotbot.proto.ircv3;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -22,10 +24,11 @@ public class IRCv3BotConnection implements BotConnection {
         String nick = BotConstants.getBotConstants().getNick();
         Configuration config = BotConfiguration.getConfig();
 
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         this.client = Client.builder().nick(nick).server().host(host).secure(ssl).then()
                         .listeners()
-                        .input(line -> System.out.println(" <- " + line))
-                        .output(line -> System.out.println(" -> " + line))
+                        .input(line -> System.out.println(sdf.format(new Date()) + " <- " + line))
+                        .output(line -> System.out.println(sdf.format(new Date()) + " -> " + line))
                         .exception(Throwable::printStackTrace).then().build();
 
         this.client.getAuthManager().addProtocol(new SaslPlain(this.client, config.getString("account_name"),
