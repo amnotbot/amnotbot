@@ -54,6 +54,9 @@ public class BotTaskManager
     public void cancelTasks()
     {
         this.timer.cancel();
+        for (BotTask task : this.tasks) {
+            task.stop();
+        }
     }
 
 }

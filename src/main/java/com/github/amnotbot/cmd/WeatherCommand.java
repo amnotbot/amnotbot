@@ -26,6 +26,7 @@
  */
 package com.github.amnotbot.cmd;
 
+import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.Locale;
 import java.util.ResourceBundle;
@@ -44,8 +45,14 @@ public class WeatherCommand implements BotCommand
 
     public void execute(BotMessage message)
     {
-        WeatherImp weather = new WeatherImp(message);
-        weather.run();
+        OpenWeatherImp weather = new OpenWeatherImp(message);
+
+        try {
+            weather.run();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
     public String help()
@@ -64,9 +71,7 @@ public class WeatherCommand implements BotCommand
             BotConfiguration.getCommandsConfig().getString("WeatherCommand"),
             helpMessage.getString("short_description"),
             helpMessage.getString("options"),
-            helpMessage.getString("station_id"),
-            helpMessage.getString("example"),
-            helpMessage.getString("set_default_desc")
+            helpMessage.getString("city_name")
         };
 
         MessageFormat formatter = new MessageFormat("");

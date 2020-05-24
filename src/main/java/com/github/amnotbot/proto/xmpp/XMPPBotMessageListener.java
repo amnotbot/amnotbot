@@ -26,11 +26,9 @@
  */
 package com.github.amnotbot.proto.xmpp;
 
-import com.github.amnotbot.BotCommandInterpreter;
-import com.github.amnotbot.BotCommandInterpreterBuilderFile;
-import com.github.amnotbot.BotCommandInterpreterConstructor;
 import com.github.amnotbot.BotConnection;
 import com.github.amnotbot.BotMessage;
+import com.github.amnotbot.BotMessageNotifier;
 import org.jivesoftware.smack.Chat;
 import org.jivesoftware.smack.MessageListener;
 import org.jivesoftware.smack.packet.Message;
@@ -43,27 +41,24 @@ public class XMPPBotMessageListener implements MessageListener
 {
 
     private BotConnection conn;
-    private BotCommandInterpreter cmdInterpreter;
     
     public XMPPBotMessageListener(BotConnection conn)
     {
         this.conn = conn;
-        
-        BotCommandInterpreterConstructor c =
-                new BotCommandInterpreterConstructor(
-                                new BotCommandInterpreterBuilderFile()
-                );
-
-        this.cmdInterpreter = c.construct(conn);
     }
     
     @Override
     public void processMessage(Chat chat, Message msg) 
     {
         this.conn.print(chat.getParticipant().split("/")[0],  msg.getBody());
-        
-        this.cmdInterpreter.run( 
-                new BotMessage(this.conn, chat.getParticipant(), new XMPPBotUser(chat), msg.getBody()) );
+
+        BotMessageNotifier.instance().notify(
+                new BotMessage(this.conn,
+                        chat.getParticipant(),
+                        new XMPPBotUser(chat),
+                        msg.getBody()
+                )
+        );
     }
     
 }

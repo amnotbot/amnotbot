@@ -26,16 +26,17 @@
  */
 package com.github.amnotbot.proto;
 
+import java.util.Arrays;
 import java.util.List;
+
 import org.apache.commons.configuration.Configuration;
 
 import com.github.amnotbot.BotConnection;
 import com.github.amnotbot.BotLogger;
 import com.github.amnotbot.proto.irc.IRCBotConnection;
 import com.github.amnotbot.proto.irc.IRCBotListener;
+import com.github.amnotbot.proto.ircv3.IRCv3BotConnection;
 import com.github.amnotbot.proto.xmpp.XMPPBotConnection;
-import com.github.amnotbot.proto.xmpp.XMPPBotMessageListener;
-import com.github.amnotbot.proto.xmpp.XMPPBotPacketListener;
 import org.jivesoftware.smack.ConnectionConfiguration;
 
 /**
@@ -46,32 +47,60 @@ public class BotConnectionFactory
 {
     private static final int SO_TIMEOUT = 1000 * 60 * 5;
 
-    public BotConnection createConnection(String protocol, Configuration config)
+    public BotConnection createConnection(final String protocol, final Configuration config)
     {
         BotConnection conn = null;
 
-        if (protocol.equals("irc")) {
-            conn = this.createIRCConnection(
+        switch (protocol.toLowerCase()) {
+            case "irc":
+                conn = this.createIRCConnection(
                     config.getString("server"),
                     config.getInt("port", 6667),
-                    config.getList("channels")
-                    );
-        } else if (protocol.equals("xmpp")) {
-            conn = this.createXMPPConnection(config);
+                    Arrays.asList(config.getStringArray("channels")),
+                    config.getBoolean("ssl")
+                );
+                break;
+            case "ircv3":
+                conn = this.createIRCv3Connection(
+                    config.getString("server"),
+                    config.getInt("port", 6667),
+                    Arrays.asList(config.getStringArray("channels")),
+                    config.getBoolean("ssl")
+                );
+                break;
+            case "xmpp":
+                conn = this.createXMPPConnection(config);
+                break;
         }
 
         return conn;
     }
 
-    private BotConnection createIRCConnection(String server, int port,
-            List<String> channels)
+    private BotConnection createIRCv3Connection(final String server, final int port, final List<String> channels, final boolean ssl) {
+        IRCv3BotConnection conn = new IRCv3BotConnection(server, port, channels, ssl);
+
+        conn.setBotLogger(new BotLogger(server));
+
+        return conn;
+    }
+
+    private BotConnection createIRCConnection(final String server, final int port,
+            final List<String> channels, final Boolean ssl)
     {
         IRCBotConnection conn = null;
 
-        if (port > 0) {
-            conn = new IRCBotConnection(server, port);
+        if (ssl) {
+            if (port > 0) {
+                conn = new IRCBotConnection(server, port, true);
+            } else {
+                conn = new IRCBotConnection(server, true);
+            }
         } else {
-            conn = new IRCBotConnection(server);
+            if (port > 0) {
+                conn = new IRCBotConnection(server, port, false);
+            } else {
+                conn = new IRCBotConnection(server, false);
+            }
         }
 
         conn.setBotLogger(new BotLogger(server));
@@ -81,12 +110,12 @@ public class BotConnectionFactory
 
         return conn;
     }
-    
-    private BotConnection createXMPPConnection(Configuration config)
+
+    private BotConnection createXMPPConnection(final Configuration config)
     {
         XMPPBotConnection conn = null;
-        
-        ConnectionConfiguration connConfig = new ConnectionConfiguration(config.getString("server"), 
+
+        final ConnectionConfiguration connConfig = new ConnectionConfiguration(config.getString("server"), 
                 config.getInt("port", 5222));
         connConfig.setCompressionEnabled(true);
         connConfig.setSASLAuthenticationEnabled(false);
@@ -96,10 +125,10 @@ public class BotConnectionFactory
                 config.getString("user"),
                 config.getString("password"),
                 config.getString("resource"),
-                config.getList("channels")
+                Arrays.asList(config.getStringArray("channels"))
                 );
         conn.setBotLogger(new BotLogger(config.getString("server")));
-        
+
         return conn;
     }
 

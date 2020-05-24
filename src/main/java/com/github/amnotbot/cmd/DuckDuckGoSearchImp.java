@@ -37,16 +37,13 @@ import org.json.JSONObject;
 public class DuckDuckGoSearchImp {
     
     private BotMessage msg;
-    private DuckDuckGoSearch.searchType sType;
     private DuckDuckGoOutputStrategy outputStrategy;
 
     public DuckDuckGoSearchImp(
-            DuckDuckGoSearch.searchType s,
             DuckDuckGoOutputStrategy outputStrategy,
             BotMessage msg)
     {
         this.msg = msg;
-        this.sType = s;
         this.outputStrategy = outputStrategy;
     }
 
@@ -56,7 +53,7 @@ public class DuckDuckGoSearchImp {
             DuckDuckGoSearch duckduckgo = new DuckDuckGoSearch();
 
             JSONObject answer;
-            answer = duckduckgo.search(this.sType, this.msg.getText());
+            answer = duckduckgo.search(this.msg.getParams());
             this.outputStrategy.showAnswer(this.msg, answer);
         } catch (Exception e) {
             e.printStackTrace();

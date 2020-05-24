@@ -26,105 +26,87 @@
  */
 package com.github.amnotbot.task;
 
-import java.io.UnsupportedEncodingException;
-import java.math.BigInteger;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.List;
-import org.apache.commons.lang.StringUtils;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import com.github.amnotbot.BotLogger;
 import com.github.amnotbot.BotTask;
 import com.github.amnotbot.config.BotConfiguration;
 
-import twitter4j.Status;
-import twitter4j.Twitter;
-import twitter4j.TwitterException;
-import twitter4j.TwitterFactory;
+import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.lang.StringUtils;
+
+import twitter4j.*;
 import twitter4j.conf.ConfigurationBuilder;
 
 /**
  *
  * @author gpoppino
  */
-public class TwitterTask extends BotTask
-{
-    TwitterFactory tf;
-    private String newestTweet = null;
-    private String firstTweet = null;
+public class TwitterTask extends BotTask {
+    boolean firstRun = true;
+    Twitter twitter;
+    SortedSet<String> storedStatuses;
+    final int maxSetSize = 1024;
 
-    public TwitterTask()
-    {
-        String key = BotConfiguration.getConfig().getString("twitter_key");
-        String secret =
-                BotConfiguration.getConfig().getString("twitter_secret");
-        String accessToken =
-                BotConfiguration.getConfig().getString("twitter_token");
-        String tokenSecret =
-                BotConfiguration.getConfig().getString("twitter_token_secret");
+    public TwitterTask() {
+        final String key = BotConfiguration.getConfig().getString("twitter_key");
+        final String secret = BotConfiguration.getConfig().getString("twitter_secret");
+        final String accessToken = BotConfiguration.getConfig().getString("twitter_token");
+        final String tokenSecret = BotConfiguration.getConfig().getString("twitter_token_secret");
 
-        ConfigurationBuilder cb = new ConfigurationBuilder();
-        cb.setDebugEnabled(true)
-        .setOAuthConsumerKey(key)
-        .setOAuthConsumerSecret(secret)
-        .setOAuthAccessToken(accessToken)
-        .setOAuthAccessTokenSecret(tokenSecret);
-        this.tf = new TwitterFactory(cb.build());
+        final ConfigurationBuilder cb = new ConfigurationBuilder();
+        cb.setDebugEnabled(true).setOAuthConsumerKey(key).setOAuthConsumerSecret(secret)
+                .setOAuthAccessToken(accessToken).setOAuthAccessTokenSecret(tokenSecret);
+
+        final TwitterFactory tf = new TwitterFactory(cb.build());
+        this.twitter = tf.getInstance();
+
+        this.storedStatuses = new TreeSet<String>();
     }
 
     @Override
-    public void run() 
-    {
-        Twitter twitter = this.tf.getInstance();
-
+    public void run() {
         List<Status> statuses;
-        Boolean firstTweet = true;
         try {
-            statuses = twitter.getHomeTimeline();
-            for (Status status : statuses) {
-                String text = StringUtils.replace(status.getText(), "\n", " ");
-                if (this.seenTweet(firstTweet, text)) break;
-                firstTweet = false;
+            statuses = this.twitter.getHomeTimeline();
+            if (this.firstRun) {
+                statuses.stream().forEach(s -> this.storeStatus(s));
+                this.firstRun = false;
+            } else {
+                statuses.stream().forEach(s -> this.showStatus(s));
+            }
+        } catch (final TwitterException e) {
+            e.printStackTrace();
+        }
+    }
 
-                for (String channel : this.getChannels()) {
-                    this.getConnection().doPrivmsg(channel,
-                            "@" + status.getUser().getScreenName()
-                                + ": " + text);
-                }
-                
+    private void storeStatus(final Status status) {
+        this.storedStatuses.add(this.getSHA1FromTweet(status.getUser().getScreenName() + status.getText()));
+        if (this.storedStatuses.size() > this.maxSetSize) {
+            this.storedStatuses.remove(this.storedStatuses.last());
+        }
+    }
+
+    private void showStatus(final Status status) {
+        final String text = StringUtils.replace(status.getText(), "\n", " ");
+        for (final String channel : this.getChannels()) {
+            if (!this.storedStatuses.contains(this.getSHA1FromTweet(status.getUser().getScreenName() + status.getText()))) {
+                this.getConnection().doPrivmsg(channel, "@" + status.getUser().getScreenName() + ": " + text);
+                this.storeStatus(status);
                 try {
                     Thread.sleep(1000);
-                } catch (InterruptedException e) {
+                } catch (final InterruptedException e) {
                     BotLogger.getDebugLogger().debug(e);
                 }
             }
-            this.newestTweet = this.firstTweet;
-        } catch (TwitterException e) {
-            BotLogger.getDebugLogger().debug(e);
         }
     }
 
-    private Boolean seenTweet(Boolean firstTweet, String text)
-    {
-        MessageDigest md = null;
-        byte[] bytesOfMessage = null;
-        
-        try {
-            bytesOfMessage = text.getBytes("UTF-8");
-            md = MessageDigest.getInstance("MD5");
-        } catch (NoSuchAlgorithmException e) {
-            BotLogger.getDebugLogger().debug(e);
-        } catch (UnsupportedEncodingException e) {
-            BotLogger.getDebugLogger().debug(e);
-        }
-        
-        byte[] digest = md.digest(bytesOfMessage);
-        BigInteger bigInt = new BigInteger(1, digest);
-        String hashText = bigInt.toString(16);
-        if (firstTweet) this.firstTweet = hashText;
-        if (this.newestTweet == null) return true;
-        if (StringUtils.equals(this.newestTweet, hashText)) return true;
-        return false;
+    private String getSHA1FromTweet(final String text) {
+        return DigestUtils.sha1Hex(text);
     }
 
+    public void stop() { }
 }

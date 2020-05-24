@@ -45,10 +45,16 @@ public class GoogleResult
 {
     JSONObject result;
 
-    public GoogleResult(JSONObject answer) throws JSONException
+    public GoogleResult(GoogleSearchImp.searchType sType, JSONObject answer) throws JSONException
     {
-        JSONObject data = answer.getJSONObject("responseData");
-        this.result = data.getJSONArray("results").getJSONObject(0);
+        switch (sType) {
+            case WEB_SEARCH:
+                this.result = answer.getJSONArray("items").getJSONObject(0);
+                break;
+            case SPELLING_SEARCH:
+                this.result = answer.getJSONObject("spelling");
+                break;
+        }
     }
 
     public String optStringRaw(String opt)
@@ -73,7 +79,7 @@ public class GoogleResult
 
     public String title()
     {
-        return this.optString("titleNoFormatting");
+        return this.optString("title");
     }
 
     public String shortDate(String dateOpt) throws ParseException

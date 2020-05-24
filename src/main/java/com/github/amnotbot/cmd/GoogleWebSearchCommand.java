@@ -20,7 +20,7 @@ public class GoogleWebSearchCommand implements BotCommand
     public void execute(BotMessage message)
     {
         new GoogleSearchImp(
-                GoogleSearch.searchType.WEB_SEARCH,
+                GoogleSearchImp.searchType.WEB_SEARCH,
                 new GoogleResultOutputWebStrategy(),
                 message
                 ).run();
@@ -46,8 +46,7 @@ public class GoogleWebSearchCommand implements BotCommand
             cmd,
             helpMessage.getString("web_short_description"),
             helpMessage.getString("parameters"),
-            helpMessage.getString("search_term"),
-            helpMessage.getString("example")
+            helpMessage.getString("search_term")
         };
 
         MessageFormat formatter = new MessageFormat("");

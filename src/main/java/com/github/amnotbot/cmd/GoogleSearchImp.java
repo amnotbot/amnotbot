@@ -31,6 +31,9 @@ import org.json.JSONObject;
 
 import com.github.amnotbot.*;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  *
  * @author gpoppino
@@ -39,16 +42,20 @@ public class GoogleSearchImp
 {
 
     private BotMessage msg;
-    private GoogleSearch.searchType sType;
     private GoogleResultOutputStrategy outputStrategy;
 
-    public GoogleSearchImp(
-            GoogleSearch.searchType s,
+    public enum searchType {
+        SPELLING_SEARCH, WEB_SEARCH
+    }
+
+    private searchType sType;
+
+    public GoogleSearchImp(searchType sType,
             GoogleResultOutputStrategy outputStrategy,
             BotMessage msg)
     {
         this.msg = msg;
-        this.sType = s;
+        this.sType = sType;
         this.outputStrategy = outputStrategy;
     }
 
@@ -57,9 +64,21 @@ public class GoogleSearchImp
         try {
             GoogleSearch google = new GoogleSearch();
 
-            JSONObject answer;
-            answer = google.search(this.sType, this.msg.getText());
-            this.outputStrategy.showAnswer(this.msg, new GoogleResult(answer));
+            String searchTerm = new String();
+            switch (this.sType) {
+                case WEB_SEARCH:
+                    searchTerm = this.msg.getParams();
+                    break;
+                case SPELLING_SEARCH:
+                    Pattern p =
+                            Pattern.compile("([\\w]+)[\\s]?\\Q(sp?)\\E", Pattern.CASE_INSENSITIVE);
+                    Matcher m = p.matcher(msg.getText().trim());
+                    if (!m.find()) return;
+                    searchTerm = m.group(1).trim();
+                    break;
+            }
+            JSONObject answer = google.search(searchTerm);
+            this.outputStrategy.showAnswer(this.msg, new GoogleResult(sType, answer));
         } catch (Exception e) {
             e.printStackTrace();
             BotLogger.getDebugLogger().debug(e.getMessage());

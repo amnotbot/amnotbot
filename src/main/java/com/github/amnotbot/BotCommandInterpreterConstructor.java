@@ -26,8 +26,6 @@
  */
 package com.github.amnotbot;
 
-import com.github.amnotbot.spam.BotSpamDetector;
-
 /**
  *
  * @author gpoppino
@@ -41,15 +39,11 @@ public class BotCommandInterpreterConstructor
         this.builder = b;
     }
 
-    public BotCommandInterpreter construct(BotConnection conn)
+    public BotCommandInterpreter construct()
     {
-        BotSpamDetector spamDetector;
-
-        spamDetector = this.builder.buildSpamFilter(conn);
-        this.builder.buildInterpreter(spamDetector);
+        this.builder.buildInterpreter();
         this.builder.loadCommands();
 
         return this.builder.getInterpreter();
     }
-    
 }

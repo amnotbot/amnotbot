@@ -26,11 +26,10 @@
  */
 package com.github.amnotbot.proto.xmpp;
 
-import com.github.amnotbot.BotCommandInterpreter;
-import com.github.amnotbot.BotCommandInterpreterBuilderFile;
-import com.github.amnotbot.BotCommandInterpreterConstructor;
+
 import com.github.amnotbot.BotConnection;
 import com.github.amnotbot.BotMessage;
+import com.github.amnotbot.BotMessageNotifier;
 import com.github.amnotbot.config.BotConfiguration;
 import org.apache.commons.lang.StringUtils;
 import org.jivesoftware.smack.PacketListener;
@@ -44,18 +43,10 @@ import org.jivesoftware.smack.packet.Message;
 public class XMPPBotPacketListener implements PacketListener
 {
     private BotConnection conn;
-    private BotCommandInterpreter cmdInterpreter;
 
     public XMPPBotPacketListener(BotConnection conn)
     {
         this.conn = conn;
-        
-        BotCommandInterpreterConstructor c =
-                new BotCommandInterpreterConstructor(
-                                new BotCommandInterpreterBuilderFile()
-                );
-
-        this.cmdInterpreter = c.construct(conn);
     }
             
     @Override
@@ -68,12 +59,16 @@ public class XMPPBotPacketListener implements PacketListener
             // from = amnotbot@conference.jabber.org/gresco
             this.conn.print(channel, nick + "> " + msg.getBody());
     
-            // avoid recurvise messages
+            // avoid recursive messages
             if (StringUtils.equals(BotConfiguration.getConfig().getString("nick"), nick)) return;
-            
-            this.cmdInterpreter.run( 
-                    new BotMessage(this.conn, channel, 
-                            new XMPPBotUser(null, packet.getTo(), null), msg.getBody()) );
+
+            BotMessageNotifier.instance().notify(
+                new BotMessage(this.conn,
+                        channel,
+                        new XMPPBotUser(null, packet.getTo(), null),
+                        msg.getBody()
+                )
+            );
         }
     }
     

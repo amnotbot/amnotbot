@@ -5,3 +5,7 @@ debug.log
 .project
 .classpath
 .settings
+.idea
+amnotbot-core.iml
+dependency-reduced-pom.xml
+.vscode

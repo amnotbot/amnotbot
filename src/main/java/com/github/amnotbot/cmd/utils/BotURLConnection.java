@@ -51,7 +51,7 @@ public class BotURLConnection
         URLConnection conn;
 
         conn = this.url.openConnection();
-        conn.addRequestProperty("Referer", "http://packetpan.org");
+        conn.setRequestProperty("User-Agent", "amnotbot/1.0");
 
         return conn;
     }

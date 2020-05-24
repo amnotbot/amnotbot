@@ -33,6 +33,8 @@ import org.schwering.irc.lib.IRCEventListener;
 import com.github.amnotbot.BotConnection;
 import com.github.amnotbot.BotConstants;
 import com.github.amnotbot.BotLogger;
+import org.schwering.irc.lib.ssl.SSLDefaultTrustManager;
+import org.schwering.irc.lib.ssl.SSLIRCConnection;
 
 public class IRCBotConnection implements BotConnection
 {
@@ -40,6 +42,7 @@ public class IRCBotConnection implements BotConnection
     private BotLogger logger;
     private boolean silent = false;
     private IRCConnection conn;
+
 
     public IRCBotConnection(String server,
             int[] ports,
@@ -107,25 +110,50 @@ public class IRCBotConnection implements BotConnection
         this.init();
     }
 
-    public IRCBotConnection(String server)
+    public IRCBotConnection(String server, int port, Boolean ssl)
     {
-        this.conn = new IRCConnection(server,
-                BotConstants.getBotConstants().getIrcPorts(),
-                null,
-                BotConstants.getBotConstants().getNick(),
-                BotConstants.getBotConstants().getNick(),
-                BotConstants.getBotConstants().getNick());
+        if (ssl) {
+            SSLIRCConnection connSSL = new SSLIRCConnection(server, new int[]{port},
+                    null,
+                    BotConstants.getBotConstants().getNick(),
+                    BotConstants.getBotConstants().getNick(),
+                    BotConstants.getBotConstants().getNick());
+
+            connSSL.addTrustManager(new SSLDefaultTrustManager());
+
+            this.conn = connSSL;
+        } else {
+            this.conn = new IRCConnection(server, new int[]{port},
+                    null,
+                    BotConstants.getBotConstants().getNick(),
+                    BotConstants.getBotConstants().getNick(),
+                    BotConstants.getBotConstants().getNick());
+        }
 
         this.init();
     }
 
-    public IRCBotConnection(String server, int port)
+    public IRCBotConnection(String server, Boolean ssl)
     {
-        this.conn = new IRCConnection(server, new int[]{port},
-                null,
-                BotConstants.getBotConstants().getNick(),
-                BotConstants.getBotConstants().getNick(),
-                BotConstants.getBotConstants().getNick());
+        if (ssl) {
+            SSLIRCConnection connSSL = new SSLIRCConnection(server,
+                    BotConstants.getBotConstants().getIrcPorts(),
+                    null,
+                    BotConstants.getBotConstants().getNick(),
+                    BotConstants.getBotConstants().getNick(),
+                    BotConstants.getBotConstants().getNick());
+
+            connSSL.addTrustManager(new SSLDefaultTrustManager());
+
+            this.conn = connSSL;
+        } else {
+            this.conn = new IRCConnection(server,
+                    BotConstants.getBotConstants().getIrcPorts(),
+                    null,
+                    BotConstants.getBotConstants().getNick(),
+                    BotConstants.getBotConstants().getNick(),
+                    BotConstants.getBotConstants().getNick());
+        }
 
         this.init();
     }

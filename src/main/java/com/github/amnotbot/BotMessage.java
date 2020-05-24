@@ -72,6 +72,12 @@ public class BotMessage
         this.text = text;
     }
 
+    public String getParams()
+    {
+        return text.trim().indexOf(" ") == -1 ?
+            new String() : text.trim().substring(text.indexOf(" ")).trim();
+    }
+
     public BotConnection getConn()
     {
         return this.conn;

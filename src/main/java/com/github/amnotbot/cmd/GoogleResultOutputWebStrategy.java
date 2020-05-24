@@ -41,7 +41,7 @@ public class GoogleResultOutputWebStrategy implements GoogleResultOutputStrategy
             throws UnsupportedEncodingException
     {        
         msg.getConn().doPrivmsg(msg.getTarget(), result.title());
-        msg.getConn().doPrivmsg(msg.getTarget(), result.decodedUrl("url"));
-        msg.getConn().doPrivmsg(msg.getTarget(), result.optString("content"));
+        msg.getConn().doPrivmsg(msg.getTarget(), result.decodedUrl("link"));
+        msg.getConn().doPrivmsg(msg.getTarget(), result.optString("snippet").replaceAll("\n", ""));
     }
 }
