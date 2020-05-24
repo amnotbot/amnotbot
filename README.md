@@ -1,4 +1,4 @@
-![Java CI with Maven](https://github.com/gpoppino/amnotbot/workflows/Java%20CI%20with%20Maven/badge.svg?branch=master)
+![Java CI with Maven](https://github.com/amnotbot/amnotbot/workflows/Java%20CI%20with%20Maven/badge.svg)
 
 # Amnotbot
 
@@ -16,4 +16,4 @@ Channel ##subsystem on irc.freenode.net.
 ## Authors
 
 * Jimmy Mitchener <jcm@packetpan.org>
-* Geronimo Poppino <gresco@gmail.com>
+* Geronimo Poppino <gpoppino@outlook.com>
