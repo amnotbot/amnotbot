@@ -10,6 +10,48 @@
     <url>scm:git:file://localhost/</url>
   </scm>
 
+  <profiles>
+    <profile>
+      <id>heroku</id>
+      <activation>
+        <property>
+          <name>env.SOURCE_VERSION</name>
+        </property>
+      </activation>
+      <properties>
+        <buildNumber>${env.SOURCE_VERSION}</buildNumber>
+      </properties>
+    </profile>
+    <profile>
+      <id>local</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>buildnumber-maven-plugin</artifactId>
+            <version>1.4</version>
+            <executions>
+              <execution>
+              <phase>validate</phase>
+              <goals>
+                <goal>create</goal>
+              </goals>
+              </execution>
+            </executions>
+            <configuration>
+              <doCheck>false</doCheck>
+              <doUpdate>false</doUpdate>
+              <shortRevisionLength>7</shortRevisionLength>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+
   <build>
     <resources>
       <resource>
@@ -32,24 +74,6 @@
         <configuration>
           <source>11</source>
           <target>11</target>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>buildnumber-maven-plugin</artifactId>
-        <version>1.4</version>
-        <executions>
-          <execution>
-          <phase>validate</phase>
-          <goals>
-            <goal>create</goal>
-          </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <doCheck>false</doCheck>
-          <doUpdate>false</doUpdate>
-          <shortRevisionLength>7</shortRevisionLength>
         </configuration>
       </plugin>
       <plugin>
