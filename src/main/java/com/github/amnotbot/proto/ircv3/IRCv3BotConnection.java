@@ -12,6 +12,7 @@ import com.github.amnotbot.config.BotConfiguration;
 
 import org.apache.commons.configuration.Configuration;
 import org.kitteh.irc.client.library.Client;
+import org.kitteh.irc.client.library.Client.Builder.Server.SecurityType;
 import org.kitteh.irc.client.library.feature.auth.SaslPlain;
 
 public class IRCv3BotConnection implements BotConnection {
@@ -23,9 +24,10 @@ public class IRCv3BotConnection implements BotConnection {
 
         String nick = BotConstants.getBotConstants().getNick();
         Configuration config = BotConfiguration.getConfig();
+        SecurityType securityType = ssl ? SecurityType.SECURE : SecurityType.INSECURE;
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        this.client = Client.builder().nick(nick).server().host(host).secure(ssl).then()
+        this.client = Client.builder().nick(nick).server().host(host).port(port, securityType).then()
                         .listeners()
                         .input(line -> System.out.println(sdf.format(new Date()) + " <- " + line))
                         .output(line -> System.out.println(sdf.format(new Date()) + " -> " + line))
