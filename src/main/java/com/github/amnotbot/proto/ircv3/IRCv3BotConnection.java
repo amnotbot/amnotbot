@@ -35,8 +35,6 @@ public class IRCv3BotConnection implements BotConnection {
             config.getString("account_password")));
 
         this.client.getEventManager().registerEventListener(new IRCv3BotListener(this, channels));
-
-        channels.stream().forEach(c -> this.client.addChannel(c));
     }
 
     @Override
