@@ -18,7 +18,7 @@ public class OpenWeatherImp
     {
         this.msg = msg;
         if (msg.getParams().contains(",")) {
-            String args[] = msg.getText().split(",");
+            String args[] = msg.getParams().split(",");
             if (args.length > 1) {
                 this.city = args[0].trim();
                 this.country = args[1].trim().isEmpty() ? null : args[1].trim();
