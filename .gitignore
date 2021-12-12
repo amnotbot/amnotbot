@@ -9,3 +9,6 @@ debug.log
 amnotbot-core.iml
 dependency-reduced-pom.xml
 .vscode
+.class
+.DS_Store
+.factorypath
