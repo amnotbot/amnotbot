@@ -157,7 +157,9 @@ public class BotHTMLParser implements WebPageInfo
                 new HasAttributeFilter("name", "keywords")), true);
         if (keywordsList.size() > 0) {
             MetaTag metatag = (MetaTag) keywordsList.elementAt(0);
-            this.setKeywords(metatag.getMetaContent());
+            if (metatag.getMetaContent() != null) {
+                this.setKeywords(metatag.getMetaContent());
+            }
         }
 
         NodeList descriptions = nl.extractAllNodesThatMatch(
