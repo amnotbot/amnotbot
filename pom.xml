@@ -154,7 +154,7 @@
     <dependency>
       <groupId>org.json</groupId>
       <artifactId>json</artifactId>
-      <version>20160810</version>
+      <version>20220320</version>
     </dependency>
     <dependency>
         <groupId>jivesoftware</groupId>
@@ -189,12 +189,12 @@
     <dependency>
       <groupId>org.postgresql</groupId>
       <artifactId>postgresql</artifactId>
-      <version>42.2.1</version>
+      <version>42.2.27</version>
     </dependency>
     <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-core</artifactId>
-      <version>5.4.15.Final</version>
+      <version>5.4.24.Final</version>
     </dependency>
   </dependencies>
 </project>
