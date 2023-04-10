@@ -29,8 +29,11 @@ package com.github.amnotbot.cmd.utils;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.HashMap;
+import java.io.OutputStreamWriter;
 
 /**
  *
@@ -39,11 +42,13 @@ import java.net.URLConnection;
 public class BotURLConnection 
 {
     
-    private URL url;
+    private final URL url;
+    private final HashMap<String, String> headers;
     
     public BotURLConnection(URL url)
     {
         this.url = url;
+        this.headers = new HashMap<>();
     }
     
     private URLConnection startConnection()
@@ -75,6 +80,34 @@ public class BotURLConnection
             throws IOException
     {
         return this.makeQuery( this.startConnection() );
+    }
+
+    private URLConnection doPost(HttpURLConnection conn, String data)
+        throws IOException
+    {
+        try (OutputStreamWriter out = new OutputStreamWriter(conn.getOutputStream())) {
+            out.write(data);
+            out.flush();
+        }
+        return conn;
+    }
+
+    public void addHeader(String key, String value)
+    {
+        this.headers.put(key, value);
+    }
+
+    public String postToURL(String data)
+            throws IOException
+    {
+        HttpURLConnection conn;
+
+        conn = (HttpURLConnection) this.startConnection();
+        conn.setRequestMethod("POST");
+        headers.forEach(conn::setRequestProperty);
+        conn.setDoOutput(true);
+
+        return this.makeQuery( this.doPost(conn, data) );
     }
 
 }

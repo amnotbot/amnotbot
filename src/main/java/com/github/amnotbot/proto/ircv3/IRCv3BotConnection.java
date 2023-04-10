@@ -46,7 +46,11 @@ public class IRCv3BotConnection implements BotConnection {
 
     @Override
     public void doPrivmsg(final String target, final String msg) {
-        this.client.sendMessage(target, msg);
+        if (msg.length() > 500) {
+            this.client.sendMultiLineMessage(target, msg);
+        } else {
+            this.client.sendMessage(target, msg);
+        }
     }
 
     @Override
