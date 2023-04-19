@@ -62,6 +62,6 @@ public class OpenAICommandImp
         message.getConn().doPrivmsg(message.getTarget(),
                 jsonResponse.getJSONArray("choices")
                         .getJSONObject(0).getJSONObject("message").optString("content")
-                        .replaceAll("(?m)^\\s*$[\n\r]+", ""));
+                        .replaceAll("(?m)\\R", " "));
     }
 }
