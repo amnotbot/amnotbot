@@ -45,11 +45,20 @@ public class IRCv3BotConnection implements BotConnection {
     }
 
     @Override
-    public void doPrivmsg(final String target, final String msg) {
-        if (msg.length() > 500) {
-            this.client.sendMultiLineMessage(target, msg);
-        } else {
-            this.client.sendMessage(target, msg);
+    public void doPrivmsg(final String target, String msg) {
+        final int max_length = 392;
+        while (msg.length() > 0) {
+            if (msg.length() <= max_length) {
+                this.client.sendMessage(target, msg);
+                msg = "";
+            } else {
+                int index_of_last_space = msg.substring(0, max_length).lastIndexOf(" ");
+                if (index_of_last_space == -1) {
+                    index_of_last_space = max_length;
+                }
+                this.client.sendMessage(target, msg.substring(0, index_of_last_space));
+                msg = msg.substring(index_of_last_space).stripLeading();
+            }
         }
     }
 
