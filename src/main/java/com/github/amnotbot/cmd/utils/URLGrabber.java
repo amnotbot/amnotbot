@@ -33,25 +33,23 @@ import java.util.regex.Pattern;
  *
  * @author gpoppino
  */
-public class URLGrabber 
-{
-    
+public class URLGrabber {
+
     private Matcher m;
-    
-    public URLGrabber(String text)
-    {
+
+    public URLGrabber(String text) {
         Pattern urlPattern = Pattern.compile(
-                ".*((http[s]?://([a-zA-Z]*.)?[a-zA-Z0-9]+(.[a-z]{2,4})+\\S*).*)");
+            ".*((http[s]?://([a-zA-Z]*.)?[a-zA-Z0-9]+(.[a-z]{2,4})+\\S*).*)"
+        );
         this.m = urlPattern.matcher(text);
     }
-    
-    public boolean hasURL()
-    {
+
+    public boolean hasURL() {
+        this.m.reset();
         return this.m.find();
     }
-    
-    public String getURL()
-    {
+
+    public String getURL() {
         String url = "";
         if (this.hasURL()) {
             url = this.m.group(1).trim().split("\\s+")[0];
