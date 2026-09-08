@@ -4,6 +4,8 @@ import com.github.amnotbot.BotLogger;
 import com.github.amnotbot.BotMessage;
 import com.github.amnotbot.cmd.utils.BotURLConnection;
 
+import org.json.JSONObject;
+
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -21,6 +23,12 @@ public class BookmarkImp
         this.url = url;
     }
 
+    private static boolean isMissing(String value)
+    {
+        return value == null || value.trim().isEmpty()
+                || value.contains("${");
+    }
+
     /**
      * Posts the URL to the bookmark backend and notifies the channel on success.
      *
@@ -28,6 +36,10 @@ public class BookmarkImp
      */
     public void run(BotMessage message)
     {
+        if (isMissing(this.backendUrl) || isMissing(this.jwtToken)) {
+            return;
+        }
+
         BotURLConnection conn;
         try {
             conn = new BotURLConnection(new URL(this.backendUrl + "/api/bookmarks"));
@@ -39,7 +51,7 @@ public class BookmarkImp
         conn.addHeader("Content-Type", "application/json");
         conn.addHeader("Cookie", "access_token=" + this.jwtToken);
 
-        String payload = "{\"url\": \"" + this.url + "\"}";
+        String payload = new JSONObject().put("url", this.url).toString();
         try {
             conn.postToURL(payload);
             message.getConn().doPrivmsg(message.getTarget(), "Bookmarked: " + this.url);

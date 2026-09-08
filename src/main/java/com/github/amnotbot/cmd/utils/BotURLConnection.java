@@ -30,6 +30,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.nio.charset.StandardCharsets;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.HashMap;
@@ -85,7 +86,7 @@ public class BotURLConnection
     private URLConnection doPost(HttpURLConnection conn, String data)
         throws IOException
     {
-        try (OutputStreamWriter out = new OutputStreamWriter(conn.getOutputStream())) {
+        try (OutputStreamWriter out = new OutputStreamWriter(conn.getOutputStream(), StandardCharsets.UTF_8)) {
             out.write(data);
             out.flush();
         }
@@ -107,7 +108,17 @@ public class BotURLConnection
         headers.forEach(conn::setRequestProperty);
         conn.setDoOutput(true);
 
-        return this.makeQuery( this.doPost(conn, data) );
+        conn.setInstanceFollowRedirects(false);
+        try {
+            this.doPost(conn, data);
+            int status = conn.getResponseCode();
+            if (status < 200 || status >= 300) {
+                throw new IOException("POST failed with HTTP " + status);
+            }
+            return this.makeQuery(conn);
+        } finally {
+            conn.disconnect();
+        }
     }
 
 }

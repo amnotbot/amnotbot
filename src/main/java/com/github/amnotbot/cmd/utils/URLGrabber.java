@@ -35,13 +35,12 @@ import java.util.regex.Pattern;
  */
 public class URLGrabber {
 
-    private Matcher m;
+    private static final Pattern URL_PATTERN = Pattern.compile(
+            "https?://[^\\s<>]+", Pattern.CASE_INSENSITIVE);
+    private final Matcher m;
 
     public URLGrabber(String text) {
-        Pattern urlPattern = Pattern.compile(
-            ".*((http[s]?://([a-zA-Z]*.)?[a-zA-Z0-9]+(.[a-z]{2,4})+\\S*).*)"
-        );
-        this.m = urlPattern.matcher(text);
+        this.m = URL_PATTERN.matcher(text);
     }
 
     public boolean hasURL() {
@@ -50,10 +49,6 @@ public class URLGrabber {
     }
 
     public String getURL() {
-        String url = "";
-        if (this.hasURL()) {
-            url = this.m.group(1).trim().split("\\s+")[0];
-        }
-        return url;
+        return this.hasURL() ? this.m.group() : "";
     }
 }
