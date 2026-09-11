@@ -14,6 +14,7 @@ import org.apache.commons.configuration.Configuration;
 import org.kitteh.irc.client.library.Client;
 import org.kitteh.irc.client.library.Client.Builder.Server.SecurityType;
 import org.kitteh.irc.client.library.feature.auth.SaslPlain;
+import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 
 public class IRCv3BotConnection implements BotConnection {
 
@@ -21,13 +22,28 @@ public class IRCv3BotConnection implements BotConnection {
     private BotLogger logger;
 
     public IRCv3BotConnection(final String host, final int port, List<String> channels, final boolean ssl) {
+        this(host, port, channels, ssl, false);
+    }
+
+    /**
+     * Creates a connection, optionally accepting untrusted TLS certificates.
+     * The trust override is scoped to this connection and requires SSL.
+     */
+    public IRCv3BotConnection(final String host, final int port,
+            List<String> channels, final boolean ssl,
+            final boolean untrustedCertificates) {
 
         String nick = BotConstants.getBotConstants().getNick();
         Configuration config = BotConfiguration.getConfig();
         SecurityType securityType = ssl ? SecurityType.SECURE : SecurityType.INSECURE;
+        Client.Builder.Server server = Client.builder().nick(nick).server()
+                .host(host).port(port, securityType);
+        if (ssl && untrustedCertificates) {
+            server.secureTrustManagerFactory(InsecureTrustManagerFactory.INSTANCE);
+        }
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        this.client = Client.builder().nick(nick).server().host(host).port(port, securityType).then()
+        this.client = server.then()
                         .listeners()
                         .input(line -> System.out.println(sdf.format(new Date()) + " <- " + line))
                         .output(line -> System.out.println(sdf.format(new Date()) + " -> " + line))

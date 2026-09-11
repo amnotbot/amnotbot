@@ -65,7 +65,8 @@ public class BotConnectionFactory
                     config.getString("server"),
                     config.getInt("port", 6667),
                     Arrays.asList(config.getStringArray("channels")),
-                    config.getBoolean("ssl")
+                    config.getBoolean("ssl"),
+                    config.getBoolean("untrusted-certificates", false)
                 );
                 break;
             case "xmpp":
@@ -76,8 +77,11 @@ public class BotConnectionFactory
         return conn;
     }
 
-    private BotConnection createIRCv3Connection(final String server, final int port, final List<String> channels, final boolean ssl) {
-        IRCv3BotConnection conn = new IRCv3BotConnection(server, port, channels, ssl);
+    private BotConnection createIRCv3Connection(final String server, final int port,
+            final List<String> channels, final boolean ssl,
+            final boolean untrustedCertificates) {
+        IRCv3BotConnection conn = new IRCv3BotConnection(server, port, channels,
+                ssl, untrustedCertificates);
 
         conn.setBotLogger(new BotLogger(server));
 
