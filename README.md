@@ -12,11 +12,13 @@ services; their live availability has not been verified as part of this review.
 
 ## Build and run
 
-Use a JDK compatible with Java 11 and Maven. The Maven compiler targets Java 11.
+Use JDK 21 and Maven 3.9 or newer. Set `JAVA_HOME` to your JDK 21 installation
+and verify that `mvn -version` reports Java 21. Maven uses `--release 21` to
+compile against Java 21 APIs and produce Java 21 bytecode. Running the bot
+requires Java 21 or newer.
 
 ```sh
-mvn test
-mvn package
+mvn clean verify
 ```
 
 The executable JAR includes dependencies:
@@ -56,8 +58,8 @@ automatically disable most integrations.
 
 The repository also contains a `Dockerfile` that builds and runs the JAR as the
 `amnotbot` user, and a `Procfile` defining the same command as a worker. The
-Dockerfile uses a floating `maven:latest` base and assumes `yum` is available;
-check that combination before relying on it. Container configuration lives in
+Dockerfile uses Maven 3.9 with Eclipse Temurin 21. CI and the Heroku runtime
+also use Java 21. Container configuration lives in
 `/home/amnotbot/.amnotbot`.
 
 ## Commands
