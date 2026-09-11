@@ -23,7 +23,7 @@ java -jar target/amnotbot-core-0.0.1-SNAPSHOT.jar
 
 ## Architecture Overview
 
-Amnotbot is a multi-protocol IRC/XMPP bot built with Java 11 and Maven.
+Amnotbot is a multi-protocol IRC/XMPP bot built with Java 21 and Maven 3.9+.
 
 ### Core Flow
 
